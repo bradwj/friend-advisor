@@ -7,14 +7,18 @@ router.post("/create", async (req, res) => {
   const { groupId, datetime, name, description, lat, long } = req.query;
 
   try {
-    const docRef = await addDoc(collection(db, "events"), {
-      first: "Ada",
-      last: "Lovelace",
-      born: 1815,
-    });
-    console.log("Document written with ID: ", docRef.id);
+    const event = {
+      groupId,
+      datetime: new Date(datetime),
+      name,
+      description,
+      location: new admin.firestore.GeoPoint(Number(lat), Number(long)),
+    };
+    const docRef = await db.collection("events").add(event);
+    console.log("Document written with ID:", docRef.id);
+    res.status(200).send(event);
   } catch (e) {
-    console.error("Error adding document: ", e);
+    res.status(400).send({ message: e.toString() });
   }
 });
 
