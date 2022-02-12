@@ -37,6 +37,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import CreateEvent from "./pages/CreateEvent";
+import Profile from './pages/Profile';
 
 setupIonicReact();
 
@@ -52,6 +53,9 @@ const App: React.FC = () => {
             <IonReactRouter>
                 <IonTabs>
                     <IonRouterOutlet>
+                        <Route exact path="/profile">
+                            <Profile />
+                        </Route>
                         <Route exact path="/signin">
                             <SignIn />
                         </Route>

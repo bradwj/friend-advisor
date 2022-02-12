@@ -1,13 +1,12 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { addDoc, getFirestore, collection, getDocs, onSnapshot, getDoc, doc } from "firebase/firestore";
-import ExploreContainer from '../components/ExploreContainer';
 import './Home.css';
 import { AuthContext } from "../Auth";
 import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 
-const Home: React.FC = () => {
+const SignIn: React.FC = () => {
     const auth = useContext(AuthContext);
     const db = getFirestore();
     const history = useHistory();
@@ -25,16 +24,10 @@ const Home: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Home</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonButton onClick={signIn} expand="full" color="secondary">Sign In</IonButton>
-        <ExploreContainer name="Home page" />
       </IonContent>
     </IonPage>
   );
 };
 
-export default Home;
+export default SignIn;
