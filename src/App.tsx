@@ -51,6 +51,9 @@ const App: React.FC = () => {
             <IonReactRouter>
                 <IonTabs>
                     <IonRouterOutlet>
+                        <Route exact path="/signin">
+                            <SignIn />
+                        </Route>
                         <Route exact path="/addfriend">
                             <AddFriend/>
                         </Route>
