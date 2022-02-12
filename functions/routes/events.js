@@ -1,7 +1,7 @@
-const { getFirestore, collection, addDoc } = require("firebase/firestore");
 const express = require("express");
 const router = express.Router();
-const db = getFirestore();
+const admin = require("../firebase.js");
+const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
   const { groupId, datetime, name, description, lat, long } = req.query;

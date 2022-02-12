@@ -1,4 +1,3 @@
-const {getFirestore} = require("firebase/firestore");
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
