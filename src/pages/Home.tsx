@@ -2,6 +2,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/rea
 import ExploreContainer from '../components/ExploreContainer';
 import './Home.css';
 
+import { AuthContext } from "../Auth";
+import {useContext} from "react";
+
 const Home: React.FC = () => {
   return (
     <IonPage>
@@ -15,7 +18,7 @@ const Home: React.FC = () => {
           <IonToolbar>
             <IonTitle size="large">Home</IonTitle>
           </IonToolbar>
-        </IonHeader>
+        </IonHeader>          {JSON.stringify(useContext(AuthContext))}
         <ExploreContainer name="Home page" />
       </IonContent>
     </IonPage>
