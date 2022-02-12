@@ -16,9 +16,9 @@ const app = express();
 app.use(cors({ origin: true }));
 
 const indexRouter = require("./routes/index");
-const twilioRouter = require("./routes/twilio");
+const groupRouter = require("./routes/groups");
 
 app.use("/", indexRouter);
-app.use("/twilio", twilioRouter);
+app.use("/groups", groupRouter);
 
 exports.app = functions.https.onRequest(app);
