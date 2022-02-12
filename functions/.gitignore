@@ -2,3 +2,4 @@ node_modules/
 *.rest
 *.log
 .env
+/service-account.json
