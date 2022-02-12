@@ -68,8 +68,8 @@ const Home: React.FC = () => {
                 </IonItem>
                 <IonItem>
                     <IonLabel>Date</IonLabel>
-                    <IonInput type="datetime-local" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
-                </IonItem>
+                    <IonInput type="date" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
+                </IonItem><IonItem>{eventDate}</IonItem>
                 {/*<button onClick={handleResetLocation}>Reset Location</button>*/}
                 {/*<label>Latitute:</label><input type='text' value={location.lat} disabled/>
                 <label>Longitute:</label><input type='text' value={location.lng} disabled/>
