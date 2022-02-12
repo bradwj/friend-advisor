@@ -19,7 +19,7 @@ router.post("/create", async (req, res) => {
       }
 })
 router.post("/addmember", async (req, res) => {
-    const {memberId}; //FIXME - ADD CALLING USER
+    //const {memberId}; //FIXME - ADD CALLING USER
   
 })
 
