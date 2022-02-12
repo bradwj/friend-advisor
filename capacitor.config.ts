@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'tech.friendadvisor',
   appName: 'FriendAdvisor',
   webDir: 'build',
   bundledWebRuntime: false
