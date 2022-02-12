@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
+import AddFriend from './pages/AddFriend';
 import Home from './pages/Home';
 import Tab3 from './pages/Tab3';
 
@@ -41,8 +41,8 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
+          <Route exact path="/addfriend">
+            <AddFriend />
           </Route>
           <Route exact path="/home">
             <Home />
@@ -51,13 +51,13 @@ const App: React.FC = () => (
             <Tab3 />
           </Route>
           <Route exact path="/">
-            <Redirect to="/tab1" />
+            <Redirect to="/home" />
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="top">
-          <IonTabButton tab="tab1" href="/tab1">
+          <IonTabButton tab="addfriend" href="/addfriend">
             <IonIcon icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+            <IonLabel>Add Friend</IonLabel>
           </IonTabButton>
           <IonTabButton tab="home" href="/home">
             <IonIcon icon={ellipse} />
