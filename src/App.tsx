@@ -14,6 +14,7 @@ import { ellipse, square, triangle } from 'ionicons/icons';
 import AddFriend from './pages/AddFriend';
 import Home from './pages/Home';
 import Tab3 from './pages/Tab3';
+import SignIn from './pages/SignIn';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -41,6 +42,9 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
+          <Route exact path="/signin">
+            <SignIn />
+          </Route>
           <Route exact path="/addfriend">
             <AddFriend />
           </Route>
