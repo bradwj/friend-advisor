@@ -15,7 +15,6 @@ router.post("/create", async (req, res) => {
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-
 })
 router.post("/addmember", async (req, res) => {
     const {memberId} = req.query;
