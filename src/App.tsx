@@ -36,6 +36,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import CreateEvent from "./pages/CreateEvent";
 
 setupIonicReact();
 
@@ -51,6 +52,9 @@ const App: React.FC = () => {
             <IonReactRouter>
                 <IonTabs>
                     <IonRouterOutlet>
+                        <Route exact path="/signin">
+                            <SignIn />
+                        </Route>
                         <Route exact path="/addfriend">
                             <AddFriend/>
                         </Route>
@@ -59,6 +63,9 @@ const App: React.FC = () => {
                         </Route>
                         <Route path="/tab3">
                             <Tab3/>
+                        </Route>
+                        <Route path="/create-event">
+                            <CreateEvent/>
                         </Route>
                         <Route exact path="/">
                             <Redirect to="/home"/>
