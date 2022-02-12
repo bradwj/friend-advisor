@@ -80,6 +80,10 @@ const App: React.FC = () => {
                             <IonIcon icon={triangle}/>
                             <IonLabel>Add Friend</IonLabel>
                         </IonTabButton>
+                        <IonTabButton tab="addevent" href="/create-event">
+                            <IonIcon icon={square}/>
+                            <IonLabel>New Event</IonLabel>
+                        </IonTabButton>
                         <IonTabButton tab="home" href="/home">
                             <IonIcon icon={ellipse}/>
                             <IonLabel>Home</IonLabel>
