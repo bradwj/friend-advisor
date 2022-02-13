@@ -1,4 +1,4 @@
-## FriendAdvisor
+# FriendAdvisor
 Planning events with friends just got easier! With just a few taps, you can create an event, invite friends, and share updates. Plus, you get reminders through notifications on your phone, so you never forget an important event again! Say goodbye to forgetting your significant other's anniversary or your mother's birthday.
 
 We know that life can get busy, so we make it easy for you to stay on top of your plans. Plus, our app is avilable through both your internet browser or as an app on your mobile device. No more excuses!
@@ -6,7 +6,7 @@ We know that life can get busy, so we make it easy for you to stay on top of you
 Whether you're planning a birthday party, a weekend getaway, or just a night out, FriendAdvisor makes it easy for you and your friends to stay connected.
 
 So what are you waiting for? 
-## [Try out FriendAdvisor today!](https://friendadvisor.tech)
+### [Try out FriendAdvisor today!](https://friendadvisor.tech)
 
 ## Inspiration
 Our team was inspired to create FriendAdvisor because coordinating events with a group of friends can be a huge hassle. You would have to send out group emails or texts to try and get everyone together, and then have to follow-up to make sure everyone got the message. And, if someone couldn't make it, then you would have to change the entire plan! 
