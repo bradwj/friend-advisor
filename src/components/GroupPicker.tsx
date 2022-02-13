@@ -40,8 +40,8 @@ const ExploreContainer: React.FC = () => {
 
     if (ctx?.loggedIn) {
         return (
-            <IonSelect okText="Okay" cancelText="Dismiss">
-                {groups?.map((group: Group) => (<IonSelectOption value={group.id}>{group.name}</IonSelectOption>))}
+            <IonSelect okText="Confirm" cancelText="Dismiss">
+                {groups?.map((group: Group) => (<IonSelectOption value={group.id} key={group.id}>{group.name}</IonSelectOption>))}
             </IonSelect>
         );
     } else {

@@ -64,7 +64,7 @@ const Home: React.FC = () => {
                     <IonToolbar>
                         <IonTitle size="large">Home</IonTitle>
                     </IonToolbar>
-                </IonHeader>          {JSON.stringify(useContext(AuthContext))}
+                </IonHeader>
                 <IonItem>
                     <IonLabel>Name</IonLabel>
                     <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
