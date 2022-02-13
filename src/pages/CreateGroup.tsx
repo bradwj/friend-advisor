@@ -29,7 +29,7 @@ const CreateGroup: React.FC = () => {
 
     const tryCode = async () => {
         const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-        await fetch(`${basePath}/groups/create?groupId=name=${name}&creatorId=${auth?.userId}`, {
+        await fetch(`${basePath}/groups/create?name=${name}&creatorId=${auth?.userId}`, {
             method: "POST"
         });
 
