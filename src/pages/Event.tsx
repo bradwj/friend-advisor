@@ -13,10 +13,11 @@ import {
 } from '@ionic/react';
 import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
-import {collection, getDocs, getFirestore, deleteDoc, doc, getDoc, setDoc} from "firebase/firestore";
+import {collection, getDocs, getFirestore, deleteDoc, doc, getDoc, setDoc, deleteField} from "firebase/firestore";
 import {AuthContext} from "../Auth";
 import MapPicker from 'react-google-map-picker';
 import {RouteComponentProps} from "react-router";
+import firebase from "firebase/compat";
 
 interface Event{
     datetime: any,
@@ -35,6 +36,7 @@ const Event: React.FC<RouteComponentProps> = ({match}) => {
     const [editing, setEditing] = useState<boolean>(false);
     const ctx = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
+    const [showModal2, setShowModal2] = useState(false);
     const [eventName, setEventName] = useState<string>();
     const [eventDesc, setEventDesc] = useState<string>();
     const [eventDate, setEventDate] = useState<string>();
@@ -79,6 +81,8 @@ const Event: React.FC<RouteComponentProps> = ({match}) => {
                 name: eventName,
                 description: eventDesc,
                 datetime: eventDate,
+                lat: deleteField(),
+                long: deleteField()
             }, {merge: true});
         }
         setEditing(false);
@@ -88,6 +92,8 @@ const Event: React.FC<RouteComponentProps> = ({match}) => {
         console.log("setting location");
         setLocation({lat, long});
     }
+
+    if(location) console.log(location.lat, location.long);
 
   return (
     <IonPage>
@@ -120,35 +126,44 @@ const Event: React.FC<RouteComponentProps> = ({match}) => {
           }
 
           {editing ? <>
-          {location && location.lat && location.long ? <IonItem>
-              Location: {location.lat}, {location.long}
-              <IonButton color="secondary" onClick={() => setShowModal(true)}>Edit Location</IonButton>
-              <IonButton color="danger" onClick={() => setLocation(undefined)}>Remove</IonButton>
-          </IonItem>: <IonItem>
-              <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
-          </IonItem>
-          }
+                  {location && location.lat && location.long ? <IonItem>
+                      Location: {location.lat}, {location.long}
+                      <IonButton color="secondary" onClick={() => setShowModal(true)}>Edit Location</IonButton>
+                      <IonButton color="danger" onClick={() => setLocation(undefined)}>Remove</IonButton>
+                  </IonItem> : <IonItem>
+                      <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
+                  </IonItem>
+                  }
                   <IonModal isOpen={showModal} onDidDismiss={() => {
                       setShowModal(false);
                   }}>
-          <MapPicker defaultLocation={{ lat: location?.lat || 35.2058936, lng: location?.long || -97.4479024}}
-                     zoom={10}
-                     style={{height:'700px'}}
-                     onChangeLocation={handleChangeLocation}
-                     apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
-          <IonButton onClick={() => {
-                setLocation({ lat: location?.lat || 35.2058936, long: location?.long || -97.4479024});
-              setShowModal(false);
-          }}>Close</IonButton>
-          </IonModal>
-          </>
-              : (location && (location.lat && location.long) ?
-                  <>
-                  {<MapPicker defaultLocation={{lat: location.lat, lng: location.long}}
+                      <MapPicker defaultLocation={{lat: location?.lat || 35.2058936, lng: location?.long || -97.4479024}}
                                  zoom={10}
                                  style={{height: '700px'}}
-                                 onChangeLocation={()=>{}}
-                                 apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>}
+                                 onChangeLocation={handleChangeLocation}
+                                 apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                      <IonButton onClick={() => {
+                          setLocation({lat: location?.lat || 35.2058936, long: location?.long || -97.4479024});
+                          setShowModal(false);
+                      }}>Close</IonButton>
+                  </IonModal>
+              </>
+              : (location && (location.lat && location.long) ?
+                  <>
+                          <IonModal isOpen={showModal2} onDidDismiss={() => {
+                              setShowModal2(false);
+                          }}>
+                              <MapPicker defaultLocation={{lat: location.lat, lng: location.long}}
+                                         zoom={10}
+                                         style={{height: '700px'}}
+                                         onChangeLocation={() => {
+                                         }}
+                                         apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                              <IonButton onClick={() => {
+                                  setShowModal2(false);
+                              }}>Close</IonButton>
+                          </IonModal>
+                      <IonButton onClick={() => setShowModal2(true)}>Show Location</IonButton>
                   </> : <IonItem><i>No location defined.</i></IonItem>)
           }
 
