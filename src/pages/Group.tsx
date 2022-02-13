@@ -17,9 +17,10 @@ import ExploreContainer from '../components/ExploreContainer';
 import {RouteComponentProps} from "react-router";
 import {useCallback, useContext, useEffect, useState} from "react";
 import {AuthContext} from "../Auth";
-import {collection, doc, getDoc, getDocs, getFirestore} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs, getFirestore, setDoc} from "firebase/firestore";
 import { personAddOutline } from 'ionicons/icons';
 import QRCode from "react-qr-code";
+import {useHistory} from "react-router-dom";
 
 interface Group {
     id: string,
@@ -33,6 +34,7 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
     const [group, setGroup] = useState<Group>();
     const ctx = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
+    const history = useHistory();
 
     const fetchGroup = useCallback(async () => {
         const groupDoc = await getDoc(doc(db, "groups", id));
@@ -55,6 +57,23 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
     useEffect(() => {
         fetchGroup()
     }, [fetchGroup]);
+
+    async function leaveGroup(){
+        const groupDoc = await getDoc(doc(db, "groups", id));
+
+        const members = groupDoc?.data()?.members;
+
+        if(members) {
+            const index = members.indexOf(ctx?.userId);
+            if (index > -1 && ctx?.userId) {
+                members.splice(index, 1); // 2nd parameter means remove one item only
+            }
+
+            await setDoc(doc(db, "groups", id), {members}, {merge: true});
+        }
+
+        history.push('/groups');
+    }
 
     // @ts-ignore
     const id = match.params.id;
@@ -82,6 +101,9 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                     </IonAvatar>
                 </IonItem>)}
                 </IonList>
+                <h2>Group ID</h2>
+                <p>{group?.id}</p>
+                <IonButton color="danger" onClick={leaveGroup}>Leave Group</IonButton>
                 <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                     <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
                     <QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} />
