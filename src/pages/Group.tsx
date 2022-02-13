@@ -38,7 +38,6 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
 
     const fetchGroup = useCallback(async () => {
         const groupDoc = await getDoc(doc(db, "groups", id));
-        console.log(id);
 
         const users: { id: string; name: any; }[] = [];
 
@@ -92,7 +91,7 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                 <h1>{group?.name}</h1>
                 <h2>Group Members</h2>
                 <IonList>
-                {group?.members.map(member => <IonItem key={member.id}>
+                {group?.members.map(member => <IonItem button href={'users/'+member.id} key={member.id}>
                     <IonLabel>
                         <h2>{member.name}</h2>
                     </IonLabel>
