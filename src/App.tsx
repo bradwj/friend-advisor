@@ -73,7 +73,7 @@ const App: React.FC = () => {
                         </Route>
                     </IonRouterOutlet>
                     { auth?.loggedIn ? 
-                    <IonTabBar slot="top">
+                    <IonTabBar slot="bottom">
                         <IonTabButton tab="addevent" href="/create-event">
                             <IonIcon icon={square}/>
                             <IonLabel>New Event</IonLabel>
