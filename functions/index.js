@@ -4,6 +4,7 @@ require("./firebase");
 const functions = require("firebase-functions");
 const express = require("express");
 const cors = require("cors");
+exports.scheduleThis = require("./lib/scheduler").scheduledFunction;
 
 const app = express();
 
