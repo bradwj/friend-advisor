@@ -36,13 +36,16 @@ const GroupPicker: React.FC<PickerProps> = ({onPickGroup}) => {
                 val.push({id: doc.id, name: doc.data().name})
             }
         });
+        console.log("values", val);
         setGroups(val);
-    }, [ctx?.userData, groups]) // if userId changes, useEffect will run again
+    }, [ctx?.userData]) // if userId changes, useEffect will run again
                  // if you want to run only once, just leave array empty []
 
     useEffect(() => {
         fetchGroups()
-    }, [fetchGroups, groups]);
+    }, [fetchGroups, ctx?.userData]);
+
+    console.log("ctx", groups, ctx?.loggedIn);
 
     if (ctx?.loggedIn) {
         return (
