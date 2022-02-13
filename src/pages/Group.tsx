@@ -1,20 +1,25 @@
 import {
     IonAvatar,
     IonButton,
+    IonButtons,
     IonContent,
     IonHeader,
+    IonIcon,
     IonItem,
     IonLabel,
     IonList,
     IonPage,
     IonTitle,
-    IonToolbar
+    IonToolbar,
+    IonModal
 } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import {RouteComponentProps} from "react-router";
 import {useCallback, useContext, useEffect, useState} from "react";
 import {AuthContext} from "../Auth";
 import {collection, doc, getDoc, getDocs, getFirestore} from "firebase/firestore";
+import { personAddOutline } from 'ionicons/icons';
+import QRCode from "react-qr-code";
 
 interface Group {
     id: string,
@@ -27,6 +32,7 @@ const db = getFirestore();
 const Group: React.FC<RouteComponentProps> = ({match}) => {
     const [group, setGroup] = useState<Group>();
     const ctx = useContext(AuthContext);
+    const [showModal, setShowModal] = useState(false);
 
     const fetchGroup = useCallback(async () => {
         const groupDoc = await getDoc(doc(db, "groups", id));
@@ -58,14 +64,12 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>{group?.name}</IonTitle>
+                    <IonButtons slot='end'>
+                        <IonButton onClick={() => setShowModal(true)} size='large'><IonIcon icon={personAddOutline}></IonIcon></IonButton>
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">{group?.name}</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
                 <h1>{group?.name}</h1>
                 <h2>Group Members</h2>
                 <IonList>
@@ -78,6 +82,10 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                     </IonAvatar>
                 </IonItem>)}
                 </IonList>
+                <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+                    <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
+                    <QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} />
+                </IonModal>
             </IonContent>
         </IonPage>
     );
