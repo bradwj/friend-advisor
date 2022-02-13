@@ -81,7 +81,7 @@ const Home: React.FC = () => {
                 <p>{event.description}</p>
                 <IonButton href={'groups/'+event.groupId}>Group</IonButton>
                 <IonButton onClick={() => setShowModal(true)}>Location</IonButton>
-                    <IonModal isOpen={showModal}>
+                    <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                         <MapPicker defaultLocation={{lat: event.lat, lng: event.long}}
                                    zoom={10}
                                    style={{height:'700px'}}
