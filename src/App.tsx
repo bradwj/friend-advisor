@@ -43,6 +43,7 @@ import JoinGroup from './pages/JoinGroup';
 import Group from "./pages/Group";
 import Groups from "./pages/Groups";
 import CreateGroup from "./pages/CreateGroup";
+import "./all.css";
 
 setupIonicReact();
 
