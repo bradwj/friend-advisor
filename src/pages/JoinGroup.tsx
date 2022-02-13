@@ -54,7 +54,7 @@ const JoinGroup: React.FC = () => {
     <IonPage>
         <IonHeader>
             <IonToolbar>
-                <IonTitle>My Groups</IonTitle>
+                <IonTitle>Join Group</IonTitle>
             </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
