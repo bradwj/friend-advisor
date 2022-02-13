@@ -75,6 +75,7 @@ const App: React.FC = () => {
                             <Redirect to="/home"/>
                         </Route>
                     </IonRouterOutlet>
+                    { auth?.loggedIn ? 
                     <IonTabBar slot="top">
                         <IonTabButton tab="addfriend" href="/addfriend">
                             <IonIcon icon={triangle}/>
@@ -93,6 +94,7 @@ const App: React.FC = () => {
                             <IonLabel>Tab 3</IonLabel>
                         </IonTabButton>
                     </IonTabBar>
+                    : <IonTabBar></IonTabBar>}
                 </IonTabs>
             </IonReactRouter>
         </AuthContext.Provider>

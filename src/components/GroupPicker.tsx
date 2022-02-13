@@ -28,7 +28,9 @@ const ExploreContainer: React.FC = () => {
         const docs = await getDocs(collection(db, "groups"))
         const val: Group[] = [];
         docs.forEach(doc => {
-            val.push({id: doc.id, name: doc.data().name})
+            if(doc.data().members.includes(ctx?.userId)) {
+                val.push({id: doc.id, name: doc.data().name})
+            }
         });
         setGroups(val);
     }, [ctx?.userData]) // if userId changes, useEffect will run again
