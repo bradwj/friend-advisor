@@ -1,4 +1,5 @@
-# FriendAdvisor
+![Friend Advisor Logo](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_thumbnail_photos/001/834/632/datas/medium.png)
+---
 Planning events with friends just got easier! With just a few taps, you can create an event, invite friends, and share updates. Plus, you get reminders through notifications on your phone, so you never forget an important event again! Say goodbye to forgetting your significant other's anniversary or your mother's birthday.
 
 We know that life can get busy, so we make it easy for you to stay on top of your plans. Plus, our app is avilable through both your internet browser or as an app on your mobile device. No more excuses!
