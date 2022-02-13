@@ -82,6 +82,9 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                     </IonAvatar>
                 </IonItem>)}
                 </IonList>
+                <h2>Group ID</h2>
+                <p>{group?.id}</p>
+                <IonButton color="color"></IonButton>
                 <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                     <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
                     <QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} />

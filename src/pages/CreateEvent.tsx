@@ -50,6 +50,8 @@ const Home: React.FC = () => {
         await fetch(`http://localhost:5001/friend-advisor/us-central1/app/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
             method: "POST"
         });
+
+
     }
 
 
