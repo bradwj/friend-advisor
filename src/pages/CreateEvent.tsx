@@ -7,32 +7,56 @@ import {
     IonTitle,
     IonToolbar,
     IonInput,
-    IonTextarea, IonButton, IonModal
+    IonTextarea, IonButton, IonModal, IonSelectOption, IonSelect
 } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './CreateEvent.css';
 import MapPicker from 'react-google-map-picker'
 import { AuthContext } from "../Auth";
-import {SetStateAction, useContext, useState} from "react";
+import {SetStateAction, useCallback, useContext, useEffect, useState} from "react";
 import GroupPicker from "../components/GroupPicker";
 import {useLocation} from "react-router";
+import {collection, getDocs, getFirestore} from "firebase/firestore";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024};
 const DefaultZoom = 10;
+const db = getFirestore();
 
-
+interface Group {
+    id: string,
+    name: string
+}
 
 const Home: React.FC = () => {
+    const ctx = useContext(AuthContext);
     const [eventName, setEventName] = useState<string>();
     const [eventDesc, setEventDesc] = useState<string>();
     const [eventDate, setEventDate] = useState<string>();
     const [groupId, setGroupId] = useState<string>();
+    const [groups, setGroups] = useState<Group[]>();
     const [showModal, setShowModal] = useState(false);
 
     const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
 
     const [location, setLocation] = useState(defaultLocation);
     const [zoom, setZoom] = useState(DefaultZoom);
+
+    const fetchGroups = useCallback(async () => {
+        const docs = await getDocs(collection(db, "groups"))
+        const val: Group[] = [];
+        docs.forEach(doc => {
+            if(doc.data().members.includes(ctx?.userId)) {
+                val.push({id: doc.id, name: doc.data().name})
+            }
+        });
+        console.log("values", val);
+        setGroups(val);
+    }, [ctx?.userData]) // if userId changes, useEffect will run again
+    // if you want to run only once, just leave array empty []
+
+    useEffect(() => {
+        fetchGroups()
+    }, [fetchGroups, ctx?.userData]);
 
     function handleChangeLocation(lat: any, lng: any) {
         setLocation({lat: lat, lng: lng});
@@ -74,7 +98,9 @@ const Home: React.FC = () => {
                 </IonItem>
                 <IonItem>
                     <IonLabel>Group</IonLabel>
-                    <GroupPicker onPickGroup={setGroupId}/>
+                    <IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>setGroupId(e.detail.value!)}>
+                        {groups?.map((group: Group) => (<IonSelectOption value={group.id} key={group.id}>{group.name}</IonSelectOption>))}
+                    </IonSelect>
                 </IonItem>
                 <IonItem>
                     <IonLabel>Description</IonLabel>
