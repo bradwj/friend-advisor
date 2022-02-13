@@ -1,6 +1,6 @@
 {
-  "short_name": "Ionic App",
-  "name": "My Ionic App",
+  "short_name": "Friend Advisor",
+  "name": "Friend Advisor",
   "icons": [
     {
       "src": "assets/icon/favicon.png",
