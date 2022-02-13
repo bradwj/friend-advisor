@@ -16,6 +16,8 @@ import './Profile.css';
 import { AuthContext } from "../Auth";
 import { SetStateAction, useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth, signOut } from "firebase/auth";
+import { useHistory } from "react-router-dom";
 
 const Profile: React.FC = () => {
     const [name, setProfileName] = useState<string>();
@@ -26,9 +28,9 @@ const Profile: React.FC = () => {
 
     const db = getFirestore();
     const auth = useContext(AuthContext);
+    const history = useHistory();
 
     useEffect(() => {
-        console.log('helo');
         getDoc(doc(db, "users", `${auth?.userId}`))
             .then(userEntry => {
                 if (userEntry.exists()) {
@@ -56,6 +58,11 @@ const Profile: React.FC = () => {
             dislikes,
             dob
         });
+    }
+
+    const logout = async () => {
+        await signOut(getAuth());
+        history.push('/signin');
     }
 
     return (
@@ -87,6 +94,7 @@ const Profile: React.FC = () => {
                     <IonInput type="date" value={dob} onIonChange={e => setProfileDOB(e.detail.value!)}/>
                 </IonItem>
                 <IonButton onClick={saveProfile} expand="full" color="secondary">Save</IonButton>
+                <IonButton onClick={logout} expand="full" color="primary">Logout</IonButton>
             </IonContent>
         </IonPage>
     );
