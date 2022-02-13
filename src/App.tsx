@@ -14,6 +14,7 @@ import {IonReactRouter} from '@ionic/react-router';
 import {calendarNumberOutline, ellipse, peopleCircleOutline, personCircleOutline, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
+import { useEffect, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -43,11 +44,15 @@ import Groups from "./pages/Groups";
 setupIonicReact();
 
 const App: React.FC = () => {
+    const [signedIn, setSignedIn] = useState(true);
     const {auth} = useAuthInit();
-    if (auth) {
-        console.log("logged in", auth);
-    }
 
+    useEffect(() => {
+        if (auth?.loggedIn != signedIn && auth?.loggedIn != undefined) {
+            console.log(auth?.loggedIn);
+            setSignedIn(!(!auth?.loggedIn));
+        }
+    }, [auth]);
 
     return <IonApp>
         <AuthContext.Provider value={auth}>
@@ -75,8 +80,7 @@ const App: React.FC = () => {
                             <Redirect to="/signin"/>
                         </Route>
                     </IonRouterOutlet>
-                    { auth?.loggedIn ?
-                    <IonTabBar slot="bottom">
+                    <IonTabBar hidden={!signedIn} slot="bottom">
                         <IonTabButton tab="events" href="/home">
                             <IonIcon icon={calendarNumberOutline}/>
                             <IonLabel>Events</IonLabel>
@@ -90,7 +94,6 @@ const App: React.FC = () => {
                             <IonLabel>Profile</IonLabel>
                         </IonTabButton>
                     </IonTabBar>
-                    : <IonTabBar></IonTabBar>}
                 </IonTabs>
             </IonReactRouter>
         </AuthContext.Provider>

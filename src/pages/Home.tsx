@@ -3,7 +3,7 @@ import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 import {AuthContext} from "../Auth";
-import MapPicker from 'react-google-map-picker'
+import MapPicker from 'react-google-map-picker';
 
 interface Event{
     datetime: any,
@@ -45,8 +45,8 @@ const Home: React.FC = () => {
 
         eventsDocs.forEach(event => {
             if(groupsImIn.includes(event.data().groupId)){
-                const {datetime, description, lat, long, name, groupId, id} = event.data();
-                events.push({datetime, description, lat, long, name, id, groupId });
+                const {datetime, description, lat, long, name, groupId} = event.data();
+                events.push({datetime, description, lat, long, name, id: event.id, groupId });
             }
         });
 
