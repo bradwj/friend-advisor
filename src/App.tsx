@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 import {useAuthInit, AuthContext} from "./Auth";
 import {IonReactRouter} from '@ionic/react-router';
-import {ellipse, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
+import {calendarNumberOutline, ellipse, peopleCircleOutline, personCircleOutline, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 
@@ -37,6 +37,8 @@ import './theme/variables.css';
 import CreateEvent from "./pages/CreateEvent";
 import Profile from './pages/Profile';
 import JoinGroup from './pages/JoinGroup';
+import Group from "./pages/Group";
+import Groups from "./pages/Groups";
 
 setupIonicReact();
 
@@ -67,26 +69,24 @@ const App: React.FC = () => {
                         <Route path="/create-event">
                             <CreateEvent/>
                         </Route>
+                        <Route path="/groups/:id" component={Group}></Route>
+                        <Route path="/groups" exact component={Groups}></Route>
                         <Route exact path="/">
                             <Redirect to="/signin"/>
                         </Route>
                     </IonRouterOutlet>
-                    { auth?.loggedIn ? 
+                    { auth?.loggedIn ?
                     <IonTabBar slot="bottom">
-                        <IonTabButton tab="addevent" href="/create-event">
-                            <IonIcon icon={square}/>
-                            <IonLabel>New Event</IonLabel>
+                        <IonTabButton tab="events" href="/home">
+                            <IonIcon icon={calendarNumberOutline}/>
+                            <IonLabel>Events</IonLabel>
                         </IonTabButton>
-                        <IonTabButton tab="joingroup" href="/joingroup">
-                            <IonIcon icon={triangleOutline}/>
-                            <IonLabel>Join Group</IonLabel>
-                        </IonTabButton>
-                        <IonTabButton tab="home" href="/home">
-                            <IonIcon icon={ellipse}/>
-                            <IonLabel>Home</IonLabel>
+                        <IonTabButton tab="groups" href="/groups">
+                            <IonIcon icon={peopleCircleOutline}/>
+                            <IonLabel>Groups</IonLabel>
                         </IonTabButton>
                         <IonTabButton tab="profile" href="/profile">
-                            <IonIcon icon={squareOutline}/>
+                            <IonIcon icon={personCircleOutline}/>
                             <IonLabel>Profile</IonLabel>
                         </IonTabButton>
                     </IonTabBar>

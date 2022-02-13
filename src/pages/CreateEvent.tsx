@@ -88,7 +88,7 @@ const Home: React.FC = () => {
                 </IonItem>
                 <IonItem>
                     <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
-                    <IonModal isOpen={showModal}>
+                    <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                         <MapPicker defaultLocation={defaultLocation}
                                    zoom={zoom}
                                    style={{height:'700px'}}
