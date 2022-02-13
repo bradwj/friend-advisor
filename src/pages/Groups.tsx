@@ -56,11 +56,6 @@ const Groups: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">My Groups</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
                 <IonList>
                     {groups?.map(group => (
                         <IonItem button href={'groups/'+group.id} key={group.id}>

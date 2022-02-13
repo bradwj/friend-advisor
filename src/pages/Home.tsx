@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
 
     const fetchGroups = useCallback(async () => {
-        const docs = await getDocs(collection(db, "groups"))
+        const docs = await getDocs(collection(db, "groups"));
         const val: GroupWithEvents[] = [];
 
         const groupsImIn:string[] = [];
@@ -41,7 +41,7 @@ const Home: React.FC = () => {
 
         const events:Event[] = [];
 
-        const eventsDocs = await getDocs(collection(db, "events"))
+        const eventsDocs = await getDocs(collection(db, "events"));
 
         eventsDocs.forEach(event => {
             if(groupsImIn.includes(event.data().groupId)){
@@ -51,11 +51,11 @@ const Home: React.FC = () => {
         });
 
         setEvents(events);
-    }, [ctx?.userData]) // if userId changes, useEffect will run again
+    }, [ctx?.userData]); // if userId changes, useEffect will run again
     // if you want to run only once, just leave array empty []
 
     useEffect(() => {
-        fetchGroups()
+        fetchGroups();
     }, [fetchGroups]);
 
   return (
@@ -66,11 +66,6 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Events</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonList>
             <IonButton expand="block" href="/create-event">Create Event</IonButton>
           {events?.map(event => (

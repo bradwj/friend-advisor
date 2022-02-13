@@ -87,11 +87,6 @@ const Home: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Home</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
                 <IonItem>
                     <IonLabel>Name</IonLabel>
                     <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
@@ -138,7 +133,7 @@ const Home: React.FC = () => {
                     </IonModal>
                 </IonItem>
 
-                <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="full" color="primary">Create Event</IonButton>
+                <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="block" color="primary">Create Event</IonButton>
             </IonContent>
         </IonPage>
     );
