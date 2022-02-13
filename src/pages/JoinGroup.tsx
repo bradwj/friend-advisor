@@ -1,4 +1,14 @@
-import { IonContent, IonPage, IonButton, IonItem, IonLabel, IonInput, IonToast } from '@ionic/react';
+import {
+    IonContent,
+    IonPage,
+    IonButton,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonToast,
+    IonHeader,
+    IonToolbar, IonTitle
+} from '@ionic/react';
 import { addDoc, getFirestore, getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import './JoinGroup.css';
 import { AuthContext } from "../Auth";
@@ -42,6 +52,11 @@ const JoinGroup: React.FC = () => {
 
   return (
     <IonPage>
+        <IonHeader>
+            <IonToolbar>
+                <IonTitle>My Groups</IonTitle>
+            </IonToolbar>
+        </IonHeader>
         <IonContent fullscreen>
             <IonItem>
                 <IonLabel>Group Code</IonLabel>
