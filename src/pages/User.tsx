@@ -64,14 +64,14 @@ const User: React.FC<RouteComponentProps> = ({match}) => {
                     </IonButtons>
                 </IonToolbar>       
             </IonHeader>
-            <IonContent fullscreen>
+            <IonContent hidden={user == undefined} fullscreen>
                 <div className='center'>
                     <IonAvatar slot="start">
                         <img src={`https://picsum.photos/seed/${user?.id}/200/200`} />
                     </IonAvatar>
                     <h1>{user?.name}</h1>
-                    <p>{user?.likes} enjoyer</p>
-                    <p>{user?.dislikes} hater</p>
+                    <p>Likes {user?.likes}</p>
+                    <p>Dislikes {user?.dislikes}</p>
                     <p>{user?.phone}</p>
                     <p>{user?.dob}</p>
                 </div>

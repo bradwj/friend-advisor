@@ -81,7 +81,7 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>{group?.name}</IonTitle>
+                    <IonTitle>Group Profile</IonTitle>
                     <IonButtons slot='end'>
                         <IonButton onClick={() => setShowModal(true)} size='large'><IonIcon size='large' icon={personAddOutline}></IonIcon></IonButton>
                     </IonButtons>

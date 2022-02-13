@@ -27,6 +27,7 @@ const Profile: React.FC = () => {
 
     const [notification, setNotification] = useState<string>();
     const [notify, setNotify] = useState<boolean>(false);
+    const [loadAttempt, setLoadAttempt] = useState<boolean>(false);
 
     const db = getFirestore();
     const auth = useContext(AuthContext);
@@ -45,6 +46,7 @@ const Profile: React.FC = () => {
                 } else {
                     console.log(auth?.userId);
                 }
+                setLoadAttempt(true);
             })
             .catch(error => {
                 console.log(error);
@@ -76,7 +78,7 @@ const Profile: React.FC = () => {
                     <IonTitle>Profile</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent fullscreen>
+            <IonContent hidden={!loadAttempt} fullscreen>
                 <IonItem>
                     <IonLabel>Name</IonLabel>
                     <IonInput value={name} onIonChange={e => setProfileName(e.detail.value!)}/>
@@ -97,8 +99,8 @@ const Profile: React.FC = () => {
                     <IonLabel>Date of Birth</IonLabel>
                     <IonInput type="date" value={dob} onIonChange={e => setProfileDOB(e.detail.value!)}/>
                 </IonItem>
-                <IonButton onClick={saveProfile} expand="full" color="secondary">Save</IonButton>
-                <IonButton onClick={logout} expand="full" color="primary">Logout</IonButton>
+                <IonButton onClick={saveProfile} expand="block" color="secondary">Save</IonButton>
+                <IonButton onClick={logout} expand="block" color="primary">Logout</IonButton>
                 <IonToast 
                     isOpen={notify}
                     onDidDismiss={() => {setNotify(false)}}
