@@ -1,16 +1,17 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
 import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 import {AuthContext} from "../Auth";
 
 interface Event{
-    datetime: Date,
+    datetime: any,
     description: string,
     lat: number,
     long: number,
     name: string,
+    id: string,
+    groupId: string
 }
 
 interface GroupWithEvents {
@@ -42,8 +43,8 @@ const Home: React.FC = () => {
 
         eventsDocs.forEach(event => {
             if(groupsImIn.includes(event.data().groupId)){
-                const {datetime, description, lat, long, name} = event.data();
-                events.push({datetime, description, lat, long, name});
+                const {datetime, description, lat, long, name, groupId, id} = event.data();
+                events.push({datetime, description, lat, long, name, id, groupId });
             }
         });
 
@@ -59,7 +60,7 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Home</IonTitle>
+          <IonTitle>Events</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -68,7 +69,19 @@ const Home: React.FC = () => {
             <IonTitle size="large">Home</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Home page" />
+        <IonList>
+          {events?.map(event => (
+            <IonItem key={event.id}>
+              <IonLabel>
+                <h1>{event.name}</h1>
+                <h3>{new Date(event.datetime.seconds * 1000).toDateString()}</h3>
+                <p>{event.description}</p>
+                <IonRouterLink href={'groups/'+event.groupId}>Group</IonRouterLink>
+              </IonLabel>
+            </IonItem>
+          ))}
+        </IonList>
+        
       </IonContent>
     </IonPage>
   );

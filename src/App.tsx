@@ -13,7 +13,6 @@ import {useAuthInit, AuthContext} from "./Auth";
 import {IonReactRouter} from '@ionic/react-router';
 import {ellipse, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
 import Home from './pages/Home';
-import Tab3 from './pages/Tab3';
 import SignIn from './pages/SignIn';
 
 /* Core CSS required for Ionic components to work properly */
