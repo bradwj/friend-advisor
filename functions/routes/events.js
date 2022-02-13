@@ -12,8 +12,15 @@ router.post("/create", async (req, res) => {
       datetime: new Date(datetime),
       name,
       description,
-      location: new admin.firestore.GeoPoint(Number(lat), Number(long)),
+      sentNotifications: {
+        monthBefore: [],
+        weekBefore: [],
+        dayBefore: [],
+        dayOf: [],
+      },
     };
+    if (lat && long) event.location = new admin.firestore.GeoPoint(Number(lat), Number(long));
+    
     const docRef = await db.collection("events").add(event);
     console.log("Document written with ID:", docRef.id);
     res.status(200).send({ id: docRef.id, ...event });

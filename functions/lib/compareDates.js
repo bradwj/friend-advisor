@@ -3,7 +3,7 @@ const db = admin.firestore();
 
 // Call with hourDiff as a numerical parameter, representing the time between the current OS time and the event/nirthday
 
-exports.searchDates = async function searchDates(hourDiff)
+export async function searchDates(hourDiff)
 {
     const groupsRef = db.collection('groups');
     const usersRef = db.collection('users');
