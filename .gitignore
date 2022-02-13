@@ -31,3 +31,4 @@ yarn-error.log*
 /android/
 
 hosting.*.cache
+/firebase-debug.log
