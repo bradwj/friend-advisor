@@ -41,6 +41,7 @@ import Profile from './pages/Profile';
 import JoinGroup from './pages/JoinGroup';
 import Group from "./pages/Group";
 import Groups from "./pages/Groups";
+import CreateGroup from "./pages/CreateGroup";
 
 setupIonicReact();
 
@@ -65,6 +66,9 @@ const App: React.FC = () => {
                         </Route>
                         <Route exact path="/joingroup">
                             <JoinGroup />
+                        </Route>
+                        <Route exact path="/creategroup">
+                            <CreateGroup />
                         </Route>
                         <Route exact path="/signin">
                             <SignIn />
