@@ -134,27 +134,28 @@ const Home: React.FC = () => {
                     <IonInput type="datetime-local" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
                 </IonItem>
                 {/*<button onClick={handleResetLocation}>Reset Location</button>*/}
-                {locationEnabled && <IonItem>
-                    Location: {location.lat}, {location.lng} <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove Location</IonButton>
-                </IonItem>}
-                <IonItem>
-                    <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
-                    <IonModal isOpen={showModal} onDidDismiss={() => {
+                {locationEnabled ? <IonItem>
+                    Location: {location.lat}, {location.lng}
+                    <IonButton color="secondary" onClick={() => setShowModal(true)}>Pick Location</IonButton>
+                    <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove</IonButton>
+                </IonItem> : <IonItem>
+                    <IonButton onClick={() => setShowModal(true)}>Edit Location</IonButton>
+                    </IonItem>}
+                <IonModal isOpen={showModal} onDidDismiss={() => {
+                    setShowModal(false);
+                    setLocationEnabled(true)
+                }}>
+                    <MapPicker defaultLocation={defaultLocation}
+                               zoom={zoom}
+                               style={{height:'700px'}}
+                               onChangeLocation={handleChangeLocation}
+                               onChangeZoom={handleChangeZoom}
+                               apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                    <IonButton onClick={() => {
                         setShowModal(false);
                         setLocationEnabled(true)
-                    }}>
-                        <MapPicker defaultLocation={defaultLocation}
-                                   zoom={zoom}
-                                   style={{height:'700px'}}
-                                   onChangeLocation={handleChangeLocation}
-                                   onChangeZoom={handleChangeZoom}
-                                   apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
-                        <IonButton onClick={() => {
-                            setShowModal(false);
-                            setLocationEnabled(true)
-                        }}>Close</IonButton>
-                    </IonModal>
-                </IonItem>
+                    }}>Close</IonButton>
+                </IonModal>
 
                 <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="full" color="primary">Create Event</IonButton>
             </IonContent>
