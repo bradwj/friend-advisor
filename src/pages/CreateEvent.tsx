@@ -15,6 +15,7 @@ import MapPicker from 'react-google-map-picker'
 import { AuthContext } from "../Auth";
 import {SetStateAction, useContext, useState} from "react";
 import GroupPicker from "../components/GroupPicker";
+import {useLocation} from "react-router";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024};
 const DefaultZoom = 10;
@@ -47,11 +48,10 @@ const Home: React.FC = () => {
     }
 
     async function submit(){
-        await fetch(`http://localhost:5001/friend-advisor/us-central1/app/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
+        const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
+        await fetch(`${basePath}/us-central1/app/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
             method: "POST"
         });
-
-
     }
 
 

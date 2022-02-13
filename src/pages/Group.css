@@ -1,0 +1,12 @@
+.qr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+ion-modal.inf {
+    --width: 256px;
+    --height: 300px;
+}
