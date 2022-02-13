@@ -22,5 +22,9 @@ router.post("/addmember", async (req, res) => {
     //const {memberId}; //FIXME - ADD CALLING USER
   
 })
+router.post("/addmember", async (req, res) => {
+  //const {memberId}; //FIXME - ADD CALLING USER
+
+})
 
 module.exports = router;
