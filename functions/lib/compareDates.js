@@ -2,7 +2,7 @@ const admin = require("../firebase.js");
 const db = admin.firestore();
 
 
-async function searchBirthdays()
+export async function searchBirthdays(hourDiff)
 {
     const groupsRef = db.collection('groups');
     const usersRef = db.collection('users');
@@ -25,7 +25,7 @@ async function searchBirthdays()
             const currentDate = new Date();
             const hoursDifferent = (userDate-currentDate) / ((1000) * (60) * (60));
             //console.log(hoursDifferent, userDate, currentDate);
-            if (hoursDifferent <= 48 && hoursDifferent >= 0)
+            if (hoursDifferent <= hourDiff && hoursDifferent >= 0)
             {
                 console.log("It is "+(currentUser.data().name)+"'s birthday in approx. "+ (Math.ceil(hoursDifferent)) + " hours!");
             }
@@ -33,4 +33,3 @@ async function searchBirthdays()
     });
 }
 
-searchBirthdays();
