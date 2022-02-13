@@ -15,7 +15,7 @@ import MapPicker from 'react-google-map-picker'
 import { AuthContext } from "../Auth";
 import {SetStateAction, useCallback, useContext, useEffect, useState} from "react";
 import GroupPicker from "../components/GroupPicker";
-import {useLocation} from "react-router";
+import {useHistory, useLocation} from "react-router";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024};
@@ -35,11 +35,14 @@ const Home: React.FC = () => {
     const [groupId, setGroupId] = useState<string>();
     const [groups, setGroups] = useState<Group[]>();
     const [showModal, setShowModal] = useState(false);
+    const [locationEnabled, setLocationEnabled] = useState(false);
 
     const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
 
     const [location, setLocation] = useState(defaultLocation);
     const [zoom, setZoom] = useState(DefaultZoom);
+
+    const history = useHistory();
 
     const fetchGroups = useCallback(async () => {
         const docs = await getDocs(collection(db, "groups"))
@@ -59,6 +62,7 @@ const Home: React.FC = () => {
     }, [fetchGroups, ctx?.userData]);
 
     function handleChangeLocation(lat: any, lng: any) {
+        setLocationEnabled(true);
         setLocation({lat: lat, lng: lng});
     }
 
@@ -73,9 +77,17 @@ const Home: React.FC = () => {
 
     async function submit(){
         const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-        await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
-            method: "POST"
-        });
+        if(locationEnabled) {
+            await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
+                method: "POST"
+            });
+        }else{
+            await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}`, {
+                method: "POST"
+            });
+        }
+
+        history.push("/events");
     }
 
 
@@ -117,21 +129,28 @@ const Home: React.FC = () => {
                     <IonInput type="datetime-local" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
                 </IonItem>
                 {/*<button onClick={handleResetLocation}>Reset Location</button>*/}
-                <IonItem>
+                {locationEnabled ? <IonItem>
                     Location: {location.lat}, {location.lng}
-                </IonItem>
-                <IonItem>
-                    <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
-                    <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                        <MapPicker defaultLocation={defaultLocation}
-                                   zoom={zoom}
-                                   style={{height:'700px'}}
-                                   onChangeLocation={handleChangeLocation}
-                                   onChangeZoom={handleChangeZoom}
-                                   apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
-                        <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
-                    </IonModal>
-                </IonItem>
+                    <IonButton color="secondary" onClick={() => setShowModal(true)}>Pick Location</IonButton>
+                    <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove</IonButton>
+                </IonItem> : <IonItem>
+                    <IonButton onClick={() => setShowModal(true)}>Edit Location</IonButton>
+                    </IonItem>}
+                <IonModal isOpen={showModal} onDidDismiss={() => {
+                    setShowModal(false);
+                    setLocationEnabled(true)
+                }}>
+                    <MapPicker defaultLocation={defaultLocation}
+                               zoom={zoom}
+                               style={{height:'700px'}}
+                               onChangeLocation={handleChangeLocation}
+                               onChangeZoom={handleChangeZoom}
+                               apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                    <IonButton onClick={() => {
+                        setShowModal(false);
+                        setLocationEnabled(true)
+                    }}>Close</IonButton>
+                </IonModal>
 
                 <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="block" color="primary">Create Event</IonButton>
             </IonContent>
