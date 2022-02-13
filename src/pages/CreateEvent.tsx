@@ -49,7 +49,7 @@ const Home: React.FC = () => {
 
     async function submit(){
         const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-        await fetch(`${basePath}/us-central1/app/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
+        await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
             method: "POST"
         });
     }
