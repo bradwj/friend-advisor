@@ -81,13 +81,13 @@ const App: React.FC = () => {
                             <IonIcon icon={square}/>
                             <IonLabel>New Event</IonLabel>
                         </IonTabButton>
-                        <IonTabButton tab="joingroup" href="/joingroup">
-                            <IonIcon icon={triangleOutline}/>
-                            <IonLabel>Join Group</IonLabel>
-                        </IonTabButton>
-                        <IonTabButton tab="home" href="/home">
+                        <IonTabButton tab="events" href="/home">
                             <IonIcon icon={ellipse}/>
-                            <IonLabel>Home</IonLabel>
+                            <IonLabel>Events</IonLabel>
+                        </IonTabButton>
+                        <IonTabButton tab="groups" href="/groups">
+                            <IonIcon icon={triangleOutline}/>
+                            <IonLabel>Groups</IonLabel>
                         </IonTabButton>
                         <IonTabButton tab="profile" href="/profile">
                             <IonIcon icon={squareOutline}/>
