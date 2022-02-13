@@ -5,6 +5,7 @@ const db = admin.firestore();
 
 
 router.post("/create", async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
   const { name, creatorId } = req.query;
   const group = {
     name,
