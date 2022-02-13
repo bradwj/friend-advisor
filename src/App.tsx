@@ -15,6 +15,7 @@ import {calendarNumberOutline, ellipse, peopleCircleOutline, personCircleOutline
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import User from './pages/User';
+import Event from './pages/Event';
 import { useEffect, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
@@ -82,6 +83,7 @@ const App: React.FC = () => {
                         <Route path="/groups/:id" component={Group}></Route>
                         <Route path="/groups" exact component={Groups}></Route>
                         <Route path="/users/:id" component={User}></Route>
+                        <Route path="/events/:id" component={Event}></Route>
                         <Route exact path="/">
                             <Redirect to="/signin"/>
                         </Route>

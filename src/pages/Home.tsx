@@ -3,7 +3,7 @@ import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
 import {collection, getDocs, getFirestore, deleteDoc, doc} from "firebase/firestore";
 import {AuthContext} from "../Auth";
-import MapPicker from 'react-google-map-picker';
+import {useHistory} from "react-router";
 
 interface Event{
     datetime: any,
@@ -24,9 +24,9 @@ interface GroupWithEvents {
 const db = getFirestore();
 
 const Home: React.FC = () => {
-    const [events, setEvents] = useState<Event[]>()
+    const [events, setEvents] = useState<Event[]>();
     const ctx = useContext(AuthContext);
-    const [showModal, setShowModal] = useState(false);
+    const history = useHistory();
 
     const fetchGroups = useCallback(async () => {
         const docs = await getDocs(collection(db, "groups"));
@@ -61,6 +61,8 @@ const Home: React.FC = () => {
     async function removeEvent(id:string){
         await deleteDoc(doc(db, "events", id));
         await fetchGroups();
+
+        history.push("/events");
     }
 
   return (
@@ -74,7 +76,7 @@ const Home: React.FC = () => {
         <IonList>
             <IonButton expand="block" href="/create-event">Create Event</IonButton>
           {events?.sort((a, b) => a.datetime.seconds - b.datetime.seconds).map(event => (
-            <IonCard key={event.id}>
+            <IonCard button href={'events/'+event.id} key={event.id}>
                 <IonCardHeader>
                   <IonCardTitle>{event.name}</IonCardTitle>
                   <IonCardSubtitle>{new Date(event.datetime.seconds * 1000).toDateString()}</IonCardSubtitle>
@@ -83,15 +85,6 @@ const Home: React.FC = () => {
                   <p>{event.description}</p>
                   <br />
                   <IonButton size="default" href={'groups/'+event.groupId}>Group</IonButton>
-                    {event.lat && event.long && <><IonButton size="default" onClick={() => setShowModal(true)}>Location</IonButton>
-                  <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                      <MapPicker defaultLocation={{lat: event.lat, lng: event.long}}
-                                zoom={10}
-                                style={{height:'700px'}}
-                                apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
-                      <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
-                  </IonModal></>}
-                  <IonButton size="default" color="secondary" onClick={() => {}}>Edit</IonButton>
                   <IonButton size="default" color="danger" onClick={() => removeEvent(event.id)}>Remove</IonButton>
                 </IonCardContent>
             </IonCard>
