@@ -79,15 +79,17 @@ const Home: React.FC = () => {
                 <h1>{event.name}</h1>
                 <h3>{new Date(event.datetime.seconds * 1000).toDateString()}</h3>
                 <p>{event.description}</p>
-                <IonButton href={'groups/'+event.groupId}>Group</IonButton>
-                <IonButton onClick={() => setShowModal(true)}>Location</IonButton>
-                    <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                        <MapPicker defaultLocation={{lat: event.lat, lng: event.long}}
-                                   zoom={10}
-                                   style={{height:'700px'}}
-                                   apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
-                        <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
-                    </IonModal>
+                <IonButton size="default" href={'groups/'+event.groupId}>Group</IonButton>
+                  {event.lat && event.long && <><IonButton size="default" onClick={() => setShowModal(true)}>Location</IonButton>
+                <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+                    <MapPicker defaultLocation={{lat: event.lat, lng: event.long}}
+                               zoom={10}
+                               style={{height:'700px'}}
+                               apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                    <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
+                </IonModal></>}
+                <IonButton size="default" color="secondary" onClick={() => {}}>Edit</IonButton>
+                <IonButton color="danger" onClick={() => {}}>Remove</IonButton>
               </IonLabel>
             </IonItem>
           ))}
