@@ -66,6 +66,7 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                         <IonTitle size="large">{group?.name}</IonTitle>
                     </IonToolbar>
                 </IonHeader>
+                <h1>{group?.name}</h1>
                 <h2>Group Members</h2>
                 <IonList>
                 {group?.members.map(member => <IonItem key={member.id}>
