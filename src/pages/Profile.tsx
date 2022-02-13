@@ -9,8 +9,7 @@ import {
     IonInput,
     IonTextarea,
     IonButton,
-    useIonViewWillEnter,
-    useIonViewDidEnter
+    IonToast
 } from '@ionic/react';
 import './Profile.css';
 import { AuthContext } from "../Auth";
@@ -25,6 +24,9 @@ const Profile: React.FC = () => {
     const [likes, setProfileLikes] = useState<string>();
     const [dislikes, setProfileDislikes] = useState<string>();
     const [dob, setProfileDOB] = useState<string>();
+
+    const [notification, setNotification] = useState<string>();
+    const [notify, setNotify] = useState<boolean>(false);
 
     const db = getFirestore();
     const auth = useContext(AuthContext);
@@ -58,6 +60,8 @@ const Profile: React.FC = () => {
             dislikes,
             dob
         });
+        setNotification("Your profile was updated successfully!");
+        setNotify(true);
     }
 
     const logout = async () => {
@@ -95,6 +99,13 @@ const Profile: React.FC = () => {
                 </IonItem>
                 <IonButton onClick={saveProfile} expand="full" color="secondary">Save</IonButton>
                 <IonButton onClick={logout} expand="full" color="primary">Logout</IonButton>
+                <IonToast 
+                    isOpen={notify}
+                    onDidDismiss={() => {setNotify(false)}}
+                    message={notification}
+                    duration={1000}
+                    position="bottom"
+                />
             </IonContent>
         </IonPage>
     );
