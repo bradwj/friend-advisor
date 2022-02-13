@@ -13,7 +13,6 @@ import {useAuthInit, AuthContext} from "./Auth";
 import {IonReactRouter} from '@ionic/react-router';
 import {ellipse, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
 import Home from './pages/Home';
-import Tab3 from './pages/Tab3';
 import SignIn from './pages/SignIn';
 
 /* Core CSS required for Ionic components to work properly */
@@ -73,7 +72,7 @@ const App: React.FC = () => {
                         </Route>
                     </IonRouterOutlet>
                     { auth?.loggedIn ? 
-                    <IonTabBar slot="top">
+                    <IonTabBar slot="bottom">
                         <IonTabButton tab="addevent" href="/create-event">
                             <IonIcon icon={square}/>
                             <IonLabel>New Event</IonLabel>
