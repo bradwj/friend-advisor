@@ -68,10 +68,11 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Home</IonTitle>
+            <IonTitle size="large">Events</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonList>
+            <IonButton expand="block" href="/create-event">Create Event</IonButton>
           {events?.map(event => (
             <IonItem key={event.id}>
               <IonLabel>
@@ -91,7 +92,7 @@ const Home: React.FC = () => {
             </IonItem>
           ))}
         </IonList>
-        
+
       </IonContent>
     </IonPage>
   );

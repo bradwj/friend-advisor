@@ -75,6 +75,7 @@ const Groups: React.FC = () => {
                         </IonItem>
                     ))}
                 </IonList>
+                <IonButton expand="block" href="/joingroup">Join Group</IonButton>
             </IonContent>
         </IonPage>
     );
