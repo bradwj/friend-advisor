@@ -87,7 +87,7 @@ const Home: React.FC = () => {
             });
         }
 
-        history.push("/events");
+        history.push("/home");
     }
 
 

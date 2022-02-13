@@ -62,7 +62,7 @@ const Home: React.FC = () => {
         await deleteDoc(doc(db, "events", id));
         await fetchGroups();
 
-        history.push("/events");
+        history.push("/home");
     }
 
   return (
