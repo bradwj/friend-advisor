@@ -1,10 +1,11 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonFooter, IonIcon } from '@ionic/react';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { addDoc, getFirestore, collection, getDocs, onSnapshot, getDoc, doc } from "firebase/firestore";
 import './SignIn.css';
 import { AuthContext } from "../Auth";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { personOutline } from 'ionicons/icons';
 
 const SignIn: React.FC = () => {
     const auth = useContext(AuthContext);
@@ -36,8 +37,13 @@ const SignIn: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <IonButton onClick={signIn} expand="full" color="secondary">Sign In</IonButton>
+        <div className='center'>
+          <div><IonIcon size='large' icon={personOutline}></IonIcon></div>
+          <div><IonButton onClick={signIn} expand="block">Sign In</IonButton></div>
+        </div>
       </IonContent>
+      <IonFooter>
+      </IonFooter>
     </IonPage>
   );
 };
