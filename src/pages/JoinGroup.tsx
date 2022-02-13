@@ -3,9 +3,12 @@ import { addDoc, getFirestore, getDoc, doc, updateDoc, arrayUnion } from "fireba
 import './JoinGroup.css';
 import { AuthContext } from "../Auth";
 import { useContext, useState } from "react";
+import { useLocation } from 'react-router';
 
 const JoinGroup: React.FC = () => {
-    const [code, setGroupCode] = useState<string>();
+    const id: any = new URLSearchParams(useLocation().search).get('id');
+
+    const [code, setGroupCode] = useState<string>(id);
     const [notification, setNotification] = useState<string>();
     const [notify, setNotify] = useState<boolean>(false);
 
