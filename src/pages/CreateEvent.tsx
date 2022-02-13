@@ -89,13 +89,13 @@ const Home: React.FC = () => {
                 <IonItem>
                     <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
                     <IonModal isOpen={showModal}>
-                        <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
                         <MapPicker defaultLocation={defaultLocation}
                                    zoom={zoom}
                                    style={{height:'700px'}}
                                    onChangeLocation={handleChangeLocation}
                                    onChangeZoom={handleChangeZoom}
                                    apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                        <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
                     </IonModal>
                 </IonItem>
 

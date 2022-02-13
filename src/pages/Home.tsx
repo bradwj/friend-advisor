@@ -1,8 +1,9 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonRouterLink } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonModal,  } from '@ionic/react';
 import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 import {AuthContext} from "../Auth";
+import MapPicker from 'react-google-map-picker'
 
 interface Event{
     datetime: any,
@@ -25,6 +26,7 @@ const db = getFirestore();
 const Home: React.FC = () => {
     const [events, setEvents] = useState<Event[]>()
     const ctx = useContext(AuthContext);
+    const [showModal, setShowModal] = useState(false);
 
     const fetchGroups = useCallback(async () => {
         const docs = await getDocs(collection(db, "groups"))
@@ -76,7 +78,15 @@ const Home: React.FC = () => {
                 <h1>{event.name}</h1>
                 <h3>{new Date(event.datetime.seconds * 1000).toDateString()}</h3>
                 <p>{event.description}</p>
-                <IonRouterLink href={'groups/'+event.groupId}>Group</IonRouterLink>
+                <IonButton href={'groups/'+event.groupId}>Group</IonButton>
+                <IonButton onClick={() => setShowModal(true)}>Location</IonButton>
+                    <IonModal isOpen={showModal}>
+                        <MapPicker defaultLocation={{lat: event.lat, lng: event.long}}
+                                   zoom={10}
+                                   style={{height:'700px'}}
+                                   apiKey='AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA'/>
+                        <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
+                    </IonModal>
               </IonLabel>
             </IonItem>
           ))}
