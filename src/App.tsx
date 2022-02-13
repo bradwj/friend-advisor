@@ -37,6 +37,8 @@ import './theme/variables.css';
 import CreateEvent from "./pages/CreateEvent";
 import Profile from './pages/Profile';
 import JoinGroup from './pages/JoinGroup';
+import Group from "./pages/Group";
+import Groups from "./pages/Groups";
 
 setupIonicReact();
 
@@ -67,11 +69,13 @@ const App: React.FC = () => {
                         <Route path="/create-event">
                             <CreateEvent/>
                         </Route>
+                        <Route path="/groups/:id" component={Group}></Route>
+                        <Route path="/groups" exact component={Groups}></Route>
                         <Route exact path="/">
                             <Redirect to="/signin"/>
                         </Route>
                     </IonRouterOutlet>
-                    { auth?.loggedIn ? 
+                    { auth?.loggedIn ?
                     <IonTabBar slot="bottom">
                         <IonTabButton tab="addevent" href="/create-event">
                             <IonIcon icon={square}/>
