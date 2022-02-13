@@ -13,7 +13,7 @@ import {
     IonToolbar,
     IonModal
 } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import './Group.css';
 import {RouteComponentProps} from "react-router";
 import {useCallback, useContext, useEffect, useState} from "react";
 import {AuthContext} from "../Auth";
@@ -104,9 +104,9 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                 <h2>Group ID</h2>
                 <p>{group?.id}</p>
                 <IonButton color="danger" onClick={leaveGroup}>Leave Group</IonButton>
-                <IonModal isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                    <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
-                    <QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} />
+                <IonModal className='inf' isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+                    <div className='qr'><QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} /></div>
+                    <IonButton slot='bottom' onClick={() => setShowModal(false)}>Close</IonButton>
                 </IonModal>
             </IonContent>
         </IonPage>
