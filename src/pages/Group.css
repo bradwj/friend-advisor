@@ -11,9 +11,6 @@ ion-modal.inf {
     --height: 320px;
 }
 
-ion-content {
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-    --padding-start: 10px;
-    --padding-end: 10px;
+.padded {
+    padding-left: 10px;
 }

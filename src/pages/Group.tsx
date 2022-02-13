@@ -88,8 +88,8 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <h1>{group?.name}</h1>
-                <h2>Group Members</h2>
+                <h1 className='padded'>{group?.name}</h1>
+                <h2 className='padded'>Group Members</h2>
                 <IonList>
                 {group?.members.map(member => <IonItem button href={'users/'+member.id} key={member.id}>
                     <IonLabel>
@@ -100,9 +100,9 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                     </IonAvatar>
                 </IonItem>)}
                 </IonList>
-                <h2>Group ID</h2>
-                <p>{group?.id}</p>
-                <IonButton color="danger" onClick={leaveGroup}>Leave Group</IonButton>
+                <h2 className='padded'>Group ID</h2>
+                <p className='padded'>{group?.id}</p>
+                <IonButton className='padded' color="danger" onClick={leaveGroup}>Leave Group</IonButton>
                 <IonModal className='inf' isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
                     <div className='qr'><QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} /></div>
                     <IonButton slot='bottom' onClick={() => setShowModal(false)}>Close</IonButton>
