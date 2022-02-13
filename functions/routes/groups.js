@@ -14,7 +14,7 @@ router.post("/create", async (req, res) => {
   try {
     const docRef = await db.collection("groups").add(group);
     console.log("Document written with ID: ", docRef.id);
-    res.send({
+    res.status(200).send({
       id: docRef.id,
       ...group
     });
