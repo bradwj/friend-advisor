@@ -73,7 +73,7 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonList>
             <IonButton expand="block" href="/create-event">Create Event</IonButton>
-          {events?.map(event => (
+          {events?.sort((a, b) => a.datetime.seconds - b.datetime.seconds).map(event => (
             <IonItem key={event.id}>
               <IonLabel>
                 <h1>{event.name}</h1>
