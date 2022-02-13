@@ -1,11 +1,12 @@
 import {
     IonAvatar,
-    IonButton, IonChip, IonCol,
-    IonContent, IonGrid,
+    IonButton,
+    IonContent,
     IonHeader,
     IonItem,
     IonLabel,
-    IonPage, IonRow,
+    IonList,
+    IonPage,
     IonTitle,
     IonToolbar
 } from '@ionic/react';
@@ -18,7 +19,7 @@ import {collection, doc, getDoc, getDocs, getFirestore} from "firebase/firestore
 interface Group {
     id: string,
     name: string,
-    members: string[]
+    members: { id: string; name: any; }[]
 }
 
 const db = getFirestore();
@@ -29,10 +30,18 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
 
     const fetchGroup = useCallback(async () => {
         const groupDoc = await getDoc(doc(db, "groups", id));
+        console.log(id);
+
+        const users: { id: string; name: any; }[] = [];
+
+        const usersDocs = await getDocs(collection(db, "users"));
+        usersDocs.forEach(user => {
+            users.push({id: user.id, name: user.data().name})
+        });
 
         if(groupDoc.exists()){
-            const {members, name} = groupDoc.data() as Group;
-            setGroup({id: groupDoc.id, name, members});
+            const {members, name} = groupDoc.data();
+            setGroup({id: groupDoc.id, name, members: users.filter(user => members.includes(user.id))});
         }
     }, [ctx?.userData]) // if userId changes, useEffect will run again
     // if you want to run only once, just leave array empty []
@@ -58,15 +67,16 @@ const Group: React.FC<RouteComponentProps> = ({match}) => {
                     </IonToolbar>
                 </IonHeader>
                 <h2>Group Members</h2>
-                <IonGrid>
-                    <IonRow>
-                    {group?.members.map(member =>
-                        <IonCol key={member}> <IonAvatar>
-                            <img src={`https://picsum.photos/seed/${member}/200/200`} />
-                        </IonAvatar>
-                        </IonCol>)}
-                    </IonRow>
-                </IonGrid>
+                <IonList>
+                {group?.members.map(member => <IonItem key={member.id}>
+                    <IonLabel>
+                        <h2>{member.name}</h2>
+                    </IonLabel>
+                    <IonAvatar slot="start">
+                        <img src={`https://picsum.photos/seed/${member.id}/200/200`} />
+                    </IonAvatar>
+                </IonItem>)}
+                </IonList>
             </IonContent>
         </IonPage>
     );
