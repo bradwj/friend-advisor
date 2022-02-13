@@ -4,6 +4,8 @@ import {useCallback, useContext, useEffect, useState} from "react";
 import {collection, getDocs, getFirestore, deleteDoc, doc} from "firebase/firestore";
 import {AuthContext} from "../Auth";
 import MapPicker from 'react-google-map-picker';
+import { Link } from 'react-router-dom';
+import {useHistory} from "react-router";
 
 interface Event{
     datetime: any,
@@ -24,9 +26,10 @@ interface GroupWithEvents {
 const db = getFirestore();
 
 const Home: React.FC = () => {
-    const [events, setEvents] = useState<Event[]>()
+    const [events, setEvents] = useState<Event[]>();
     const ctx = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
+    const history = useHistory();
 
     const fetchGroups = useCallback(async () => {
         const docs = await getDocs(collection(db, "groups"));
@@ -61,6 +64,8 @@ const Home: React.FC = () => {
     async function removeEvent(id:string){
         await deleteDoc(doc(db, "events", id));
         await fetchGroups();
+
+        history.push("/events");
     }
 
   return (
@@ -76,7 +81,7 @@ const Home: React.FC = () => {
           {events?.map(event => (
             <IonItem key={event.id}>
               <IonLabel>
-                <h1>{event.name}</h1>
+                <Link to={"/events/" + event.id}><h1>{event.name}</h1></Link>
                 <h3>{new Date(event.datetime.seconds * 1000).toDateString()}</h3>
                 <p>{event.description}</p>
                 <IonButton size="default" href={'groups/'+event.groupId}>Group</IonButton>

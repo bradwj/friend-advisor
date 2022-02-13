@@ -131,10 +131,10 @@ const Home: React.FC = () => {
                 {/*<button onClick={handleResetLocation}>Reset Location</button>*/}
                 {locationEnabled ? <IonItem>
                     Location: {location.lat}, {location.lng}
-                    <IonButton color="secondary" onClick={() => setShowModal(true)}>Pick Location</IonButton>
+                    <IonButton color="secondary" onClick={() => setShowModal(true)}>Edit Location</IonButton>
                     <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove</IonButton>
                 </IonItem> : <IonItem>
-                    <IonButton onClick={() => setShowModal(true)}>Edit Location</IonButton>
+                    <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
                     </IonItem>}
                 <IonModal isOpen={showModal} onDidDismiss={() => {
                     setShowModal(false);
