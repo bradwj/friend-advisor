@@ -63,12 +63,10 @@ const Groups: React.FC = () => {
                 </IonHeader>
                 <IonList>
                     {groups?.map(group => (
-                        <IonItem key={group.id}>
-                            <IonButton href={'groups/'+group.id}>
+                        <IonItem button href={'groups/'+group.id} key={group.id}>
                             <IonLabel>
                                 <h2>{group.name}</h2>
                             </IonLabel>
-                            </IonButton>
                             <IonAvatar slot="start">
                                 <img src={`https://picsum.photos/seed/${group.id}/200/200`} />
                             </IonAvatar>
