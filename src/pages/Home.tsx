@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonModal,  } from '@ionic/react';
 import './Home.css';
 import {useCallback, useContext, useEffect, useState} from "react";
-import {collection, getDocs, getFirestore} from "firebase/firestore";
+import {collection, getDocs, getFirestore, deleteDoc, doc} from "firebase/firestore";
 import {AuthContext} from "../Auth";
 import MapPicker from 'react-google-map-picker';
 
@@ -58,6 +58,11 @@ const Home: React.FC = () => {
         fetchGroups()
     }, [fetchGroups]);
 
+    async function removeEvent(id:string){
+        await deleteDoc(doc(db, "events", id));
+        await fetchGroups();
+    }
+
   return (
     <IonPage>
       <IonHeader>
@@ -89,7 +94,7 @@ const Home: React.FC = () => {
                     <IonButton onClick={() => setShowModal(false)}>Close</IonButton>
                 </IonModal></>}
                 <IonButton size="default" color="secondary" onClick={() => {}}>Edit</IonButton>
-                <IonButton color="danger" onClick={() => {}}>Remove</IonButton>
+                <IonButton size="default" color="danger" onClick={() => removeEvent(event.id)}>Remove</IonButton>
               </IonLabel>
             </IonItem>
           ))}

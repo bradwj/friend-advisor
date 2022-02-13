@@ -15,7 +15,7 @@ import MapPicker from 'react-google-map-picker'
 import { AuthContext } from "../Auth";
 import {SetStateAction, useCallback, useContext, useEffect, useState} from "react";
 import GroupPicker from "../components/GroupPicker";
-import {useLocation} from "react-router";
+import {useHistory, useLocation} from "react-router";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024};
@@ -41,6 +41,8 @@ const Home: React.FC = () => {
 
     const [location, setLocation] = useState(defaultLocation);
     const [zoom, setZoom] = useState(DefaultZoom);
+
+    const history = useHistory();
 
     const fetchGroups = useCallback(async () => {
         const docs = await getDocs(collection(db, "groups"))
@@ -84,6 +86,8 @@ const Home: React.FC = () => {
                 method: "POST"
             });
         }
+
+        history.push("/events");
     }
 
 
