@@ -29,14 +29,4 @@ router.post("/create", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-  try {
-    const docRef = (await db.collection("events").doc(req.params.id).get()).data();
-    res.status(200).send(docRef);
-  } catch (e) {
-    res.status(400).send({ message: e.toString() });
-  }
-
-});
-
 module.exports = router;

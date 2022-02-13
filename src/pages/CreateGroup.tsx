@@ -15,12 +15,12 @@ import { AuthContext } from "../Auth";
 import { useContext, useState } from "react";
 import { useLocation, useHistory } from 'react-router';
 
-const JoinGroup: React.FC = () => {
+const CreateGroup: React.FC = () => {
     const history = useHistory();
 
     const id: any = new URLSearchParams(useLocation().search).get('id');
 
-    const [code, setGroupCode] = useState<string>(id);
+    const [name, setName] = useState<string>(id);
     const [notification, setNotification] = useState<string>();
     const [notify, setNotify] = useState<boolean>(false);
 
@@ -28,42 +28,27 @@ const JoinGroup: React.FC = () => {
     const db = getFirestore();
 
     const tryCode = async () => {
-        const groupEntry = await getDoc(doc(db, "groups", `${code}`));
-        if (groupEntry.exists()) {
-            const { members } = groupEntry.data();
-            const found = members.find((member: string) => member === auth?.userId);
-            if (found) {
-                setNotification("You are already in the group!");
-                setNotify(true);
-            } else {
-                await updateDoc(doc(db, "groups", `${code}`), {
-                    members: arrayUnion(auth?.userId)
-                });
-                setNotification("You have joined the group successfully!");
-                setNotify(true);
+        const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
+        await fetch(`${basePath}/groups/create?groupId=name=${name}&creatorId=${auth?.userId}`, {
+            method: "POST"
+        });
 
-                history.push("/");
-            }
-        } else {
-            setNotification("Group not found!");
-            setNotify(true);
-        }
+        history.push("/groups");
     }
 
   return (
     <IonPage>
         <IonHeader>
             <IonToolbar>
-                <IonTitle>Join Group</IonTitle>
+                <IonTitle>Create Group</IonTitle>
             </IonToolbar>
         </IonHeader>
         <IonContent fullscreen>
             <IonItem>
-                <IonLabel>Group Code</IonLabel>
-                <IonInput value={code} onIonChange={e => setGroupCode(e.detail.value!)}/>
+                <IonLabel>Group Name</IonLabel>
+                <IonInput value={name} onIonChange={e => setName(e.detail.value!)}/>
             </IonItem>
-            <IonButton onClick={tryCode} expand="block" color="secondary">Join</IonButton>
-            You can also join a group by scanning a group's QR code.
+            <IonButton onClick={tryCode} expand="block" color="success">Create Group</IonButton>
             <IonToast
                 isOpen={notify}
                 onDidDismiss={() => {setNotify(false)}}
@@ -76,4 +61,4 @@ const JoinGroup: React.FC = () => {
   );
 };
 
-export default JoinGroup;
+export default CreateGroup;
