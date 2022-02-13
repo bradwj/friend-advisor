@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton } from '@ionic/react';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { addDoc, getFirestore, collection, getDocs, onSnapshot, getDoc, doc } from "firebase/firestore";
-import './Home.css';
+import './SignIn.css';
 import { AuthContext } from "../Auth";
 import { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
