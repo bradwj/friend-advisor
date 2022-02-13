@@ -3,9 +3,11 @@ import { addDoc, getFirestore, getDoc, doc, updateDoc, arrayUnion } from "fireba
 import './JoinGroup.css';
 import { AuthContext } from "../Auth";
 import { useContext, useState } from "react";
-import { useLocation } from 'react-router';
+import { useLocation, useHistory } from 'react-router';
 
 const JoinGroup: React.FC = () => {
+    const history = useHistory();
+
     const id: any = new URLSearchParams(useLocation().search).get('id');
 
     const [code, setGroupCode] = useState<string>(id);
@@ -29,6 +31,8 @@ const JoinGroup: React.FC = () => {
                 });
                 setNotification("You have joined the group successfully!");
                 setNotify(true);
+
+                history.push("/");
             }
         } else {
             setNotification("Group not found!");

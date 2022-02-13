@@ -25,6 +25,7 @@ const Home: React.FC = () => {
     const [eventName, setEventName] = useState<string>();
     const [eventDesc, setEventDesc] = useState<string>();
     const [eventDate, setEventDate] = useState<string>();
+    const [groupId, setGroupId] = useState<string>();
     const [showModal, setShowModal] = useState(false);
 
     const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
@@ -46,9 +47,11 @@ const Home: React.FC = () => {
     }
 
     async function submit(){
-        await fetch(`http://localhost:5001/friend-advisor/us-central1/app/events/create?groupId=&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
+        await fetch(`http://localhost:5001/friend-advisor/us-central1/app/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
             method: "POST"
         });
+
+
     }
 
 
@@ -71,7 +74,7 @@ const Home: React.FC = () => {
                 </IonItem>
                 <IonItem>
                     <IonLabel>Group</IonLabel>
-                    <GroupPicker/>
+                    <GroupPicker onPickGroup={setGroupId}/>
                 </IonItem>
                 <IonItem>
                     <IonLabel>Description</IonLabel>
@@ -99,7 +102,7 @@ const Home: React.FC = () => {
                     </IonModal>
                 </IonItem>
 
-                <IonButton onClick={submit} expand="full" color="primary">Create Event</IonButton>
+                <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="full" color="primary">Create Event</IonButton>
             </IonContent>
         </IonPage>
     );

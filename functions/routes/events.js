@@ -4,8 +4,8 @@ const admin = require("../firebase.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
   const { groupId, datetime, name, description, lat, long } = req.query;
-
   try {
     const event = {
       groupId,
@@ -20,7 +20,7 @@ router.post("/create", async (req, res) => {
       },
     };
     if (lat && long) event.location = new admin.firestore.GeoPoint(Number(lat), Number(long));
-    
+
     const docRef = await db.collection("events").add(event);
     console.log("Document written with ID:", docRef.id);
     res.status(200).send({ id: docRef.id, ...event });

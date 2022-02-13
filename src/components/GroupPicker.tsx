@@ -20,7 +20,11 @@ interface State {
 // const auth = useContext(AuthContext);
 const db = getFirestore();
 
-const ExploreContainer: React.FC = () => {
+interface PickerProps {
+    onPickGroup: Function;
+}
+
+const GroupPicker: React.FC<PickerProps> = ({onPickGroup}) => {
     const [groups, setGroups] = useState<Group[]>();
     const ctx = useContext(AuthContext);
 
@@ -42,7 +46,7 @@ const ExploreContainer: React.FC = () => {
 
     if (ctx?.loggedIn) {
         return (
-            <IonSelect okText="Confirm" cancelText="Dismiss">
+            <IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>onPickGroup(e.detail.value!)}>
                 {groups?.map((group: Group) => (<IonSelectOption value={group.id} key={group.id}>{group.name}</IonSelectOption>))}
             </IonSelect>
         );
@@ -51,4 +55,4 @@ const ExploreContainer: React.FC = () => {
     }
 }
 
-export default ExploreContainer;
+export default GroupPicker;
