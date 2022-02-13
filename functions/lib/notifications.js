@@ -34,71 +34,83 @@ exports.checkNotifications = async function checkNotifications() {
         const sentNotifications = eventData.sentNotifications;
 
         const currentDate = new Date();
-        const hourDifference = (eventData.datetime.toDate() - currentDate) / (1000 * 60 * 60);
-        console.log(eventData.datetime);
-        console.log(hourDifference);
+        const eventDate = eventData.datetime.toDate();
+        const eventDateString = eventDate.toLocaleDateString();
+        const hourDifference = (eventDate - currentDate) / (1000 * 60 * 60);
+
+        let updated = false;
         if (hourDifference > 0) {
           if (hourDifference <= 24) {
             // Send user a message on the DAY OF the event if they haven't already been sent a notification
-            memberIds.forEach(async (memberId) => {
+            for ( const memberId of memberIds ) { 
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayOf.includes(memberId)) {
                 sendNotificationDayOf(
                   eventData.name,
                   eventData.description,
-                  eventData.date,
+                  eventDateString,
                   memberData.phone
                 );
                 sentNotifications.dayOf.push(memberId);
+                updated = true;
               }
-            });
+            }
           }
           else if (hourDifference <= 48) {
             // Send user a message on the DAY BEFORE the event if they haven't already been sent a notification
-            memberIds.forEach(async (memberId) => {
+            for ( const memberId of memberIds ) { 
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayBefore.includes(memberId)) {
                 sendNotificationDayBefore(
                   eventData.name,
                   eventData.description,
-                  eventData.date,
+                  eventDateString,
                   memberData.phone
                 );
                 sentNotifications.dayBefore.push(memberId);
+                updated = true;
               }
-            });
+            }
           } else if (hourDifference <= 24 * 7) {
             // Send user a message on the WEEK BEFORE the event if they haven't already been sent a notification
-            memberIds.forEach(async (memberId) => {
+            for ( const memberId of memberIds ) { 
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.weekBefore.includes(memberId)) {
                 sendNotificationWeekBefore(
                   eventData.name,
                   eventData.description,
-                  eventData.date,
+                  eventDateString,
                   memberData.phone
                 );
                 sentNotifications.weekBefore.push(memberId);
+                updated = true;
               }
-            });
+            }
           } else if (hourDifference <= 24 * 30) {
             // Send user a message on the MONTH BEFORE the event if they haven't already been sent a notification
-            memberIds.forEach(async (memberId) => {
+            for ( const memberId of memberIds ) { 
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.monthBefore.includes(memberId)) {
                 sendNotificationMonthBefore(
                   eventData.name,
                   eventData.description,
-                  eventData.date,
+                  eventDateString,
                   memberData.phone
                 );
                 sentNotifications.monthBefore.push(memberId);
+                updated = true;
               }
-            });
+            }
           }
         }
         else {
           console.log('event ', eventData.name, 'has already happened');
+        }
+        // Update event document
+        if (updated) {
+          await eventsRef.doc(eventDoc.id).set({
+            sentNotifications
+          }, { merge: true });
         }
       } catch (e) {
         console.error(e);
@@ -142,13 +154,14 @@ function sendNotificationDayBefore(eventName, description, date, recipient) {
 
 function sendNotificationWeekBefore(eventName, description, date, recipient) {
   sendMessage(
-    `Reminder: Your event "${eventName}" is in a week on ${date}!\nDescription: ${description}`,
+    `Reminder: Your event "${eventName}" is in less than a week on ${date}!\nDescription: ${description}`,
     recipient
   );
 }
+
 function sendNotificationMonthBefore(eventName, description, date, recipient) {
   sendMessage(
-    `Reminder: Your event "${eventName}" on ${date} is almost a month away!\nDescription: ${description}`,
+    `Reminder: Your event "${eventName}" on ${date} is less than a month away!\nDescription: ${description}`,
     recipient
   );
 }
