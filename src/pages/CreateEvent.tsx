@@ -7,7 +7,7 @@ import {
     IonTitle,
     IonToolbar,
     IonInput,
-    IonTextarea, IonButton, IonModal, IonSelectOption, IonSelect
+    IonTextarea, IonButton, IonModal, IonSelectOption, IonSelect, IonRadioGroup, IonListHeader, IonRadio
 } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './CreateEvent.css';
@@ -98,9 +98,19 @@ const Home: React.FC = () => {
                 </IonItem>
                 <IonItem>
                     <IonLabel>Group</IonLabel>
-                    <IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>setGroupId(e.detail.value!)}>
+                    <IonRadioGroup value={groupId} onIonChange={e => setGroupId(e.detail.value)}>
+                       {/* <IonListHeader>
+                            <IonLabel>Group</IonLabel>
+                        </IonListHeader>*/}
+                        {groups?.map((group: Group) => (<IonItem>
+                            <IonLabel>{group.name}</IonLabel>
+                            <IonRadio slot="start" value={group.id} />
+                        </IonItem>))}
+                    </IonRadioGroup>
+
+                    {/*<IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>setGroupId(e.detail.value!)}>
                         {groups?.map((group: Group) => (<IonSelectOption value={group.id} key={group.id}>{group.name}</IonSelectOption>))}
-                    </IonSelect>
+                    </IonSelect>*/}
                 </IonItem>
                 <IonItem>
                     <IonLabel>Description</IonLabel>
