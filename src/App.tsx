@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 import {useAuthInit, AuthContext} from "./Auth";
 import {IonReactRouter} from '@ionic/react-router';
-import {ellipse, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
+import {calendarNumberOutline, ellipse, peopleCircleOutline, personCircleOutline, square, squareOutline, triangle, triangleOutline} from 'ionicons/icons';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 
@@ -77,20 +77,16 @@ const App: React.FC = () => {
                     </IonRouterOutlet>
                     { auth?.loggedIn ?
                     <IonTabBar slot="bottom">
-                        <IonTabButton tab="addevent" href="/create-event">
-                            <IonIcon icon={square}/>
-                            <IonLabel>New Event</IonLabel>
-                        </IonTabButton>
                         <IonTabButton tab="events" href="/home">
-                            <IonIcon icon={ellipse}/>
+                            <IonIcon icon={calendarNumberOutline}/>
                             <IonLabel>Events</IonLabel>
                         </IonTabButton>
                         <IonTabButton tab="groups" href="/groups">
-                            <IonIcon icon={triangleOutline}/>
+                            <IonIcon icon={peopleCircleOutline}/>
                             <IonLabel>Groups</IonLabel>
                         </IonTabButton>
                         <IonTabButton tab="profile" href="/profile">
-                            <IonIcon icon={squareOutline}/>
+                            <IonIcon icon={personCircleOutline}/>
                             <IonLabel>Profile</IonLabel>
                         </IonTabButton>
                     </IonTabBar>
