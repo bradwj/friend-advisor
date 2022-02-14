@@ -62,3 +62,7 @@ We have many ideas for ways to extend the functionality of our app, including, b
 - Allowing users to display all of their upcoming events through a calendar view. 
 - Allowing users to automatically create an SMS group chat with the people in their FriendAdvisor groups
 - Extending our login options, so users may login with through other services like Facebook or email.
+
+---
+
+[Link to Devpost](https://devpost.com/software/friendadvisor)
