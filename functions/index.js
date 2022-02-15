@@ -9,12 +9,12 @@ const app = express();
 
 app.use(cors());
 
-const eventRouter = require("./routes/events")
+const eventRouter = require("./routes/events");
 const groupRouter = require("./routes/groups");
-const notifsRouter = require('./routes/notifications');
+const notifsRouter = require("./routes/notifications");
 
 app.use("/events", eventRouter);
 app.use("/groups", groupRouter);
-app.use('/notifs', notifsRouter);
+app.use("/notifs", notifsRouter);
 
 exports.app = functions.https.onRequest(app);

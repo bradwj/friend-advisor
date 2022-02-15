@@ -3,14 +3,13 @@ const router = express.Router();
 const admin = require("../firebase.js");
 const db = admin.firestore();
 
-
 router.post("/create", async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   const { name, creatorId } = req.query;
   const group = {
     name,
     members: [creatorId]
-  }
+  };
   try {
     const docRef = await db.collection("groups").add(group);
     console.log("Document written with ID: ", docRef.id);
