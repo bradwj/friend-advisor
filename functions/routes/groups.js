@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
-import {generate} from '../lib/createjoincode';
+const createjoincode = require('../lib/createjoincode.js');
 const db = admin.firestore();
 
 
@@ -10,8 +10,8 @@ router.post("/create", async (req, res) => {
   const { name, creatorId } = req.query;
   const group = {
     name,
-    members: [creatorId]//,
-    //id: generate(6)
+    members: [creatorId],
+    joinId: await generateGroupID()
   }
   try {
     const docRef = await db.collection("groups").add(group);
@@ -72,6 +72,42 @@ async function findGroup(req, res, next) {
     res.group = group;
   }
   next();
+}
+
+async function generateGroupID(){
+  let genStatus = false;
+  let count = 1;
+  while (genStatus==false && count < 50)
+  {
+    count = count +1;
+    let idToTry = createjoincode.generate(7);
+    genStatus = await generateHelper(idToTry);
+  }
+  if (count >= 50) {return "Unable to Generate ID.";} //Break if too many iterations
+  return genStatus;
+}
+
+async function generateHelper(idToTry){
+  let group;
+
+  try {
+    group = await db.collection("groups").get();
+    let fixed = [];
+    group.forEach(elem => fixed.push(elem));
+
+    for(let groupDoc of fixed) {
+      let groupData = groupDoc.data();
+      let joinId = groupData.joinId;
+      console.log(joinId,"compared to",idToTry);
+      if (joinId === idToTry)
+      {
+        return false;
+      }
+    }
+  } catch (err) {
+    console.log(err.message)
+  }
+  return idToTry;
 }
 
 module.exports = router;

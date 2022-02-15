@@ -1,4 +1,4 @@
-function generate(length) {
+const generate = (length) => {
     var result           = '';
     var characters       = 'ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -9,4 +9,4 @@ function generate(length) {
    return result;
 }
 
-export {generate};
+exports.generate = generate;
