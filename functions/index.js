@@ -17,11 +17,11 @@ const options = {
       version: '1.0.0',
     },
   },
-  apis: ['./routes*.js'], 
+  apis: ['./routes/events.js','./routes/groups.js','./routes/notifications.js'], 
 };
 
 const openapiSpecification = swaggerJsdoc(options);
-fs.writeFileSync("routesApi", JSON.stringify(openapiSpecification))
+fs.writeFileSync("routesApi.json", JSON.stringify(openapiSpecification))
 
 app.use(cors());
 

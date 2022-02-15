@@ -1,3 +1,91 @@
+/**
+ * @openapi
+ * /groups/create:
+ *   post:
+ *     tags:
+ *     - groups
+ *     summary: creates new group
+ *     operationId: createGroup
+ *     description: |
+ *       By passing in the appropriate options, you can create a new group.
+ *     produces:
+ *     - application/json
+ *     parameters:
+ *     - in: query
+ *       name: name
+ *       description: pass a group name
+ *       type: string
+ *     - in: query
+ *       name: creatorId
+ *       description: user ID of the creator of the group
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: Returns document ID, group structure containing name, members, joinId
+ *       400:
+ *         description: error adding document
+ * /groups/find/allData:
+ *   get:
+ *     tags:
+ *     - groups
+ *     summary: Finds a group with given Document ID from request, returns json-encoded array of its array of data, saved as "data"
+ *     operationId: findGroupData
+ *     parameters:
+ *     - name: id
+ *       in: query
+ *       description: Document ID of group to obtain data from
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful find operation
+ *       400:
+ *         description: no ID provided to search for.
+ *       404:
+ *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
+ * /groups/find/joinId:
+ *   get:
+ *     tags:
+ *     - groups
+ *     summary: Finds the joinId of a group with given ID from request, returns json-encoded array of this Id, saved as "joinId"
+ *     operationId: findGroupJoinId
+ *     parameters:
+ *     - name: id
+ *       in: query
+ *       description: ID of group to obtain joinId for.
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful find operation
+ *       400:
+ *         description: no ID provided.
+ *       404:
+ *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
+ * /groups/delete:
+ *   delete:
+ *     tags:
+ *     - groups
+ *     summary: Deletes group with given Document ID
+ *     operationId: deleteGroup
+ *     parameters:
+ *     - name: id
+ *       in: query
+ *       description: Document ID of group to delete
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful delete operation
+ *       400:
+ *         description: no ID provided.
+ *       404:
+ *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
+ */
+
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
