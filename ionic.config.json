@@ -1,7 +1,0 @@
-{
-  "name": "FriendAdvisor",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "react"
-}
