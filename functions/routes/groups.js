@@ -98,7 +98,7 @@ router.post("/create", async (req, res) => { //Used to Create Group
   const group = {
     name,
     members: [creatorId],
-    joinId: await generateGroupID()
+    joinId: await createjoincode.generate()
   };
   try {
     const docRef = await db.collection("groups").add(group);
@@ -180,40 +180,6 @@ async function findGroup (req, res, next) {
     res.group = group;
   }
   next();
-}
-
-async function generateGroupID () {
-  let genStatus = false;
-  let count = 1;
-  while (genStatus === false && count < 50) {
-    count = count + 1;
-    const idToTry = createjoincode.generate(7);
-    genStatus = await generateHelper(idToTry);
-  }
-  if (count >= 50) { return "Unable to Generate ID."; } // Break if too many iterations
-  return genStatus;
-}
-
-async function generateHelper (idToTry) {
-  let group;
-
-  try {
-    group = await db.collection("groups").get();
-    const fixed = [];
-    group.forEach(elem => fixed.push(elem));
-
-    for (const groupDoc of fixed) {
-      const groupData = groupDoc.data();
-      const joinId = groupData.joinId;
-      console.log(joinId, "compared to", idToTry);
-      if (joinId === idToTry) {
-        return false;
-      }
-    }
-  } catch (err) {
-    console.log(err.message);
-  }
-  return idToTry;
 }
 
 module.exports = router;
