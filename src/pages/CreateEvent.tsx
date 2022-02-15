@@ -99,66 +99,66 @@ const Home: React.FC = () => {
           <IonTitle>Create Event</IonTitle>
         </IonToolbar>
       </IonHeader>
-        <IonContent fullscreen>
-          <IonItem>
-            <IonLabel>Name</IonLabel>
-            <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Group</IonLabel>
-            <IonRadioGroup value={groupId} onIonChange={e => setGroupId(e.detail.value)}>
-              {/* <IonListHeader>
+      <IonContent fullscreen>
+        <IonItem>
+          <IonLabel>Name</IonLabel>
+          <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
+        </IonItem>
+        <IonItem>
+          <IonLabel>Group</IonLabel>
+          <IonRadioGroup value={groupId} onIonChange={e => setGroupId(e.detail.value)}>
+            {/* <IonListHeader>
                   <IonLabel>Group</IonLabel>
               </IonListHeader> */}
-              {groups?.map((group: Group) => (
+            {groups?.map((group: Group) => (
               <IonItem key={group.id}>
                 <IonLabel>{group.name}</IonLabel>
                 <IonRadio slot="start" value={group.id} />
               </IonItem>)
-              )}
-            </IonRadioGroup>
-            {/* <IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>setGroupId(e.detail.value!)}>
+            )}
+          </IonRadioGroup>
+          {/* <IonSelect okText="Confirm" cancelText="Dismiss" onIonChange={e=>setGroupId(e.detail.value!)}>
                 {groups?.map((group: Group) => (<IonSelectOption value={group.id} key={group.id}>{group.name}</IonSelectOption>))}
             </IonSelect> */}
+        </IonItem>
+        <IonItem>
+          <IonLabel>Description</IonLabel>
+          {/* <IonInput value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/> */}
+          <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
+        </IonItem>
+        <IonItem>
+          <IonLabel>Date</IonLabel>
+          <IonInput type="datetime-local" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
+        </IonItem>
+        {/* <button onClick={handleResetLocation}>Reset Location</button> */}
+        {locationEnabled
+          ? <IonItem>
+            Location: {location.lat}, {location.lng}
+            <IonButton color="secondary" onClick={() => setShowModal(true)}>Edit Location</IonButton>
+            <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove</IonButton>
           </IonItem>
-          <IonItem>
-            <IonLabel>Description</IonLabel>
-            {/* <IonInput value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/> */}
-            <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Date</IonLabel>
-            <IonInput type="datetime-local" value={eventDate} onIonChange={e => setEventDate(e.detail.value!)}/>
-          </IonItem>
-            {/* <button onClick={handleResetLocation}>Reset Location</button> */}
-          {locationEnabled
-            ? <IonItem>
-                Location: {location.lat}, {location.lng}
-                <IonButton color="secondary" onClick={() => setShowModal(true)}>Edit Location</IonButton>
-                <IonButton color="danger" onClick={() => setLocationEnabled(false)}>Remove</IonButton>
-              </IonItem>
-            : <IonItem>
-                <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
-              </IonItem>}
-            <IonModal isOpen={showModal} onDidDismiss={() => {
-              setShowModal(false);
-              setLocationEnabled(true);
-            }}>
-              <MapPicker defaultLocation={location}
+          : <IonItem>
+            <IonButton onClick={() => setShowModal(true)}>Pick Location</IonButton>
+          </IonItem>}
+        <IonModal isOpen={showModal} onDidDismiss={() => {
+          setShowModal(false);
+          setLocationEnabled(true);
+        }}>
+          <MapPicker defaultLocation={location}
                           zoom={zoom}
                           style={{ height: "700px" }}
                           onChangeLocation={handleChangeLocation}
                           onChangeZoom={handleChangeZoom}
                           apiKey="AIzaSyCE1vNf10CzWmZ3WGSLMr3wRF3WggzR8QA"/>
-              <IonButton onClick={() => {
-                setShowModal(false);
-                setLocationEnabled(true);
-              }}>
-                Close
-              </IonButton>
-            </IonModal>
-            <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="block" color="primary">Create Event</IonButton>
-        </IonContent>
+          <IonButton onClick={() => {
+            setShowModal(false);
+            setLocationEnabled(true);
+          }}>
+            Close
+          </IonButton>
+        </IonModal>
+        <IonButton disabled={!eventName || !eventDate || !groupId} onClick={submit} expand="block" color="primary">Create Event</IonButton>
+      </IonContent>
     </IonPage>
   );
 };
