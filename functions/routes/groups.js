@@ -4,10 +4,10 @@
  *   post:
  *     tags:
  *     - groups
- *     summary: creates new group
+ *     summary: By passing in the appropriate options, you can create a new group.
  *     operationId: createGroup
  *     description: |
- *       By passing in the appropriate options, you can create a new group.
+ *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213
  *     produces:
  *     - application/json
  *     parameters:
@@ -29,7 +29,11 @@
  *     tags:
  *     - groups
  *     summary: Finds a group with given Document ID from request, returns json-encoded array of its array of data, saved as "data"
+ *     description: |
+ *       Example Query: GET /groups/find/allData?id=6SoVHxte3j4KmDzd85Ng
  *     operationId: findGroupData
+ *     produces:
+ *     - application/json
  *     parameters:
  *     - name: id
  *       in: query
@@ -49,7 +53,11 @@
  *     tags:
  *     - groups
  *     summary: Finds the joinId of a group with given ID from request, returns json-encoded array of this Id, saved as "joinId"
+ *     description: |
+ *       Example Query: GET groups/find/joinId?id=6SoVHxte3j4KmDzd85Ng
  *     operationId: findGroupJoinId
+ *     produces:
+ *     - application/json
  *     parameters:
  *     - name: id
  *       in: query
@@ -69,7 +77,11 @@
  *     tags:
  *     - groups
  *     summary: Deletes group with given Document ID
+ *     description: |
+ *       Example Query: DELETE groups/delete?id=ciQRf9auZZYCjCbqmcFz
  *     operationId: deleteGroup
+ *     produces:
+ *     - application/json
  *     parameters:
  *     - name: id
  *       in: query
