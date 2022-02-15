@@ -8,7 +8,7 @@ const AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const client = require("twilio")(ACCOUNT_SID, AUTH_TOKEN);
 
 // Goes through all events and sends notifications to all members of the group if it is time to do so
-exports.checkNotifications = async function checkNotifications() {
+exports.checkNotifications = async function checkNotifications () {
   console.log("Checking for notifications...");
 
   const groupsRef = db.collection("groups");
@@ -42,7 +42,7 @@ exports.checkNotifications = async function checkNotifications() {
         if (hourDifference > 0) {
           if (hourDifference <= 24) {
             // Send user a message on the DAY OF the event if they haven't already been sent a notification
-            for ( const memberId of memberIds ) { 
+            for (const memberId of memberIds) {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayOf.includes(memberId)) {
                 sendNotificationDayOf(
@@ -55,10 +55,9 @@ exports.checkNotifications = async function checkNotifications() {
                 updated = true;
               }
             }
-          }
-          else if (hourDifference <= 48) {
+          } else if (hourDifference <= 48) {
             // Send user a message on the DAY BEFORE the event if they haven't already been sent a notification
-            for ( const memberId of memberIds ) { 
+            for (const memberId of memberIds) {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayBefore.includes(memberId)) {
                 sendNotificationDayBefore(
@@ -73,7 +72,7 @@ exports.checkNotifications = async function checkNotifications() {
             }
           } else if (hourDifference <= 24 * 7) {
             // Send user a message on the WEEK BEFORE the event if they haven't already been sent a notification
-            for ( const memberId of memberIds ) { 
+            for (const memberId of memberIds) {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.weekBefore.includes(memberId)) {
                 sendNotificationWeekBefore(
@@ -88,7 +87,7 @@ exports.checkNotifications = async function checkNotifications() {
             }
           } else if (hourDifference <= 24 * 30) {
             // Send user a message on the MONTH BEFORE the event if they haven't already been sent a notification
-            for ( const memberId of memberIds ) { 
+            for (const memberId of memberIds) {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.monthBefore.includes(memberId)) {
                 sendNotificationMonthBefore(
@@ -102,9 +101,8 @@ exports.checkNotifications = async function checkNotifications() {
               }
             }
           }
-        }
-        else {
-          console.log('event ', eventData.name, 'has already happened');
+        } else {
+          console.log("event ", eventData.name, "has already happened");
         }
         // Update event document
         if (updated) {
@@ -116,19 +114,18 @@ exports.checkNotifications = async function checkNotifications() {
         console.error(e);
       }
     });
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e);
   }
 };
 
 // Send message with messageBody to recipient
-function sendMessage(messageBody, recipient) {
+function sendMessage (messageBody, recipient) {
   client.messages
     .create({
       body: messageBody,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: recipient,
+      to: recipient
     })
     .then((message) => {
       console.log(message);
@@ -138,28 +135,28 @@ function sendMessage(messageBody, recipient) {
     });
 }
 
-function sendNotificationDayOf(eventName, description, date, recipient) {
+function sendNotificationDayOf (eventName, description, date, recipient) {
   sendMessage(
     `Reminder: Your event "${eventName}" is today!\nDescription: ${description}`,
     recipient
   );
 }
 
-function sendNotificationDayBefore(eventName, description, date, recipient) {
+function sendNotificationDayBefore (eventName, description, date, recipient) {
   sendMessage(
     `Reminder: Your event "${eventName}" is tomorrow, ${date}!\nDescription: ${description}`,
     recipient
   );
 }
 
-function sendNotificationWeekBefore(eventName, description, date, recipient) {
+function sendNotificationWeekBefore (eventName, description, date, recipient) {
   sendMessage(
     `Reminder: Your event "${eventName}" is in less than a week on ${date}!\nDescription: ${description}`,
     recipient
   );
 }
 
-function sendNotificationMonthBefore(eventName, description, date, recipient) {
+function sendNotificationMonthBefore (eventName, description, date, recipient) {
   sendMessage(
     `Reminder: Your event "${eventName}" on ${date} is less than a month away!\nDescription: ${description}`,
     recipient

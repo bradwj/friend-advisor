@@ -1,62 +1,62 @@
 import {
-    IonContent,
-    IonPage,
-    IonButton,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonToast,
-    IonHeader,
-    IonToolbar, IonTitle
-} from '@ionic/react';
-import { addDoc, getFirestore, getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
-import './JoinGroup.css';
+  IonContent,
+  IonPage,
+  IonButton,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonToast,
+  IonHeader,
+  IonToolbar,
+  IonTitle
+} from "@ionic/react";
+import "./JoinGroup.css";
 import { AuthContext } from "../Auth";
-import { useContext, useState } from "react";
-import { useLocation, useHistory } from 'react-router';
+import React, { useContext, useState } from "react";
+import { useLocation, useHistory } from "react-router";
 
 const CreateGroup: React.FC = () => {
-    const history = useHistory();
+  const history = useHistory();
 
-    const id: any = new URLSearchParams(useLocation().search).get('id');
+  const id: any = new URLSearchParams(useLocation().search).get("id");
 
-    const [name, setName] = useState<string>(id);
-    const [notification, setNotification] = useState<string>();
-    const [notify, setNotify] = useState<boolean>(false);
+  const [name, setName] = useState<string>(id);
+  const [notification, setNotification] = useState<string>();
+  const [notify, setNotify] = useState<boolean>(false);
 
-    const auth = useContext(AuthContext);
-    const db = getFirestore();
+  const auth = useContext(AuthContext);
 
-    const tryCode = async () => {
-        const basePath = process.env.NODE_ENV === 'development' ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-        await fetch(`${basePath}/groups/create?name=${name}&creatorId=${auth?.userId}`, {
-            method: "POST"
-        });
-
-        history.push("/groups");
-    }
+  const tryCode = async () => {
+    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
+    await fetch(`${basePath}/groups/create?name=${name}&creatorId=${auth?.userId}`, {
+      method: "POST"
+    });
+    setNotification("Successfully created group!");
+    setNotify(true);
+    history.push("/groups");
+  };
 
   return (
     <IonPage>
-        <IonHeader>
-            <IonToolbar>
-                <IonTitle>Create Group</IonTitle>
-            </IonToolbar>
-        </IonHeader>
-        <IonContent fullscreen>
-            <IonItem>
-                <IonLabel>Group Name</IonLabel>
-                <IonInput value={name} onIonChange={e => setName(e.detail.value!)}/>
-            </IonItem>
-            <IonButton onClick={tryCode} expand="block" color="success">Create Group</IonButton>
-            <IonToast
-                isOpen={notify}
-                onDidDismiss={() => {setNotify(false)}}
-                message={notification}
-                duration={1000}
-                position="bottom"
-            />
-        </IonContent>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Create Group</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonItem>
+          <IonLabel>Group Name</IonLabel>
+          <IonInput value={name} onIonChange={e => setName(e.detail.value!)}/>
+        </IonItem>
+        <IonButton onClick={tryCode} expand="block" color="success">Create Group</IonButton>
+        <IonToast
+          isOpen={notify}
+          onDidDismiss={() => { setNotify(false); }}
+          message={notification}
+          duration={1000}
+          position="bottom"
+        />
+      </IonContent>
     </IonPage>
   );
 };
