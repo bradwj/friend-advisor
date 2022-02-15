@@ -1,26 +1,26 @@
 import {
-    IonAvatar,
-    IonButton,
-    IonButtons,
-    IonContent,
-    IonHeader,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonModal
-} from '@ionic/react';
-import './Group.css';
-import {RouteComponentProps} from "react-router";
-import {useCallback, useContext, useEffect, useState} from "react";
-import {AuthContext} from "../Auth";
-import {collection, doc, getDoc, getDocs, getFirestore, setDoc} from "firebase/firestore";
-import { personAddOutline } from 'ionicons/icons';
+  IonAvatar,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonModal
+} from "@ionic/react";
+import "./Group.css";
+import { RouteComponentProps } from "react-router";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../Auth";
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 interface Group {
     id: string,
@@ -30,86 +30,86 @@ interface Group {
 
 const db = getFirestore();
 
-const Group: React.FC<RouteComponentProps> = ({match}) => {
-    const [group, setGroup] = useState<Group>();
-    const ctx = useContext(AuthContext);
-    const [showModal, setShowModal] = useState(false);
-    const history = useHistory();
+const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
+  const [group, setGroup] = useState<Group>();
+  const ctx = useContext(AuthContext);
+  const [showModal, setShowModal] = useState(false);
+  const history = useHistory();
 
-    const fetchGroup = useCallback(async () => {
-        const groupDoc = await getDoc(doc(db, "groups", id));
+  // @ts-ignore
+  const id = match.params.id;
 
-        const users: { id: string; name: any; }[] = [];
+  const fetchGroup = useCallback(async () => {
+    const groupDoc = await getDoc(doc(db, "groups", id));
 
-        const usersDocs = await getDocs(collection(db, "users"));
-        usersDocs.forEach(user => {
-            users.push({id: user.id, name: user.data().name})
-        });
+    const users: { id: string; name: any; }[] = [];
 
-        if(groupDoc.exists()){
-            const {members, name} = groupDoc.data();
-            setGroup({id: groupDoc.id, name, members: users.filter(user => members.includes(user.id))});
-        }
-    }, [ctx?.userData]) // if userId changes, useEffect will run again
-    // if you want to run only once, just leave array empty []
+    const usersDocs = await getDocs(collection(db, "users"));
+    usersDocs.forEach(user => {
+      users.push({ id: user.id, name: user.data().name });
+    });
 
-    useEffect(() => {
-        fetchGroup()
-    }, [fetchGroup]);
+    if (groupDoc.exists()) {
+      const { members, name } = groupDoc.data();
+      setGroup({ id: groupDoc.id, name, members: users.filter(user => members.includes(user.id)) });
+    }
+  }, [ctx?.userData]); // if userId changes, useEffect will run again
+  // if you want to run only once, just leave array empty []
 
-    async function leaveGroup(){
-        const groupDoc = await getDoc(doc(db, "groups", id));
+  useEffect(() => {
+    fetchGroup();
+  }, [fetchGroup]);
 
-        const members = groupDoc?.data()?.members;
+  async function leaveGroup () {
+    const groupDoc = await getDoc(doc(db, "groups", id));
 
-        if(members) {
-            const index = members.indexOf(ctx?.userId);
-            if (index > -1 && ctx?.userId) {
-                members.splice(index, 1); // 2nd parameter means remove one item only
-            }
+    const members = groupDoc?.data()?.members;
 
-            await setDoc(doc(db, "groups", id), {members}, {merge: true});
-        }
+    if (members) {
+      const index = members.indexOf(ctx?.userId);
+      if (index > -1 && ctx?.userId) {
+        members.splice(index, 1); // 2nd parameter means remove one item only
+      }
 
-        history.push('/groups');
+      await setDoc(doc(db, "groups", id), { members }, { merge: true });
     }
 
-    // @ts-ignore
-    const id = match.params.id;
+    history.push("/groups");
+  }
 
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Group Profile</IonTitle>
-                    <IonButtons slot='end'>
-                        <IonButton onClick={() => setShowModal(true)} size='large'><IonIcon size='large' icon={personAddOutline}></IonIcon></IonButton>
-                    </IonButtons>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent fullscreen>
-                <h1 className='padded'>{group?.name}</h1>
-                <h2 className='padded'>Group Members</h2>
-                <IonList>
-                {group?.members.map(member => <IonItem button href={'users/'+member.id} key={member.id}>
-                    <IonLabel>
-                        <h2>{member.name}</h2>
-                    </IonLabel>
-                    <IonAvatar slot="start">
-                        <img src={`https://picsum.photos/seed/${member.id}/200/200`} />
-                    </IonAvatar>
-                </IonItem>)}
-                </IonList>
-                <h2 className='padded'>Group ID</h2>
-                <p className='padded'>{group?.id}</p>
-                <IonButton className='padded' color="danger" onClick={leaveGroup}>Leave Group</IonButton>
-                <IonModal className='inf' isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-                    <div className='qr'><QRCode value={new URL("/joingroup?id="+group?.id, window.location.origin).href} /></div>
-                    <IonButton slot='bottom' onClick={() => setShowModal(false)}>Close</IonButton>
-                </IonModal>
-            </IonContent>
-        </IonPage>
-    );
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Group Profile</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={() => setShowModal(true)} size="large"><IonIcon size="large" icon={personAddOutline}></IonIcon></IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <h1 className="padded">{group?.name}</h1>
+        <h2 className="padded">Group Members</h2>
+        <IonList>
+          {group?.members.map(member => <IonItem button href={"users/" + member.id} key={member.id}>
+            <IonLabel>
+              <h2>{member.name}</h2>
+            </IonLabel>
+            <IonAvatar slot="start">
+              <img src={`https://picsum.photos/seed/${member.id}/200/200`} />
+            </IonAvatar>
+          </IonItem>)}
+        </IonList>
+        <h2 className="padded">Group ID</h2>
+        <p className="padded">{group?.id}</p>
+        <IonButton className="padded" color="danger" onClick={leaveGroup}>Leave Group</IonButton>
+        <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
+          <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
+          <IonButton slot="bottom" onClick={() => setShowModal(false)}>Close</IonButton>
+        </IonModal>
+      </IonContent>
+    </IonPage>
+  );
 };
 
-export default Group;
+export default GroupPage;

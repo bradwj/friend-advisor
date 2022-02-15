@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
-import {generate} from '../lib/createjoincode';
+// import {generate} from '../lib/createjoincode';
 const db = admin.firestore();
-
 
 router.post("/create", async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   const { name, creatorId } = req.query;
   const group = {
     name,
-    members: [creatorId]//,
-    //id: generate(6)
-  }
+    members: [creatorId]
+    // ,
+    // id: generate(6)
+  };
+  
   try {
     const docRef = await db.collection("groups").add(group);
     console.log("Document written with ID: ", docRef.id);

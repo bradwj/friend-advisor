@@ -16,8 +16,8 @@ router.post("/create", async (req, res) => {
         monthBefore: [],
         weekBefore: [],
         dayBefore: [],
-        dayOf: [],
-      },
+        dayOf: []
+      }
     };
     if (lat && long) event.location = new admin.firestore.GeoPoint(Number(lat), Number(long));
 
