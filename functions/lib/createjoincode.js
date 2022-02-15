@@ -1,12 +1,12 @@
-function generate(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
+function generate (length) {
+  let result = "";
+  const characters = "ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() *
  charactersLength));
-   }
-   return result;
+  }
+  return result;
 }
 
-export {generate};
+export { generate };

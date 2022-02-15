@@ -13,7 +13,7 @@ router.post("/create", async (req, res) => {
     // ,
     // id: generate(6)
   };
-  
+
   try {
     const docRef = await db.collection("groups").add(group);
     console.log("Document written with ID: ", docRef.id);
@@ -27,48 +27,43 @@ router.post("/create", async (req, res) => {
   }
 });
 
-//Get a specific group
+// Get a specific group
 router.get("/find", findGroup, async (req, res) => {
   res.status(200).json(res.group);
-})
+});
 
-router.delete("/delete", findGroup, async(req, res) => {
+router.delete("/delete", findGroup, async (req, res) => {
   try {
-    const deleteDoc = await res.group.delete();
-    res.status(200).json({message: "Group has been deleted successfully!"});
-  } catch (err)
-  {
-    res.status(500).json({message: err.message});
+    await res.group.delete();
+    res.status(200).json({ message: "Group has been deleted successfully!" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  
-})
+});
 
-router.patch("/edit", findGroup, async(req, res) => {
-  //FIXME
-})
+router.patch("/edit", findGroup, async (req, res) => {
+  // FIXME
+});
 
-async function findGroup(req, res, next) {
+async function findGroup (req, res, next) {
   let group;
   const { id } = req.query;
-  if (id == null)
-  {
+  if (id == null) {
     try {
       group = await db.collection("groups").get();
     } catch (err) {
-      res.status(500).json({message: "Server error: Cannot list groups"})
+      res.status(500).json({ message: "Server error: Cannot list groups" });
     }
     res.group = group;
-  }
-  else
-  {
+  } else {
     try {
       group = await db.collection("groups").doc(id);
       const doc = await group.get();
       if (group == null || !doc.exists) {
-          return res.status(404).json({message: "Cannot find group."}) //status 404 means you cannot find something
+        return res.status(404).json({ message: "Cannot find group." }); // status 404 means you cannot find something
       }
     } catch (err) {
-        return res.status(500).json({message: err.message})
+      return res.status(500).json({ message: err.message });
     }
     res.group = group;
   }
