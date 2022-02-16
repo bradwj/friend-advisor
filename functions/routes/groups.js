@@ -114,7 +114,7 @@
  *     - groups
  *     summary: Edits data for group with given ID from query parameters such as name and description
  *     description: |
- *       Example Query: /groups/edit?id=zBZvVSe5MXNXLDDSnIPn&name=new group name&description=changed group description
+ *       Example Query: PATCH /groups/edit?id=zBZvVSe5MXNXLDDSnIPn&name=new group name&description=changed group description
  *     operationId: editGroup
  *     produces:
  *       - application/json
@@ -138,6 +138,36 @@
  *         description: no ID provided.
  *       404:
  *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
+ * /groups/join:
+ *   patch:
+ *     tags:
+ *     - groups
+ *     summary: Adds a member to a group, given a joinId and userId
+ *     description: |
+ *       Example Query: PATCH /groups/join?joinId=eAboFZ&userId=91t0o6LiJaQnc03sI2EQg1SXIxI2
+ *     operationId: joinGroup
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: joinId
+ *       description: joinId of group to join
+ *       required: true
+ *       type: string
+ *     - in: query
+ *       name: userId
+ *       description: userId of user to add to group
+ *       type: string
+ *       required: true
+ *     responses:
+ *       200:
+ *         description: successful join operation
+ *       400:
+ *         description: member already in group requested
+ *       404:
+ *         description: Group does not exist or could not be found
  *       500:
  *         description: Other server-error
  */
@@ -167,6 +197,34 @@ router.post("/create", async (req, res) => { // Used to Create Group
       id: docRef.id,
       ...group
     });
+  } catch (e) {
+    console.error("Error adding document: ", e);
+    res.status(500).send({ message: e.toString() });
+  }
+});
+
+// Adds a member to a group, given userId and joinId
+router.patch("/join", async (req, res) => {
+  const { joinId, userId } = req.query;
+  if (joinId === undefined || joinId === null || userId === undefined || userId === null) { res.status(404).send({ message: "No Id provided, but it is a required argument." }); return; }
+  try {
+    const group = await db.collection("groups").where("joinId", "==", joinId).get();
+    if (group.empty) {
+      res.status(404).json({ message: "Group does not exist." });
+    } else {
+      const fixed = [];
+      group.forEach(elem => fixed.push(elem));
+      const groupDoc = await fixed.at(0);
+      const { members } = groupDoc.data();
+      const found = members.find((member) => member === userId);
+      if (found) {
+        return res.status(400).json({ message: "Member already in group!" });
+      }
+      console.log(groupDoc.id, userId);
+      const arrayToUpdate = admin.firestore.FieldValue.arrayUnion(userId);
+      await db.collection("groups").doc(groupDoc.id).update({ members: arrayToUpdate });
+      res.status(200).json({ message: "Member has successfully been added." });
+    }
   } catch (e) {
     console.error("Error adding document: ", e);
     res.status(500).send({ message: e.toString() });
