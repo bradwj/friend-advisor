@@ -110,7 +110,8 @@ router.post("/create", async (req, res) => { //Used to Create Group
   const group = {
     name,
     members: [creatorId],
-    joinId: await createjoincode.generate()
+    joinId: await createjoincode.generate(),
+    lastUpdated: Date.now()
   };
   try {
     const docRef = await db.collection("groups").add(group);

@@ -12,7 +12,8 @@ import {
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { collection, getFirestore, query, where, getDocs } from "firebase/firestore";
+import { appendToCache } from "../cache_manager";
 
 interface Group {
     id: string,
@@ -23,21 +24,40 @@ interface Group {
 const db = getFirestore();
 
 const Groups: React.FC = () => {
-  const [groups, setGroups] = useState<Group[]>();
+  const [groups, setGroups] = useState<Group[]>(JSON.parse(window.localStorage.getItem("userGroups") || "[]"));
   const ctx = useContext(AuthContext);
 
   const fetchGroups = async () => {
     console.log("fetchGroups");
-    const docs = await getDocs(collection(db, "groups"));
+    if (groups.length === 0) {
+      const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${ctx?.userId}`));
+      const docs = await getDocs(groupQuery);
 
-    const groupsImIn:Group[] = [];
-    docs.forEach(doc => {
-      if (doc.data()?.members?.includes(ctx?.userId)) {
+      const groupsImIn:Group[] = [];
+      docs.forEach(doc => {
+        const group = { id: doc.id, members: doc.data().members, name: doc.data().name };
+        groupsImIn.push(group);
+        appendToCache("userGroups", group);
+      });
+
+      setGroups(groupsImIn);
+      window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
+    } else {
+      const lastCachedUserGroups: number = JSON.parse(window.localStorage.getItem("lastCachedUserGroups") || "0");
+      const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${ctx?.userId}`), where("lastUpdated", ">", lastCachedUserGroups));
+      const docs = await getDocs(groupQuery);
+
+      const groupsImIn:Group[] = [];
+      docs.forEach(doc => {
         groupsImIn.push({ id: doc.id, members: doc.data().members, name: doc.data().name });
-      }
-    });
+      });
 
-    setGroups(groupsImIn);
+      setGroups(groups.concat(groupsImIn));
+      groupsImIn.forEach(group => {
+        appendToCache("userGroups", group);
+      });
+      window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
+    }
   };
 
   useEffect(() => {
