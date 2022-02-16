@@ -12,10 +12,11 @@ import {
 } from "@ionic/react";
 import "./Home.css";
 import React, { useContext, useEffect, useState } from "react";
-import { getFirestore, deleteDoc, doc, getDoc, setDoc, deleteField } from "firebase/firestore";
+import { getFirestore, deleteDoc, doc, setDoc, deleteField } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import MapPicker from "react-google-map-picker";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, useHistory } from "react-router";
+import { fetchEvents } from "./Home";
 
 interface Event{
     datetime: any,
@@ -29,6 +30,20 @@ interface Event{
 
 const db = getFirestore();
 
+export const fetchEvent = async (eventId: any, userId: any) => {
+  console.log("fetchEvent");
+  const events = await fetchEvents(userId);
+  const event = events.find((event: any) => event.id === eventId);
+
+  return new Promise<Event>((resolve, reject) => {
+    if (event) {
+      resolve(event);
+    } else {
+      reject(new Error("Event not found!"));
+    }
+  });
+};
+
 const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [event, setEvent] = useState<Event>();
   const [editing, setEditing] = useState<boolean>(false);
@@ -39,25 +54,25 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [eventDesc, setEventDesc] = useState<string>();
   const [eventDate, setEventDate] = useState<string>();
   const [location, setLocation] = useState<{lat: number, long: number}>();
+  const history = useHistory();
 
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchEvent = async () => {
-    console.log("fetchEvent");
-    const event = await getDoc(doc(db, "events", id));
-    const data = event.data() as Event;
-
-    setEventName(data.name);
-    setEventDate(data.datetime);
-    setEventDesc(data.description);
-    setLocation({ lat: data.lat, long: data.long });
-
-    setEvent(data);
-  };
-
   useEffect(() => {
-    if (ctx?.loggedIn) fetchEvent();
+    if (ctx?.loggedIn) {
+      fetchEvent(id, ctx.userId).then(data => {
+        setEventName(data.name);
+        setEventDate(data.datetime);
+        setEventDesc(data.description);
+        setLocation({ lat: data.lat, long: data.long });
+
+        setEvent(data);
+      }, reason => {
+        console.log(reason);
+        history.push("/home");
+      });
+    }
   }, [ctx]);
 
   function getDefaultVal () {
