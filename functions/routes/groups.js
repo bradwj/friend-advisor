@@ -173,7 +173,7 @@ router.post("/create", async (req, res) => { // Used to Create Group
   }
 });
 
-// Get a specific group
+// Get all data from a specific group
 router.get("/find/allData", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
@@ -187,6 +187,7 @@ router.get("/find/allData", findGroup, async (req, res) => {
   }
 });
 
+// Obtain only the joinId
 router.get("/find/joinId", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
@@ -200,6 +201,7 @@ router.get("/find/joinId", findGroup, async (req, res) => {
   }
 });
 
+// Delete a group with its documentId
 router.delete("/delete", findGroup, async (req, res) => {
   try {
     await res.group.delete();
@@ -209,6 +211,7 @@ router.delete("/delete", findGroup, async (req, res) => {
   }
 });
 
+// Edit a group with it's documentId and name/description as params
 router.patch("/edit", findGroup, async (req, res) => {
   try {
     const updatedData = {};
