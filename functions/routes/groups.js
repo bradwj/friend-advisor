@@ -109,6 +109,7 @@ router.post("/create", async (req, res) => { // Used to Create Group
   const { name, creatorId } = req.query;
   const group = {
     name,
+    description: req.query.description || "",
     members: [creatorId],
     joinId: await createjoincode.generate()
   };
@@ -163,7 +164,19 @@ router.delete("/delete", findGroup, async (req, res) => {
 });
 
 router.patch("/edit", findGroup, async (req, res) => {
-  // FIXME
+  try {
+    const updatedData = {};
+    if (req.query.name) {
+      updatedData.name = req.query.name;
+    }
+    if (req.query.description) {
+      updatedData.description = req.query.description;
+    }
+    res.group.update(updatedData);
+    res.status(200).json({ updatedData: updatedData });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 async function findGroup (req, res, next) {
