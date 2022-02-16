@@ -21,6 +21,7 @@ import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase
 import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
+import { deleteFromCache } from "../cache_manager";
 
 interface Group {
     id: string,
@@ -72,6 +73,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
       }
 
       await setDoc(doc(db, "groups", id), { members }, { merge: true });
+      deleteFromCache("userGroups", { id: id });
     }
 
     history.push("/groups");

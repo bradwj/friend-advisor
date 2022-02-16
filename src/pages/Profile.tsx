@@ -67,6 +67,7 @@ const Profile: React.FC = () => {
 
   const logout = async () => {
     await signOut(getAuth());
+    window.localStorage.clear();
     history.push("/signin");
   };
 

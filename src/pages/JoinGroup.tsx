@@ -37,12 +37,13 @@ const JoinGroup: React.FC = () => {
         setNotify(true);
       } else {
         await updateDoc(doc(db, "groups", `${code}`), {
-          members: arrayUnion(auth?.userId)
+          members: arrayUnion(auth?.userId),
+          lastUpdated: Date.now()
         });
         setNotification("You have joined the group successfully!");
         setNotify(true);
 
-        history.push("/");
+        history.push("/groups");
       }
     } else {
       setNotification("Group not found!");

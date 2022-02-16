@@ -188,7 +188,8 @@ router.post("/create", async (req, res) => { // Used to Create Group
     name,
     description,
     members: [creatorId],
-    joinId: await createjoincode.generate()
+    joinId: await createjoincode.generate(),
+    lastUpdated: Date.now()
   };
   try {
     const docRef = await db.collection("groups").add(group);
@@ -279,6 +280,7 @@ router.patch("/edit", findGroup, async (req, res) => {
     if (req.query.description) {
       updatedData.description = req.query.description;
     }
+    updatedData.lastUpdated = Date.now();
     res.group.update(updatedData);
     res.status(200).json({ updatedData: updatedData });
   } catch (err) {
