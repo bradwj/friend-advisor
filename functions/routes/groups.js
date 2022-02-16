@@ -104,7 +104,7 @@ const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
 const db = admin.firestore();
 
-router.post("/create", async (req, res) => { //Used to Create Group
+router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
   const { name, creatorId } = req.query;
   const group = {
@@ -129,36 +129,29 @@ router.post("/create", async (req, res) => { //Used to Create Group
 router.get("/find/allData", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
-    if (doc.exists)
-    {
-      res.status(200).json({data: doc.data()});
+    if (doc.exists) {
+      res.status(200).json(doc.data());
+    } else {
+      res.status(404).json({ message: "Group does not exist." });
     }
-    else
-    {
-      res.status(404).json({message: "Group does not exist."})
-    }
-  } catch (err)
-  {
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
   res.status(200).json(res.group);
 });
 
-router.get("/find/joinId", findGroup, async(req, res) => {
+router.get("/find/joinId", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
-    if (doc.exists)
-    {
-      res.status(200).json({joinId: doc.data().joinId});
-    }
-    else
-    {
-      res.status(404).json({message: "Group does not exist."})
+    if (doc.exists) {
+      res.status(200).json({ joinId: doc.data().joinId });
+    } else {
+      res.status(404).json({ message: "Group does not exist." });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-})
+});
 
 router.delete("/delete", findGroup, async (req, res) => {
   try {
