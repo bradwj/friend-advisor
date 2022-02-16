@@ -7,7 +7,7 @@
  *     summary: By passing in the appropriate options, you can create a new group.
  *     operationId: createGroup
  *     description: |
- *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213
+ *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213&description=this is a description
  *     produces:
  *     - application/json
  *     parameters:
@@ -19,9 +19,13 @@
  *       name: creatorId
  *       description: user ID of the creator of the group
  *       type: string
+ *     - in: query
+ *       name: description
+ *       description: pass a description of the group
+ *       type: string
  *     responses:
  *       200:
- *         description: Returns document ID, group structure containing name, members, joinId
+ *         description: Returns document ID, group structure containing name, description, members, joinId
  *       400:
  *         description: error adding document
  * /groups/find/allData:
@@ -90,6 +94,38 @@
  *     responses:
  *       200:
  *         description: successful delete operation
+ *       400:
+ *         description: no ID provided.
+ *       404:
+ *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
+ * /groups/edit:
+ *   patch:
+ *     tags:
+ *     - groups
+ *     summary: Edits data for group with given ID from query parameters such as name and description
+ *     description: |
+ *       Example Query: /groups/edit?id=zBZvVSe5MXNXLDDSnIPn&name=new group name&description=changed group description
+ *     operationId: editGroup
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: id
+ *       description: Document ID of group to edit
+ *       type: string
+ *     - in: query
+ *       name: name
+ *       description: new name of group
+ *       type: string
+ *     - in: query
+ *       name: description
+ *       description: new description of group
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful edit operation
  *       400:
  *         description: no ID provided.
  *       404:
