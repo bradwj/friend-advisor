@@ -15,7 +15,7 @@ import {
 } from "@ionic/react";
 import "./Group.css";
 import { RouteComponentProps } from "react-router";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
 import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import { personAddOutline } from "ionicons/icons";
@@ -39,7 +39,8 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchGroup = useCallback(async () => {
+  const fetchGroup = async () => {
+    console.log("fetchGroup");
     const groupDoc = await getDoc(doc(db, "groups", id));
 
     const users: { id: string; name: any; }[] = [];
@@ -53,12 +54,11 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
       const { members, name } = groupDoc.data();
       setGroup({ id: groupDoc.id, name, members: users.filter(user => members.includes(user.id)) });
     }
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-  // if you want to run only once, just leave array empty []
+  };
 
   useEffect(() => {
-    fetchGroup();
-  }, [fetchGroup]);
+    if (ctx?.loggedIn) fetchGroup();
+  }, [ctx]);
 
   async function leaveGroup () {
     const groupDoc = await getDoc(doc(db, "groups", id));

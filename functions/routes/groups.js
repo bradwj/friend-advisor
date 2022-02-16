@@ -7,7 +7,7 @@
  *     summary: By passing in the appropriate options, you can create a new group.
  *     operationId: createGroup
  *     description: |
- *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213
+ *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213&description=this is a description
  *     produces:
  *     - application/json
  *     parameters:
@@ -21,9 +21,14 @@
  *       description: user ID of the creator of the group
  *       required: true
  *       type: string
+ *     - in: query
+ *       name: description
+ *       description: pass a description of the group
+ *       required: false
+ *       type: string
  *     responses:
  *       200:
- *         description: Returns document ID, group structure containing name, members, joinId
+ *         description: Returns document ID, group structure containing name, description, members, joinId
  *       500:
  *         description: error adding document
  *       404:
@@ -103,6 +108,38 @@
  *         description: Document does not exist
  *       500:
  *         description: Other server-error
+ * /groups/edit:
+ *   patch:
+ *     tags:
+ *     - groups
+ *     summary: Edits data for group with given ID from query parameters such as name and description
+ *     description: |
+ *       Example Query: /groups/edit?id=zBZvVSe5MXNXLDDSnIPn&name=new group name&description=changed group description
+ *     operationId: editGroup
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: id
+ *       description: Document ID of group to edit
+ *       type: string
+ *     - in: query
+ *       name: name
+ *       description: new name of group
+ *       type: string
+ *     - in: query
+ *       name: description
+ *       description: new description of group
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful edit operation
+ *       400:
+ *         description: no ID provided.
+ *       404:
+ *         description: Document does not exist
+ *       500:
+ *         description: Other server-error
  */
 
 const express = require("express");
@@ -113,11 +150,13 @@ const db = admin.firestore();
 
 router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
-  let { name, creatorId } = req.query;
+  let { name, creatorId, description } = req.query;
   if (name === undefined || name === null) { name = "No Name Provided"; }
+  if (description === undefined || description === null) { name = "No Description Provided"; }
   if (creatorId === undefined || creatorId === null) { res.status(404).send({ message: "No creatorId provided, but it is a required argument." }); return; }
   const group = {
     name,
+    description,
     members: [creatorId],
     joinId: await createjoincode.generate()
   };
@@ -139,7 +178,7 @@ router.get("/find/allData", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
-      res.status(200).json({ data: doc.data() });
+      res.status(200).json(doc.data());
     } else {
       res.status(404).json({ message: "Group does not exist." });
     }
@@ -171,7 +210,19 @@ router.delete("/delete", findGroup, async (req, res) => {
 });
 
 router.patch("/edit", findGroup, async (req, res) => {
-  // FIXME
+  try {
+    const updatedData = {};
+    if (req.query.name) {
+      updatedData.name = req.query.name;
+    }
+    if (req.query.description) {
+      updatedData.description = req.query.description;
+    }
+    res.group.update(updatedData);
+    res.status(200).json({ updatedData: updatedData });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 async function findGroup (req, res, next) {

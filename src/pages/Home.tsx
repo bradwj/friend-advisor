@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonButton, IonCard, IonCardContent, IonCardTitle, IonCardSubtitle, IonCardHeader } from "@ionic/react";
 import "./Home.css";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { collection, getDocs, getFirestore, deleteDoc, doc } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import { useHistory } from "react-router";
@@ -22,7 +22,8 @@ const Home: React.FC = () => {
   const ctx = useContext(AuthContext);
   const history = useHistory();
 
-  const fetchGroups = useCallback(async () => {
+  const fetchGroups = async () => {
+    console.log("fetchGroups");
     const docs = await getDocs(collection(db, "groups"));
 
     const groupsImIn:string[] = [];
@@ -44,12 +45,11 @@ const Home: React.FC = () => {
     });
 
     setEvents(events);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-    // if you want to run only once, just leave array empty []
+  };
 
   useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+    if (ctx?.loggedIn) fetchGroups();
+  }, [ctx]);
 
   async function removeEvent (id:string) {
     await deleteDoc(doc(db, "events", id));

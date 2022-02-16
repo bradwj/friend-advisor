@@ -16,7 +16,7 @@ import {
 import "./CreateEvent.css";
 import MapPicker from "react-google-map-picker";
 import { AuthContext } from "../Auth";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 
@@ -46,7 +46,8 @@ const Home: React.FC = () => {
 
   const history = useHistory();
 
-  const fetchGroups = useCallback(async () => {
+  const fetchGroups = async () => {
+    console.log("fetchGroups");
     const docs = await getDocs(collection(db, "groups"));
     const val: Group[] = [];
     docs.forEach(doc => {
@@ -56,12 +57,11 @@ const Home: React.FC = () => {
     });
     console.log("values", val);
     setGroups(val);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-  // if you want to run only once, just leave array empty []
+  };
 
   useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups, ctx?.userData]);
+    if (ctx?.loggedIn) fetchGroups();
+  }, [ctx]);
 
   function handleChangeLocation (lat: any, lng: any) {
     setLocationEnabled(true);

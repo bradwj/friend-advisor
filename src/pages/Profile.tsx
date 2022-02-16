@@ -29,11 +29,12 @@ const Profile: React.FC = () => {
   const [loadAttempt, setLoadAttempt] = useState<boolean>(false);
 
   const db = getFirestore();
-  const auth = useContext(AuthContext);
+  const ctx = useContext(AuthContext);
   const history = useHistory();
 
-  useEffect(() => {
-    getDoc(doc(db, "users", `${auth?.userId}`))
+  const fetchProfile = async () => {
+    console.log("fetchProfile");
+    getDoc(doc(db, "users", `${ctx?.userId}`))
       .then(userEntry => {
         if (userEntry.exists()) {
           const { name, phone, likes, dislikes, dob } = userEntry.data();
@@ -43,17 +44,17 @@ const Profile: React.FC = () => {
           setProfileDislikes(dislikes);
           setProfileDOB(dob);
         } else {
-          console.log(auth?.userId);
+          console.log(ctx?.userId);
         }
         setLoadAttempt(true);
       })
       .catch(error => {
         console.log(error);
       });
-  }, [auth]);
+  };
 
   const saveProfile = async () => {
-    await setDoc(doc(db, "users", `${auth?.userId}`), {
+    await setDoc(doc(db, "users", `${ctx?.userId}`), {
       name,
       phone,
       likes,
@@ -68,6 +69,10 @@ const Profile: React.FC = () => {
     await signOut(getAuth());
     history.push("/signin");
   };
+
+  useEffect(() => {
+    if (ctx?.loggedIn) fetchProfile();
+  }, [ctx]);
 
   return (
     <IonPage>

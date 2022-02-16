@@ -11,7 +11,7 @@ import {
   IonTextarea, IonInput
 } from "@ionic/react";
 import "./Home.css";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getFirestore, deleteDoc, doc, getDoc, setDoc, deleteField } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import MapPicker from "react-google-map-picker";
@@ -43,7 +43,8 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchEvent = useCallback(async () => {
+  const fetchEvent = async () => {
+    console.log("fetchEvent");
     const event = await getDoc(doc(db, "events", id));
     const data = event.data() as Event;
 
@@ -53,12 +54,11 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
     setLocation({ lat: data.lat, long: data.long });
 
     setEvent(data);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-    // if you want to run only once, just leave array empty []
+  };
 
   useEffect(() => {
-    fetchEvent();
-  }, [fetchEvent]);
+    if (ctx?.loggedIn) fetchEvent();
+  }, [ctx]);
 
   function getDefaultVal () {
     let now = event?.datetime && event?.datetime.toDate();
