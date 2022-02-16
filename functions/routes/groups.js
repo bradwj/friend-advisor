@@ -152,7 +152,7 @@ router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
   let { name, creatorId, description } = req.query;
   if (name === undefined || name === null) { name = "No Name Provided"; }
-  if (description === undefined || description === null) { name = "No Description Provided"; }
+  if (description === undefined || description === null) { description = "No Description Provided"; }
   if (creatorId === undefined || creatorId === null) { res.status(404).send({ message: "No creatorId provided, but it is a required argument." }); return; }
   const group = {
     name,
