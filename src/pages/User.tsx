@@ -9,7 +9,8 @@ import {
   IonToolbar
 } from "@ionic/react";
 import { RouteComponentProps, useHistory } from "react-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../Auth";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { arrowBack } from "ionicons/icons";
 import "./User.css";
@@ -28,11 +29,13 @@ const db = getFirestore();
 const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [user, setUser] = useState<User>();
   const history = useHistory();
+  const ctx = useContext(AuthContext);
 
   // @ts-ignore
   const id = match.params.id;
 
   const fetchUser = async (id: string) => {
+    console.log("fetchUser");
     const userEntry = await getDoc(doc(db, "users", `${id}`));
     if (userEntry.exists()) {
       const { name, likes, dislikes, dob, phone } = userEntry.data();
@@ -43,8 +46,8 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
   };
 
   useEffect(() => {
-    fetchUser(id);
-  }, [id]);
+    if (ctx?.loggedIn) fetchUser(id);
+  }, [ctx]);
 
   return (
     <IonPage>

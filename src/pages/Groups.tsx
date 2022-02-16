@@ -1,5 +1,6 @@
 import {
-  IonAvatar, IonButton,
+  IonAvatar,
+  IonButton,
   IonContent,
   IonHeader,
   IonItem,
@@ -9,7 +10,7 @@ import {
   IonTitle,
   IonToolbar
 } from "@ionic/react";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 
@@ -24,9 +25,9 @@ const db = getFirestore();
 const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>();
   const ctx = useContext(AuthContext);
-  console.log(4);
 
-  const fetchGroups = useCallback(async () => {
+  const fetchGroups = async () => {
+    console.log("fetchGroups");
     const docs = await getDocs(collection(db, "groups"));
 
     const groupsImIn:Group[] = [];
@@ -37,12 +38,11 @@ const Groups: React.FC = () => {
     });
 
     setGroups(groupsImIn);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-  // if you want to run only once, just leave array empty []
+  };
 
   useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+    if (ctx?.loggedIn) fetchGroups();
+  }, [ctx]);
 
   return (
     <IonPage>
