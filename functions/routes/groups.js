@@ -14,16 +14,20 @@
  *     - in: query
  *       name: name
  *       description: pass a group name
+ *       required: false
  *       type: string
  *     - in: query
  *       name: creatorId
  *       description: user ID of the creator of the group
+ *       required: true
  *       type: string
  *     responses:
  *       200:
  *         description: Returns document ID, group structure containing name, members, joinId
- *       400:
+ *       500:
  *         description: error adding document
+ *       404:
+ *         description: no creatorId provided
  * /groups/find/allData:
  *   get:
  *     tags:
@@ -38,6 +42,7 @@
  *     - name: id
  *       in: query
  *       description: Document ID of group to obtain data from
+ *       required: true
  *       type: string
  *     responses:
  *       200:
@@ -62,6 +67,7 @@
  *     - name: id
  *       in: query
  *       description: ID of group to obtain joinId for.
+ *       required: true
  *       type: string
  *     responses:
  *       200:
@@ -86,6 +92,7 @@
  *     - name: id
  *       in: query
  *       description: Document ID of group to delete
+ *       required: true
  *       type: string
  *     responses:
  *       200:
@@ -104,9 +111,11 @@ const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
 const db = admin.firestore();
 
-router.post("/create", async (req, res) => { //Used to Create Group
+router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
-  const { name, creatorId } = req.query;
+  let { name, creatorId } = req.query;
+  if (name === undefined || name === null) { name = "No Name Provided"; }
+  if (creatorId === undefined || creatorId === null) { res.status(404).send({ message: "No creatorId provided, but it is a required argument." }); return; }
   const group = {
     name,
     members: [creatorId],
@@ -121,7 +130,7 @@ router.post("/create", async (req, res) => { //Used to Create Group
     });
   } catch (e) {
     console.error("Error adding document: ", e);
-    res.status(400).send({ message: e.toString() });
+    res.status(500).send({ message: e.toString() });
   }
 });
 
@@ -129,36 +138,28 @@ router.post("/create", async (req, res) => { //Used to Create Group
 router.get("/find/allData", findGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
-    if (doc.exists)
-    {
-      res.status(200).json({data: doc.data()});
-    }
-    else
-    {
-      res.status(404).json({message: "Group does not exist."})
-    }
-  } catch (err)
-  {
-    res.status(500).json({ message: err.message });
-  }
-  res.status(200).json(res.group);
-});
-
-router.get("/find/joinId", findGroup, async(req, res) => {
-  try {
-    const doc = await res.group.get();
-    if (doc.exists)
-    {
-      res.status(200).json({joinId: doc.data().joinId});
-    }
-    else
-    {
-      res.status(404).json({message: "Group does not exist."})
+    if (doc.exists) {
+      res.status(200).json({ data: doc.data() });
+    } else {
+      res.status(404).json({ message: "Group does not exist." });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-})
+});
+
+router.get("/find/joinId", findGroup, async (req, res) => {
+  try {
+    const doc = await res.group.get();
+    if (doc.exists) {
+      res.status(200).json({ joinId: doc.data().joinId });
+    } else {
+      res.status(404).json({ message: "Group does not exist." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 router.delete("/delete", findGroup, async (req, res) => {
   try {
@@ -176,9 +177,9 @@ router.patch("/edit", findGroup, async (req, res) => {
 async function findGroup (req, res, next) {
   let group;
   const { id } = req.query;
-  if (id == null) {
+  if (id === null || id === undefined) {
     res.group = null;
-    return res.status(400).json({ message: "Cannot find group: No ID provided." });
+    return res.status(400).json({ message: "Cannot find group: No document ID provided." });
   } else {
     try {
       group = await db.collection("groups").doc(id);
