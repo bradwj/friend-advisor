@@ -73,14 +73,15 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
 
   async function saveEvent () {
     if (location?.lat) {
-      await setDoc(doc(db, "events", id), { name: eventName, description: eventDesc, datetime: eventDate, lat: location?.lat, long: location?.long }, { merge: true });
+      await setDoc(doc(db, "events", id), { name: eventName, description: eventDesc, datetime: eventDate, lat: location?.lat, long: location?.long, lastUpdated: Date.now() }, { merge: true });
     } else {
       await setDoc(doc(db, "events", id), {
         name: eventName,
         description: eventDesc,
         datetime: eventDate,
         lat: deleteField(),
-        long: deleteField()
+        long: deleteField(),
+        lastUpdated: Date.now()
       }, { merge: true });
     }
     setEditing(false);

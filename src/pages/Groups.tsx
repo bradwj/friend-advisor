@@ -23,45 +23,31 @@ interface Group {
 
 const db = getFirestore();
 
+export const fetchGroups = async (userId: any) => {
+  console.log("fetchGroups");
+  const lastCachedUserGroups: number = JSON.parse(window.localStorage.getItem("lastCachedUserGroups") || "0");
+  const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${userId}`), where("lastUpdated", ">", lastCachedUserGroups));
+  const docs = await getDocs(groupQuery);
+
+  docs.forEach(doc => {
+    const group: Group = { id: doc.id, members: doc.data().members, name: doc.data().name };
+    appendToCache("userGroups", group);
+  });
+
+  window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
+  return new Promise<Array<Group>>(resolve => resolve(JSON.parse(window.localStorage.getItem("userGroups") || "[]")));
+};
+
 const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>(JSON.parse(window.localStorage.getItem("userGroups") || "[]"));
   const ctx = useContext(AuthContext);
 
-  const fetchGroups = async () => {
-    console.log("fetchGroups");
-    if (groups.length === 0) {
-      const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${ctx?.userId}`));
-      const docs = await getDocs(groupQuery);
-
-      const groupsImIn:Group[] = [];
-      docs.forEach(doc => {
-        const group = { id: doc.id, members: doc.data().members, name: doc.data().name };
-        groupsImIn.push(group);
-        appendToCache("userGroups", group);
-      });
-
-      setGroups(groupsImIn);
-      window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
-    } else {
-      const lastCachedUserGroups: number = JSON.parse(window.localStorage.getItem("lastCachedUserGroups") || "0");
-      const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${ctx?.userId}`), where("lastUpdated", ">", lastCachedUserGroups));
-      const docs = await getDocs(groupQuery);
-
-      const groupsImIn:Group[] = [];
-      docs.forEach(doc => {
-        groupsImIn.push({ id: doc.id, members: doc.data().members, name: doc.data().name });
-      });
-
-      setGroups(groups.concat(groupsImIn));
-      groupsImIn.forEach(group => {
-        appendToCache("userGroups", group);
-      });
-      window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
-    }
-  };
-
   useEffect(() => {
-    if (ctx?.loggedIn) fetchGroups();
+    if (ctx?.loggedIn) {
+      fetchGroups(ctx.userId).then(groupsImIn => {
+        setGroups(groupsImIn);
+      });
+    };
   }, [ctx]);
 
   return (
