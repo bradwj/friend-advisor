@@ -53,7 +53,7 @@ export const fetchEvents = async (userId: any) => {
 const db = getFirestore();
 
 const Home: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>();
+  const [events, setEvents] = useState<Event[]>(JSON.parse(window.localStorage.getItem("userEvents") || "[]"));
   const ctx = useContext(AuthContext);
   const history = useHistory();
 
