@@ -76,7 +76,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   }, [ctx]);
 
   function getDefaultVal () {
-    let now = event?.datetime && event?.datetime.toDate();
+    let now = event && event.datetime && event.datetime.toDate();
     if (!now) now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, -1);
@@ -136,7 +136,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           : <>
             <h1>{event?.name}</h1>
             <h3>{event && new Date(event.datetime.seconds * 1000).toDateString()}</h3>
-            <p>{event?.description}</p>
+            <p>{event?.description || ""}</p>
           </>
         }
 
