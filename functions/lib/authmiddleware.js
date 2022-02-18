@@ -9,8 +9,8 @@ const authenticate = (req, res, next) => {
   admin.auth().verifyIdToken(idToken).then(decodedIdToken => {
     req.user = decodedIdToken;
     next();
-  }).catch(() => {
-    res.status(403).send({ error: "Invalid Token" });
+  }).catch((err) => {
+    res.status(403).send({ error: "Invalid Token or " + err });
   });
 };
 

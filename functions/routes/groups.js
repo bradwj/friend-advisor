@@ -211,7 +211,8 @@ router.post("/create", async (req, res) => { // Used to Create Group
 
 // Adds a member to a group, given userId and joinId
 router.patch("/join", async (req, res) => {
-  const { joinId, userId } = req.query;
+  const { joinId } = req.query;
+  const userId = req.user.uid;
   if (joinId === undefined || joinId === null || userId === undefined || userId === null) { res.status(404).send({ message: "No Id provided, but it is a required argument." }); return; }
   try {
     const group = await db.collection("groups").where("joinId", "==", joinId).get();
