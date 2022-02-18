@@ -19,6 +19,6 @@ ion-modal.big-modal {
     flex-direction: column;
 }
 
-.padded {
-    /*padding-left: 10px;*/
+.copyToClipboard{
+    user-select: none;
 }

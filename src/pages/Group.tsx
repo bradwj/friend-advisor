@@ -11,7 +11,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonModal, IonInput
+  IonModal, IonInput, IonToast
 } from "@ionic/react";
 import "./Group.css";
 import { RouteComponentProps } from "react-router";
@@ -29,7 +29,8 @@ export interface Group {
     id: string,
     name: string,
     members: any[],
-    lastUpdated: number
+    lastUpdated: number,
+    joinId: string
 }
 
 const db = getFirestore();
@@ -50,7 +51,8 @@ export const fetchGroup = async (groupId: any, userId: any) => {
     id: group.id,
     name: group.name,
     members: [],
-    lastUpdated: group.lastUpdated
+    lastUpdated: group.lastUpdated,
+    joinId: group.joinId
   };
 
   for (const member of group.members) {
@@ -65,6 +67,7 @@ export const fetchGroup = async (groupId: any, userId: any) => {
 
 const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [group, setGroup] = useState<Group>();
+  const [copyClipboardOpen, setCopyClipboardOpen] = useState(false);
   const [canDeleteGroup, setCanDeleteGroup] = useState(false);
   const ctx = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
@@ -108,6 +111,14 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
     history.push("/groups");
   }
 
+  async function copyToClipboard (string: string | undefined) {
+    if (string) {
+      await navigator.clipboard.writeText(string);
+    }
+
+    setCopyClipboardOpen(true);
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -119,8 +130,8 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <h1 className="padded">{group?.name}</h1>
-        <h2 className="padded">Group Members</h2>
+        <h1>{group?.name}</h1>
+        <h2>Group Members</h2>
         <IonList>
           {group?.members.map(member => <IonItem button href={"users/" + member.userId} key={member.userId}>
             <IonLabel>
@@ -131,16 +142,15 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
             </IonAvatar>
           </IonItem>)}
         </IonList>
-        <h2 className="padded">Group ID</h2>
-        <p className="padded">{group?.id}</p>
-        <IonButton className="padded" color="danger" onClick={leaveGroup}>Leave Group</IonButton>
-        <IonButton className="padded" color="danger" onClick={() => {
+        <h2>Group Join Code</h2>
+        <p className="copyToClipboard" onClick={() => copyToClipboard(group?.joinId)}>{group?.joinId}</p>
+        <IonButton color="danger" onClick={leaveGroup}>Leave Group</IonButton>
+        <IonButton color="danger" onClick={() => {
           setShowDeleteGroupModal(true);
           setCanDeleteGroup(false);
         }}>Delete Group</IonButton>
 
-        <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
-          <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
+        <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>          <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
           <IonButton slot="bottom" onClick={() => setShowModal(false)}>Close</IonButton>
         </IonModal>
 
@@ -165,6 +175,14 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
             Cancel
           </IonButton>
         </IonModal>
+
+        <IonToast
+          isOpen={copyClipboardOpen}
+          onDidDismiss={() => { setCopyClipboardOpen(false); }}
+          message="Copied group join code to clipboard."
+          duration={1000}
+          position="bottom"
+        />
       </IonContent>
     </IonPage>
   );

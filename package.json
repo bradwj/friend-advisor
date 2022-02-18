@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@awesome-cordova-plugins/core": "^5.39.1",
     "@capacitor/android": "^3.4.1",
     "@capacitor/app": "1.1.0",
     "@capacitor/core": "^3.4.1",

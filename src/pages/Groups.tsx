@@ -16,6 +16,7 @@ import { collection, getFirestore, query, where, getDocs } from "firebase/firest
 import { appendToCache } from "../cache_manager";
 
 interface Group {
+  joinId: string;
     id: string,
     name: string,
     members: string[],
@@ -32,7 +33,7 @@ export const fetchGroups = async (userId: any) => {
   const docs = await getDocs(groupQuery);
 
   docs.forEach(doc => {
-    const group: Group = { id: doc.id, members: doc.data().members, name: doc.data().name, lastUpdated: doc.data().lastUpdated };
+    const group: Group = { id: doc.id, members: doc.data().members, name: doc.data().name, lastUpdated: doc.data().lastUpdated, joinId: doc.data().joinId };
     appendToCache("userGroups", group);
   });
 
