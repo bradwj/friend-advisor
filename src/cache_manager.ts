@@ -22,3 +22,7 @@ export function appendToCache (key: string, value: any) {
   window.localStorage.setItem(key, JSON.stringify(currentCache));
   console.log(`[cache_manager] Successfully appended ${value.id} to cache`);
 }
+
+export function wipeCache (key: string) {
+  window.localStorage.removeItem(key);
+}

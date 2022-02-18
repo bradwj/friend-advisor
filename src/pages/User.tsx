@@ -11,20 +11,43 @@ import {
 import { RouteComponentProps, useHistory } from "react-router";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../Auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { arrowBack } from "ionicons/icons";
 import "./User.css";
+import { Group } from "./Group";
+import { where, collection, getFirestore, query, getDocs } from "firebase/firestore";
 
-interface User {
-    id: string,
+export interface User {
+    userId: string,
     name: string,
     likes: string,
     dislikes: string,
     phone: number,
-    dob: string
+    dob: string,
+    lastUpdated: number
 }
 
 const db = getFirestore();
+
+const fetchUserInGroup = async (id: string) => {
+  console.log("fetchUser");
+  const currentGroup: Group = JSON.parse(window.localStorage.getItem("currentGroup") || "{}");
+  const userEntry = currentGroup.members.find(user => user.userId === id);
+  const lastCachedCurrentGroup = JSON.parse(window.localStorage.getItem("lastCachedCurrentGroup") || "0");
+  console.log(lastCachedCurrentGroup);
+
+  if (!userEntry) return Promise.reject(new Error("user not found"));
+  const userQuery = query(collection(db, "users"), where("userId", "==", id), where("lastUpdated", ">", lastCachedCurrentGroup));
+  const userDoc = await getDocs(userQuery);
+  if (!userDoc.empty) {
+    console.log("user returned from db");
+    const { name, likes, dislikes, dob, phone, userId, lastUpdated } = userDoc.docs[0].data();
+    return Promise.resolve({ name, likes, dislikes, dob, phone, userId, lastUpdated });
+  }
+
+  console.log("user returned from cache");
+  const { name, likes, dislikes, dob, phone, userId, lastUpdated } = userEntry;
+  return Promise.resolve({ name, likes, dislikes, dob, phone, userId, lastUpdated });
+};
 
 const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [user, setUser] = useState<User>();
@@ -34,19 +57,14 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchUser = async (id: string) => {
-    console.log("fetchUser");
-    const userEntry = await getDoc(doc(db, "users", `${id}`));
-    if (userEntry.exists()) {
-      const { name, likes, dislikes, dob, phone } = userEntry.data();
-      setUser({ name, likes, dislikes, dob, phone, id: userEntry.id });
-    } else {
-      history.goBack();
-    }
-  };
-
   useEffect(() => {
-    if (ctx?.loggedIn) fetchUser(id);
+    if (ctx?.loggedIn) {
+      fetchUserInGroup(id).then(result => {
+        setUser(result);
+      }, reason => {
+        console.log(reason);
+      });
+    }
   }, [ctx]);
 
   return (
@@ -63,7 +81,7 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
       <IonContent hidden={user === undefined} fullscreen>
         <div className="center">
           <IonAvatar slot="start">
-            <img src={`https://picsum.photos/seed/${user?.id}/200/200`} />
+            <img src={`https://picsum.photos/seed/${user?.userId}/200/200`} />
           </IonAvatar>
           <h1>{user?.name}</h1>
           <p>Likes {user?.likes}</p>

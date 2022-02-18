@@ -18,16 +18,11 @@ import MapPicker from "react-google-map-picker";
 import { AuthContext } from "../Auth";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { Group } from "./Group";
+import { fetchGroups } from "./Groups";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024 };
 const DefaultZoom = 10;
-const db = getFirestore();
-
-interface Group {
-    id: string,
-    name: string
-}
 
 const Home: React.FC = () => {
   const ctx = useContext(AuthContext);
@@ -46,21 +41,12 @@ const Home: React.FC = () => {
 
   const history = useHistory();
 
-  const fetchGroups = async () => {
-    console.log("fetchGroups");
-    const docs = await getDocs(collection(db, "groups"));
-    const val: Group[] = [];
-    docs.forEach(doc => {
-      if (doc.data().members.includes(ctx?.userId)) {
-        val.push({ id: doc.id, name: doc.data().name });
-      }
-    });
-    console.log("values", val);
-    setGroups(val);
-  };
-
   useEffect(() => {
-    if (ctx?.loggedIn) fetchGroups();
+    if (ctx?.loggedIn) {
+      fetchGroups(ctx.userId).then(result => {
+        setGroups(result);
+      });
+    }
   }, [ctx]);
 
   function handleChangeLocation (lat: any, lng: any) {

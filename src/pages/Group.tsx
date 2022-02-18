@@ -17,19 +17,50 @@ import "./Group.css";
 import { RouteComponentProps } from "react-router";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
 import { deleteFromCache } from "../cache_manager";
+import { fetchGroups } from "./Groups";
 
-interface Group {
+export interface Group {
     id: string,
     name: string,
-    members: { id: string; name: any; }[]
+    members: any[],
+    lastUpdated: number
 }
 
 const db = getFirestore();
+
+export const fetchGroup = async (groupId: any, userId: any) => {
+  console.log("fetchGroup");
+  const groups = await fetchGroups(userId);
+  const group = groups.find(group => group.id === groupId);
+  const currentCachedGroup = JSON.parse(window.localStorage.getItem("currentGroup") || "{}");
+
+  if (!group) return Promise.reject(new Error("Group not found!"));
+  if (group.id === currentCachedGroup.id && group.lastUpdated === currentCachedGroup.lastUpdated) {
+    window.localStorage.setItem("lastCachedCurrentGroup", `${Date.now()}`);
+    return Promise.resolve(currentCachedGroup);
+  }
+
+  const returnedGroup: Group = {
+    id: group.id,
+    name: group.name,
+    members: [],
+    lastUpdated: group.lastUpdated
+  };
+
+  for (const member of group.members) {
+    const memberDoc = await getDoc(doc(db, "users", `${member}`));
+    returnedGroup.members.push({ ...memberDoc.data() });
+  }
+  window.localStorage.setItem("currentGroup", JSON.stringify(returnedGroup));
+  window.localStorage.setItem("lastCachedCurrentGroup", `${Date.now()}`);
+
+  return Promise.resolve(returnedGroup);
+};
 
 const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [group, setGroup] = useState<Group>();
@@ -40,25 +71,12 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchGroup = async () => {
-    console.log("fetchGroup");
-    const groupDoc = await getDoc(doc(db, "groups", id));
-
-    const users: { id: string; name: any; }[] = [];
-
-    const usersDocs = await getDocs(collection(db, "users"));
-    usersDocs.forEach(user => {
-      users.push({ id: user.id, name: user.data().name });
-    });
-
-    if (groupDoc.exists()) {
-      const { members, name } = groupDoc.data();
-      setGroup({ id: groupDoc.id, name, members: users.filter(user => members.includes(user.id)) });
-    }
-  };
-
   useEffect(() => {
-    if (ctx?.loggedIn) fetchGroup();
+    if (ctx?.loggedIn) {
+      fetchGroup(id, ctx?.userId).then(returnedGroup => {
+        setGroup(returnedGroup);
+      });
+    }
   }, [ctx]);
 
   async function leaveGroup () {
@@ -93,12 +111,12 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
         <h1 className="padded">{group?.name}</h1>
         <h2 className="padded">Group Members</h2>
         <IonList>
-          {group?.members.map(member => <IonItem button href={"users/" + member.id} key={member.id}>
+          {group?.members.map(member => <IonItem button href={"users/" + member.userId} key={member.userId}>
             <IonLabel>
               <h2>{member.name}</h2>
             </IonLabel>
             <IonAvatar slot="start">
-              <img src={`https://picsum.photos/seed/${member.id}/200/200`} />
+              <img src={`https://picsum.photos/seed/${member.userId}/200/200`} />
             </IonAvatar>
           </IonItem>)}
         </IonList>
