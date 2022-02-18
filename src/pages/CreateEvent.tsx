@@ -65,15 +65,9 @@ const Home: React.FC = () => {
   // }
 
   async function submit () {
-    if (locationEnabled) {
-      await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
-        method: "POST"
-      });
-    } else {
-      await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}`, {
-        method: "POST"
-      });
-    }
+    await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
+      method: "POST"
+    });
 
     history.push("/home");
   }
