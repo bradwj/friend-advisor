@@ -20,6 +20,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { Group } from "./Group";
 import { fetchGroups } from "./Groups";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024 };
 const DefaultZoom = 10;
@@ -64,13 +65,12 @@ const Home: React.FC = () => {
   // }
 
   async function submit () {
-    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
     if (locationEnabled) {
-      await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
+      await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
         method: "POST"
       });
     } else {
-      await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}`, {
+      await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}`, {
         method: "POST"
       });
     }
