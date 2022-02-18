@@ -7,7 +7,7 @@
  *     summary: By passing in the appropriate options, you can create a new group.
  *     operationId: createGroup
  *     description: |
- *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213&description=this is a description
+ *       Example Query: POST /groups/create?name=lexiiscool&description=this is a description
  *     produces:
  *     - application/json
  *     parameters:
@@ -17,11 +17,6 @@
  *       required: false
  *       type: string
  *     - in: query
- *       name: creatorId
- *       description: user ID of the creator of the group
- *       required: true
- *       type: string
- *     - in: query
  *       name: description
  *       description: pass a description of the group
  *       required: false
@@ -29,10 +24,10 @@
  *     responses:
  *       200:
  *         description: Returns document ID, group structure containing name, description, members, joinId
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       500:
  *         description: error adding document
- *       404:
- *         description: no creatorId provided
  * /groups/find/allData:
  *   get:
  *     tags:
@@ -54,6 +49,8 @@
  *         description: successful find operation
  *       400:
  *         description: no ID provided to search for.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -79,6 +76,8 @@
  *         description: successful find operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -104,6 +103,8 @@
  *         description: successful delete operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -136,6 +137,8 @@
  *         description: successful edit operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -166,6 +169,8 @@
  *         description: successful join operation
  *       400:
  *         description: member already in group requested
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Group does not exist or could not be found
  *       500:
@@ -176,18 +181,18 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
+const checkInGroup = require("../lib/checkingroup.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
-  let { name, creatorId, description } = req.query;
+  let { name, description } = req.query;
   if (name === undefined || name === null) { name = "No Name Provided"; }
   if (description === undefined || description === null) { description = "No Description Provided"; }
-  if (creatorId === undefined || creatorId === null) { res.status(404).send({ message: "No creatorId provided, but it is a required argument." }); return; }
   const group = {
     name,
     description,
-    members: [creatorId],
+    members: [req.user.uid],
     joinId: await createjoincode.generate(),
     lastUpdated: Date.now()
   };
@@ -206,7 +211,8 @@ router.post("/create", async (req, res) => { // Used to Create Group
 
 // Adds a member to a group, given userId and joinId
 router.patch("/join", async (req, res) => {
-  const { joinId, userId } = req.query;
+  const { joinId } = req.query;
+  const userId = req.user.uid;
   if (joinId === undefined || joinId === null || userId === undefined || userId === null) { res.status(404).send({ message: "No Id provided, but it is a required argument." }); return; }
   try {
     const group = await db.collection("groups").where("joinId", "==", joinId).get();
@@ -233,7 +239,7 @@ router.patch("/join", async (req, res) => {
 });
 
 // Get all data from a specific group
-router.get("/find/allData", findGroup, async (req, res) => {
+router.get("/find/allData", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -247,7 +253,7 @@ router.get("/find/allData", findGroup, async (req, res) => {
 });
 
 // Obtain only the joinId
-router.get("/find/joinId", findGroup, async (req, res) => {
+router.get("/find/joinId", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -261,7 +267,7 @@ router.get("/find/joinId", findGroup, async (req, res) => {
 });
 
 // Delete a group with its documentId
-router.delete("/delete", findGroup, async (req, res) => {
+router.delete("/delete", findGroup, checkInGroup.check, async (req, res) => {
   try {
     await res.group.delete();
     res.status(200).json({ message: "Group has been deleted successfully!" });
@@ -271,7 +277,7 @@ router.delete("/delete", findGroup, async (req, res) => {
 });
 
 // Edit a group with it's documentId and name/description as params
-router.patch("/edit", findGroup, async (req, res) => {
+router.patch("/edit", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const updatedData = {};
     if (req.query.name) {

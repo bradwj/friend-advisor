@@ -11,6 +11,14 @@ ion-modal.inf {
     --height: 320px;
 }
 
+ion-modal.big-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+}
+
 .padded {
     /*padding-left: 10px;*/
 }
