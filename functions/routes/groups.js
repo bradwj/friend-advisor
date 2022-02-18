@@ -7,7 +7,7 @@
  *     summary: By passing in the appropriate options, you can create a new group.
  *     operationId: createGroup
  *     description: |
- *       Example Query: POST /groups/create?name=lexiiscool&creatorId=39Nl5oVBjyc3GfKzOiObVqE3o213&description=this is a description
+ *       Example Query: POST /groups/create?name=lexiiscool&description=this is a description
  *     produces:
  *     - application/json
  *     parameters:
@@ -15,11 +15,6 @@
  *       name: name
  *       description: pass a group name
  *       required: false
- *       type: string
- *     - in: query
- *       name: creatorId
- *       description: user ID of the creator of the group
- *       required: true
  *       type: string
  *     - in: query
  *       name: description
@@ -31,8 +26,6 @@
  *         description: Returns document ID, group structure containing name, description, members, joinId
  *       500:
  *         description: error adding document
- *       404:
- *         description: no creatorId provided
  * /groups/find/allData:
  *   get:
  *     tags:
@@ -180,14 +173,13 @@ const db = admin.firestore();
 
 router.post("/create", async (req, res) => { // Used to Create Group
   res.set("Access-Control-Allow-Origin", "*");
-  let { name, creatorId, description } = req.query;
+  let { name, description } = req.query;
   if (name === undefined || name === null) { name = "No Name Provided"; }
   if (description === undefined || description === null) { description = "No Description Provided"; }
-  if (creatorId === undefined || creatorId === null) { res.status(404).send({ message: "No creatorId provided, but it is a required argument." }); return; }
   const group = {
     name,
     description,
-    members: [creatorId],
+    members: [req.user.uid],
     joinId: await createjoincode.generate(),
     lastUpdated: Date.now()
   };
