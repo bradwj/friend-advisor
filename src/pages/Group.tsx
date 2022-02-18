@@ -11,7 +11,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonModal, IonInput, IonToast
+  IonModal, IonInput, IonToast, IonBackButton
 } from "@ionic/react";
 import "./Group.css";
 import { RouteComponentProps } from "react-router";
@@ -123,9 +123,12 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/groups/" />
+          </IonButtons>
           <IonTitle>Group Profile</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => setShowModal(true)} size="large"><IonIcon size="large" icon={personAddOutline}></IonIcon></IonButton>
+            <IonButton onClick={() => setShowModal(true)} size="large"><IonIcon size="large" icon={personAddOutline}/></IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -138,7 +141,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
               <h2>{member.name}</h2>
             </IonLabel>
             <IonAvatar slot="start">
-              <img src={`https://picsum.photos/seed/${member.userId}/200/200`} />
+              <img alt="User profile image" src={`https://picsum.photos/seed/${member.userId}/200/200`} />
             </IonAvatar>
           </IonItem>)}
         </IonList>

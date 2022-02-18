@@ -8,7 +8,7 @@ import {
   IonLabel,
   IonButton,
   IonModal,
-  IonTextarea, IonInput
+  IonTextarea, IonInput, IonButtons, IonBackButton
 } from "@ionic/react";
 import "./Home.css";
 import React, { useContext, useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import MapPicker from "react-google-map-picker";
 import { RouteComponentProps, useHistory } from "react-router";
 import { fetchEvents } from "./Home";
 import RelativeDate from "../components/RelativeDate";
+// import { arrowBackOutline } from "ionicons/icons";
 
 interface Event{
     datetime: any,
@@ -114,6 +115,9 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" />
+          </IonButtons>
           <IonTitle>Event Info</IonTitle>
         </IonToolbar>
       </IonHeader>
