@@ -147,7 +147,7 @@
  *   patch:
  *     tags:
  *     - groups
- *     summary: Adds a member to a group, given a joinId and userId
+ *     summary: Adds a member to a group, given a joinId
  *     description: |
  *       Example Query: PATCH /groups/join?joinId=eAboFZ
  *     operationId: joinGroup
@@ -212,7 +212,7 @@ router.patch("/join", async (req, res) => {
   try {
     const group = await db.collection("groups").where("joinId", "==", joinId).get();
     if (group.empty) {
-      res.status(404).json({ message: "Group does not exist." });
+      res.status(404).json({ message: "Group does not exist.", joined: false });
     } else {
       const fixed = [];
       group.forEach(elem => fixed.push(elem));
@@ -220,16 +220,16 @@ router.patch("/join", async (req, res) => {
       const { members } = groupDoc.data();
       const found = members.find((member) => member === userId);
       if (found) {
-        return res.status(400).json({ message: "Member already in group!" });
+        return res.status(400).json({ message: "Member already in group!", joined: false });
       }
       console.log(groupDoc.id, userId);
       const arrayToUpdate = admin.firestore.FieldValue.arrayUnion(userId);
-      await db.collection("groups").doc(groupDoc.id).update({ members: arrayToUpdate });
-      res.status(200).json({ message: "Member has successfully been added." });
+      await db.collection("groups").doc(groupDoc.id).update({ members: arrayToUpdate, lastUpdated: Date.now() });
+      res.status(200).json({ message: "Member has successfully been added.", joined: true });
     }
   } catch (e) {
     console.error("Error adding document: ", e);
-    res.status(500).send({ message: e.toString() });
+    res.status(500).send({ message: e.toString(), joined: false });
   }
 });
 
