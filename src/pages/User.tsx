@@ -31,16 +31,19 @@ const db = getFirestore();
 const fetchUserInGroup = async (id: string) => {
   console.log("fetchUser");
   const currentGroup: Group = JSON.parse(window.localStorage.getItem("currentGroup") || "{}");
-  const userEntry = currentGroup.members.find(user => user.userId === id);
+  const userIndex = currentGroup.members.findIndex(user => user.userId === id);
+  const userEntry = currentGroup.members[userIndex];
   const lastCachedCurrentGroup = JSON.parse(window.localStorage.getItem("lastCachedCurrentGroup") || "0");
   console.log(lastCachedCurrentGroup);
 
   if (!userEntry) return Promise.reject(new Error("user not found"));
-  const userQuery = query(collection(db, "users"), where("userId", "==", id), where("lastUpdated", ">", lastCachedCurrentGroup));
+  const userQuery = query(collection(db, "users"), where("userId", "==", id), where("lastUpdated", ">", userEntry.lastUpdated));
   const userDoc = await getDocs(userQuery);
   if (!userDoc.empty) {
     console.log("user returned from db");
     const { name, likes, dislikes, dob, phone, userId, lastUpdated } = userDoc.docs[0].data();
+    currentGroup.members[userIndex] = { name, likes, dislikes, dob, phone, userId, lastUpdated };
+    window.localStorage.setItem("currentGroup", JSON.stringify(currentGroup));
     return Promise.resolve({ name, likes, dislikes, dob, phone, userId, lastUpdated });
   }
 
