@@ -28,6 +28,7 @@ export const fetchGroups = async (userId: any) => {
   console.log("fetchGroups");
   const lastCachedUserGroups: number = JSON.parse(window.localStorage.getItem("lastCachedUserGroups") || "0");
   const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${userId}`), where("lastUpdated", ">", lastCachedUserGroups));
+
   const docs = await getDocs(groupQuery);
 
   docs.forEach(doc => {

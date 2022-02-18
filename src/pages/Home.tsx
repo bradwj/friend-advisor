@@ -88,7 +88,7 @@ const Home: React.FC = () => {
                 <IonCardSubtitle>{new Date(event.datetime.seconds * 1000).toDateString()}</IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>
-                <p>{event.description}</p>
+                <p>{event.description || ""}</p>
                 <br />
                 <IonButton size="default" href={"groups/" + event.groupId}>Group</IonButton>
                 <IonButton size="default" color="danger" onClick={() => removeEvent(event.id)}>Remove</IonButton>

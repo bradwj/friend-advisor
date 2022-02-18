@@ -65,7 +65,7 @@ const Home: React.FC = () => {
   // }
 
   async function submit () {
-    await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
+    await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}${eventDesc ? `&description=${eventDesc}` : ""}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
       method: "POST"
     });
 

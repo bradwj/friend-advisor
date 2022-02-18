@@ -12,7 +12,7 @@ router.post("/create", async (req, res) => {
       datetime: new Date(datetime),
       lastUpdated: Date.now(),
       name,
-      description,
+      description: description || null,
       sentNotifications: {
         monthBefore: [],
         weekBefore: [],
