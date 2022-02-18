@@ -101,7 +101,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   }
 
   async function deleteGroup () {
-    await fetchWithAuth(ctx, "groups/delete", {
+    await fetchWithAuth(ctx, `groups/delete?id=${group?.id}`, {
       method: "DELETE"
     });
 
@@ -134,7 +134,10 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
         <h2 className="padded">Group ID</h2>
         <p className="padded">{group?.id}</p>
         <IonButton className="padded" color="danger" onClick={leaveGroup}>Leave Group</IonButton>
-        <IonButton className="padded" color="danger" onClick={() => setShowDeleteGroupModal(true)}>Delete Group</IonButton>
+        <IonButton className="padded" color="danger" onClick={() => {
+          setShowDeleteGroupModal(true);
+          setCanDeleteGroup(false);
+        }}>Delete Group</IonButton>
 
         <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
           <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
