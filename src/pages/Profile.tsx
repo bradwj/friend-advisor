@@ -47,8 +47,6 @@ const Profile: React.FC = () => {
 
   const [notification, setNotification] = useState<string>();
   const [notify, setNotify] = useState<boolean>(false);
-  // eslint-disable-next-line no-unused-vars
-  const [loadAttempt, setLoadAttempt] = useState<boolean>(false);
 
   const ctx = useContext(AuthContext);
   const history = useHistory();
@@ -82,7 +80,6 @@ const Profile: React.FC = () => {
         setProfileLikes(likes);
         setProfileDislikes(dislikes);
         setProfileDOB(dob);
-        setLoadAttempt(true);
       }, reason => {
         console.log(reason);
       });
