@@ -54,7 +54,7 @@ const JoinGroup: React.FC = () => {
           <IonInput value={code} onIonChange={e => setGroupCode(e.detail.value!)}/>
         </IonItem>
         <IonButton onClick={tryCode} expand="block" color="primary">Join</IonButton>
-        You can also join a group by scanning a group&#39s QR code.
+        You can also join a group by scanning a group&rsquo;s QR code.
         <IonToast
                 isOpen={notify}
                 onDidDismiss={() => { setNotify(false); }}
