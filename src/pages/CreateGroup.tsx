@@ -14,6 +14,7 @@ import "./JoinGroup.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useState } from "react";
 import { useLocation, useHistory } from "react-router";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 const CreateGroup: React.FC = () => {
   const history = useHistory();
@@ -27,8 +28,8 @@ const CreateGroup: React.FC = () => {
   const auth = useContext(AuthContext);
 
   const tryCode = async () => {
-    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-    await fetch(`${basePath}/groups/create?name=${name}&creatorId=${auth?.userId}`, {
+    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5000/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
+    await fetchWithAuth(auth, `${basePath}/groups/create?name=${name}`, {
       method: "POST"
     });
     setNotification("Successfully created group!");
