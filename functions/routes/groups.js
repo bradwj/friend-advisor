@@ -149,7 +149,7 @@
  *     - groups
  *     summary: Adds a member to a group, given a joinId and userId
  *     description: |
- *       Example Query: PATCH /groups/join?joinId=eAboFZ&userId=91t0o6LiJaQnc03sI2EQg1SXIxI2
+ *       Example Query: PATCH /groups/join?joinId=eAboFZ
  *     operationId: joinGroup
  *     produces:
  *       - application/json
@@ -159,11 +159,6 @@
  *       description: joinId of group to join
  *       required: true
  *       type: string
- *     - in: query
- *       name: userId
- *       description: userId of user to add to group
- *       type: string
- *       required: true
  *     responses:
  *       200:
  *         description: successful join operation
@@ -209,7 +204,7 @@ router.post("/create", async (req, res) => { // Used to Create Group
   }
 });
 
-// Adds a member to a group, given userId and joinId
+// Adds a member to a group, given a joinId
 router.patch("/join", async (req, res) => {
   const { joinId } = req.query;
   const userId = req.user.uid;
