@@ -1,5 +1,5 @@
 {
-  "name": "FriendAdvisor",
+  "name": "friend-advisor",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -19,6 +19,7 @@
     "@types/node": "^12.19.15",
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
+    "date-fns": "^2.28.0",
     "firebase": "^9.6.6",
     "ionicons": "^5.4.0",
     "react": "^17.0.1",
@@ -73,6 +74,7 @@
   "description": "An Ionic project",
   "devDependencies": {
     "@capacitor/cli": "^3.4.1",
+    "@types/date-fns": "^2.6.0",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "@typescript-eslint/eslint-plugin": "^5.12.0",

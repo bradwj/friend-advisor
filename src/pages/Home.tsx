@@ -6,6 +6,7 @@ import { AuthContext } from "../Auth";
 import { useHistory } from "react-router";
 import { appendToCache } from "../cache_manager";
 import { fetchGroups } from "./Groups";
+import RelativeDate from "../components/RelativeDate";
 
 interface Event{
     datetime: any,
@@ -17,8 +18,8 @@ interface Event{
     groupId: string
 }
 
-// eslint-disable-next-line no-unused-vars
-interface Group {
+// noinspection JSUnusedLocalSymbols
+interface Group { // eslint-disable-line no-unused-vars
   id: string,
   name: string,
   members: string[]
@@ -62,7 +63,7 @@ const Home: React.FC = () => {
       fetchEvents(ctx.userId).then(userEvents => {
         setEvents(userEvents);
       });
-    };
+    }
   }, [ctx]);
 
   async function removeEvent (id:string) {
@@ -85,7 +86,9 @@ const Home: React.FC = () => {
             <IonCard button href={"events/" + event.id} key={event.id}>
               <IonCardHeader>
                 <IonCardTitle>{event.name}</IonCardTitle>
-                <IonCardSubtitle>{new Date(event.datetime.seconds * 1000).toDateString()}</IonCardSubtitle>
+                <IonCardSubtitle>
+                  <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>
+                </IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>
                 <p>{event.description || ""}</p>

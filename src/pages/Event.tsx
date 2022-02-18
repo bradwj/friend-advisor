@@ -17,6 +17,7 @@ import { AuthContext } from "../Auth";
 import MapPicker from "react-google-map-picker";
 import { RouteComponentProps, useHistory } from "react-router";
 import { fetchEvents } from "./Home";
+import RelativeDate from "../components/RelativeDate";
 
 interface Event{
     datetime: any,
@@ -135,7 +136,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           </>
           : <>
             <h1>{event?.name}</h1>
-            <h3>{event && new Date(event.datetime.seconds * 1000).toDateString()}</h3>
+            <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
             <p>{event?.description || ""}</p>
           </>
         }
