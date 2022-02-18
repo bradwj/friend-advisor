@@ -24,6 +24,8 @@
  *     responses:
  *       200:
  *         description: Returns document ID, group structure containing name, description, members, joinId
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       500:
  *         description: error adding document
  * /groups/find/allData:
@@ -47,6 +49,8 @@
  *         description: successful find operation
  *       400:
  *         description: no ID provided to search for.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -72,6 +76,8 @@
  *         description: successful find operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -97,6 +103,8 @@
  *         description: successful delete operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -129,6 +137,8 @@
  *         description: successful edit operation
  *       400:
  *         description: no ID provided.
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Document does not exist
  *       500:
@@ -159,6 +169,8 @@
  *         description: successful join operation
  *       400:
  *         description: member already in group requested
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
  *       404:
  *         description: Group does not exist or could not be found
  *       500:
@@ -169,6 +181,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
+const checkInGroup = require("../lib/checkingroup.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => { // Used to Create Group
@@ -225,7 +238,7 @@ router.patch("/join", async (req, res) => {
 });
 
 // Get all data from a specific group
-router.get("/find/allData", findGroup, async (req, res) => {
+router.get("/find/allData", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -239,7 +252,7 @@ router.get("/find/allData", findGroup, async (req, res) => {
 });
 
 // Obtain only the joinId
-router.get("/find/joinId", findGroup, async (req, res) => {
+router.get("/find/joinId", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -253,7 +266,7 @@ router.get("/find/joinId", findGroup, async (req, res) => {
 });
 
 // Delete a group with its documentId
-router.delete("/delete", findGroup, async (req, res) => {
+router.delete("/delete", findGroup, checkInGroup.check, async (req, res) => {
   try {
     await res.group.delete();
     res.status(200).json({ message: "Group has been deleted successfully!" });
@@ -263,7 +276,7 @@ router.delete("/delete", findGroup, async (req, res) => {
 });
 
 // Edit a group with it's documentId and name/description as params
-router.patch("/edit", findGroup, async (req, res) => {
+router.patch("/edit", findGroup, checkInGroup.check, async (req, res) => {
   try {
     const updatedData = {};
     if (req.query.name) {
