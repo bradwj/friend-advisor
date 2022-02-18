@@ -24,6 +24,7 @@ const openapiSpecification = swaggerJsdoc(options);
 fs.writeFileSync("routesApi.json", JSON.stringify(openapiSpecification));
 
 app.use(cors());
+app.use(require("./lib/authmiddleware"));
 
 const eventRouter = require("./routes/events");
 const groupRouter = require("./routes/groups");
