@@ -10,6 +10,7 @@ router.post("/create", async (req, res) => {
     const event = {
       groupId,
       datetime: new Date(datetime),
+      lastUpdated: Date.now(),
       name,
       description,
       sentNotifications: {
