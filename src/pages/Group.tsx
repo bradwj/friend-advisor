@@ -11,7 +11,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonModal
+  IonModal, IonInput
 } from "@ionic/react";
 import "./Group.css";
 import { RouteComponentProps } from "react-router";
@@ -23,6 +23,7 @@ import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
 import { deleteFromCache } from "../cache_manager";
 import { fetchGroups } from "./Groups";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 export interface Group {
     id: string,
@@ -64,8 +65,10 @@ export const fetchGroup = async (groupId: any, userId: any) => {
 
 const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [group, setGroup] = useState<Group>();
+  const [canDeleteGroup, setCanDeleteGroup] = useState(false);
   const ctx = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const history = useHistory();
 
   // @ts-ignore
@@ -97,6 +100,14 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
     history.push("/groups");
   }
 
+  async function deleteGroup () {
+    await fetchWithAuth(ctx, "groups/delete", {
+      method: "DELETE"
+    });
+
+    history.push("/groups");
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -123,9 +134,33 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
         <h2 className="padded">Group ID</h2>
         <p className="padded">{group?.id}</p>
         <IonButton className="padded" color="danger" onClick={leaveGroup}>Leave Group</IonButton>
+        <IonButton className="padded" color="danger" onClick={() => setShowDeleteGroupModal(true)}>Delete Group</IonButton>
+
         <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>
           <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
           <IonButton slot="bottom" onClick={() => setShowModal(false)}>Close</IonButton>
+        </IonModal>
+
+        <IonModal className="confirmation" isOpen={showDeleteGroupModal} onDidDismiss={() => {
+          setShowDeleteGroupModal(false);
+        }}>
+          <h2>Enter the name of the group to confirm deletion.</h2>
+          <IonItem>
+            <IonLabel>Group Name</IonLabel>
+            <IonInput onIonChange={e => setCanDeleteGroup(e.detail.value === group?.name)}/>
+          </IonItem>
+
+          <IonButton disabled={!canDeleteGroup} color="danger" onClick={async () => {
+            setShowDeleteGroupModal(false);
+            await deleteGroup();
+          }}>
+            Delete Group
+          </IonButton>
+          <IonButton onClick={() => {
+            setShowDeleteGroupModal(false);
+          }}>
+            Cancel
+          </IonButton>
         </IonModal>
       </IonContent>
     </IonPage>
