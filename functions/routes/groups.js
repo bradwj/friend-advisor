@@ -298,7 +298,7 @@ async function findGroup (req, res, next) {
     try {
       group = await db.collection("groups").doc(id);
       const doc = await group.get();
-      if (group == null || !doc.exists) {
+      if (!doc.exists) {
         return res.status(404).json({ message: "Cannot find group." }); // status 404 means you cannot find something
       }
     } catch (err) {

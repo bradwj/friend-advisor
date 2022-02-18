@@ -21,7 +21,7 @@ async function generate () {
 
 const createCode = (length) => {
   let result = "";
-  const characters = "ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789"; 
+  const characters = "ABCDEFGHJKMNOPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz0123456789";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() *
@@ -32,11 +32,7 @@ const createCode = (length) => {
 
 async function groupExistsWithId (idToQuery) {
   const group = await db.collection("groups").where("joinId", "==", idToQuery).get();
-  if (group.empty) {
-    return false;
-  } else {
-    return true;
-  }
+  return !group.empty;
 }
 
 exports.generate = generate;

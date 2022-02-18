@@ -21,7 +21,9 @@ exports.checkNotifications = async function checkNotifications () {
       console.log("No events found.");
       return;
     }
-    eventSnapshot.forEach(async (eventDoc) => {
+    const events = [];
+    eventSnapshot.forEach(event => events.push(event));
+    for (const eventDoc of events) {
       // Loop through all events
       try {
         const eventData = eventDoc.data();
@@ -46,10 +48,10 @@ exports.checkNotifications = async function checkNotifications () {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayOf.includes(memberId)) {
                 sendNotificationDayOf(
-                  eventData.name,
-                  eventData.description,
-                  eventDateString,
-                  memberData.phone
+                    eventData.name,
+                    eventData.description,
+                    eventDateString,
+                    memberData.phone
                 );
                 sentNotifications.dayOf.push(memberId);
                 updated = true;
@@ -61,10 +63,10 @@ exports.checkNotifications = async function checkNotifications () {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.dayBefore.includes(memberId)) {
                 sendNotificationDayBefore(
-                  eventData.name,
-                  eventData.description,
-                  eventDateString,
-                  memberData.phone
+                    eventData.name,
+                    eventData.description,
+                    eventDateString,
+                    memberData.phone
                 );
                 sentNotifications.dayBefore.push(memberId);
                 updated = true;
@@ -76,10 +78,10 @@ exports.checkNotifications = async function checkNotifications () {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.weekBefore.includes(memberId)) {
                 sendNotificationWeekBefore(
-                  eventData.name,
-                  eventData.description,
-                  eventDateString,
-                  memberData.phone
+                    eventData.name,
+                    eventData.description,
+                    eventDateString,
+                    memberData.phone
                 );
                 sentNotifications.weekBefore.push(memberId);
                 updated = true;
@@ -91,10 +93,10 @@ exports.checkNotifications = async function checkNotifications () {
               const memberData = (await usersRef.doc(memberId).get()).data();
               if (!sentNotifications.monthBefore.includes(memberId)) {
                 sendNotificationMonthBefore(
-                  eventData.name,
-                  eventData.description,
-                  eventDateString,
-                  memberData.phone
+                    eventData.name,
+                    eventData.description,
+                    eventDateString,
+                    memberData.phone
                 );
                 sentNotifications.monthBefore.push(memberId);
                 updated = true;
@@ -113,7 +115,7 @@ exports.checkNotifications = async function checkNotifications () {
       } catch (e) {
         console.error(e);
       }
-    });
+    }
   } catch (e) {
     console.error(e);
   }
