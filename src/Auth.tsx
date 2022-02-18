@@ -15,7 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 initializeApp(firebaseConfig);
 
-interface Auth {
+export interface Auth {
     loggedIn: Boolean;
     userId?: string;
     userData?:any;
