@@ -28,8 +28,7 @@ const CreateGroup: React.FC = () => {
   const auth = useContext(AuthContext);
 
   const tryCode = async () => {
-    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5000/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-    await fetchWithAuth(auth, `${basePath}/groups/create?name=${name}`, {
+    await fetchWithAuth(auth, `groups/create?name=${name}`, {
       method: "POST"
     });
     setNotification("Successfully created group!");
