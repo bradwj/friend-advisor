@@ -43,6 +43,7 @@ import Group from "./pages/Group";
 import Groups from "./pages/Groups";
 import CreateGroup from "./pages/CreateGroup";
 import "./all.css";
+import AboutPage from "./pages/About";
 
 setupIonicReact();
 
@@ -76,6 +77,9 @@ const App: React.FC = () => {
             </Route>
             <Route exact path="/home">
               <Home/>
+            </Route>
+            <Route exact path="/about">
+              <AboutPage/>
             </Route>
             <Route path="/create-event">
               <CreateEvent/>

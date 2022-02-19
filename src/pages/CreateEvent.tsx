@@ -13,7 +13,6 @@ import {
   IonRadioGroup,
   IonRadio
 } from "@ionic/react";
-import "./CreateEvent.css";
 import MapPicker from "react-google-map-picker";
 import { AuthContext } from "../Auth";
 import React, { useContext, useEffect, useState } from "react";
@@ -65,7 +64,7 @@ const Home: React.FC = () => {
   // }
 
   async function submit () {
-    await fetchWithAuth(ctx, `events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}${eventDesc ? `&description=${eventDesc}` : ""}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
+    await fetchWithAuth(ctx, `events/create?id=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}${eventDesc ? `&description=${eventDesc}` : ""}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
       method: "POST"
     });
 

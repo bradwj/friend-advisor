@@ -10,7 +10,6 @@ import {
   IonButton,
   IonToast
 } from "@ionic/react";
-import "./Profile.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
@@ -134,6 +133,7 @@ const Profile: React.FC = () => {
                 duration={1000}
                 position="bottom"
                 />
+        <small>User ID: {ctx?.userId}</small>
       </IonContent>
     </IonPage>
   );
