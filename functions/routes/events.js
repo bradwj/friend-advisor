@@ -60,7 +60,7 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
   const { id, datetime, name, description, lat, long } = req.query;
   try {
     const event = {
-      id,
+      groupId: id,
       datetime: new Date(datetime),
       lastUpdated: Date.now(),
       name,
