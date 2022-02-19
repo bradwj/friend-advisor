@@ -21,7 +21,7 @@ const options = {
 };
 
 const openapiSpecification = swaggerJsdoc(options);
-fs.writeFileSync("routesApi.json", JSON.stringify(openapiSpecification));
+if (process.env.NODE_ENV !== "production") fs.writeFileSync("routesApi.json", JSON.stringify(openapiSpecification));
 
 app.use(cors());
 app.use(require("./lib/middleware/authenticate"));
