@@ -176,11 +176,10 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
-const checkInGroup = require("../lib/checkingroup.js");
+const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => { // Used to Create Group
-  res.set("Access-Control-Allow-Origin", "*");
   let { name, description } = req.query;
   if (name === undefined || name === null) { name = "No Name Provided"; }
   if (description === undefined || description === null) { description = "No Description Provided"; }
@@ -234,7 +233,7 @@ router.patch("/join", async (req, res) => {
 });
 
 // Get all data from a specific group
-router.get("/find/allData", findGroup, checkInGroup.check, async (req, res) => {
+router.get("/find/allData", findGroup, checkInGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -248,7 +247,7 @@ router.get("/find/allData", findGroup, checkInGroup.check, async (req, res) => {
 });
 
 // Obtain only the joinId
-router.get("/find/joinId", findGroup, checkInGroup.check, async (req, res) => {
+router.get("/find/joinId", findGroup, checkInGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
@@ -262,7 +261,7 @@ router.get("/find/joinId", findGroup, checkInGroup.check, async (req, res) => {
 });
 
 // Delete a group with its documentId
-router.delete("/delete", findGroup, checkInGroup.check, async (req, res) => {
+router.delete("/delete", findGroup, checkInGroup, async (req, res) => {
   try {
     await res.group.delete();
     res.status(200).json({ message: "Group has been deleted successfully!" });
@@ -272,7 +271,7 @@ router.delete("/delete", findGroup, checkInGroup.check, async (req, res) => {
 });
 
 // Edit a group with it's documentId and name/description as params
-router.patch("/edit", findGroup, checkInGroup.check, async (req, res) => {
+router.patch("/edit", findGroup, checkInGroup, async (req, res) => {
   try {
     const updatedData = {};
     if (req.query.name) {
@@ -288,26 +287,5 @@ router.patch("/edit", findGroup, checkInGroup.check, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-async function findGroup (req, res, next) {
-  let group;
-  const { id } = req.query;
-  if (id === null || id === undefined) {
-    res.group = null;
-    return res.status(400).json({ message: "Cannot find group: No document ID provided." });
-  } else {
-    try {
-      group = await db.collection("groups").doc(id);
-      const doc = await group.get();
-      if (!doc.exists) {
-        return res.status(404).json({ message: "Cannot find group." }); // status 404 means you cannot find something
-      }
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
-    }
-    res.group = group;
-  }
-  next();
-}
 
 module.exports = router;
