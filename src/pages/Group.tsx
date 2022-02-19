@@ -17,7 +17,6 @@ import "./Group.css";
 import { RouteComponentProps } from "react-router";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
@@ -32,8 +31,6 @@ export interface Group {
     lastUpdated: number,
     joinId: string
 }
-
-const db = getFirestore();
 
 export const fetchGroup = async (groupId: any, auth: any) => {
   /*
