@@ -20,7 +20,7 @@ export function appendToCache (key: string, value: any) {
   else currentCache[indexToReplace] = value;
 
   window.localStorage.setItem(key, JSON.stringify(currentCache));
-  console.log(`[cache_manager] Successfully appended ${value.id} to cache`);
+  console.log(`[cache_manager] Successfully appended ${value.id} to cache @ ${key}`);
 }
 
 export function wipeCache (key: string) {
