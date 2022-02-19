@@ -82,6 +82,8 @@ const Home: React.FC = () => {
   }, [ctx]);
 
   async function removeEvent (id:string) {
+    console.log("removing event");
+
     await deleteDoc(doc(db, "events", id));
 
     history.push("/home");
@@ -108,7 +110,10 @@ const Home: React.FC = () => {
                 <p>{event.description || ""}</p>
                 <br />
                 <IonButton size="default" href={"groups/" + event.groupId}>Group</IonButton>
-                <IonButton size="default" color="danger" onClick={() => removeEvent(event.id)}>Remove</IonButton>
+                <IonButton size="default" color="danger" onClick={async (e) => {
+                  e.preventDefault(); // cancel link of outer card element
+                  await removeEvent(event.id);
+                }}>Remove</IonButton>
               </IonCardContent>
             </IonCard>
           ))}
