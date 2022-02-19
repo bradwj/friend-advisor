@@ -16,6 +16,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { useHistory } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const db = getFirestore();
 
@@ -40,7 +42,7 @@ const fetchProfile = async (userId: any) => {
 const Profile: React.FC = () => {
   const profile = JSON.parse(window.localStorage.getItem("cachedProfile") || "{}");
   const [name, setProfileName] = useState<string>(profile.name);
-  const [phone, setProfilePhone] = useState<string>(profile.phone);
+  const [phone, setProfilePhone] = useState<any>(profile.phone || "1");
   const [likes, setProfileLikes] = useState<string>(profile.likes);
   const [dislikes, setProfileDislikes] = useState<string>(profile.dislikes);
   const [dob, setProfileDOB] = useState<string>(profile.dob);
@@ -52,6 +54,15 @@ const Profile: React.FC = () => {
   const history = useHistory();
 
   const saveProfile = async () => {
+    console.log({
+      name,
+      phone,
+      likes,
+      dislikes,
+      dob,
+      userId: ctx?.userId,
+      lastUpdated: Date.now()
+    });
     await setDoc(doc(db, "users", `${ctx?.userId}`), {
       name,
       phone,
@@ -100,7 +111,7 @@ const Profile: React.FC = () => {
         </IonItem>
         <IonItem>
           <IonLabel>Phone</IonLabel>
-          <IonInput type="tel" value={phone} onIonChange={e => setProfilePhone(e.detail.value!)}/>
+          <PhoneInput disableDropdown={true} country={"US"} value={phone} onChange={setProfilePhone}/>
         </IonItem>
         <IonItem>
           <IonLabel>Likes</IonLabel>
