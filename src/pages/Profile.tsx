@@ -134,6 +134,7 @@ const Profile: React.FC = () => {
                 duration={1000}
                 position="bottom"
                 />
+        <small>User ID: {ctx?.userId}</small>
       </IonContent>
     </IonPage>
   );
