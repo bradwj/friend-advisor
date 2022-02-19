@@ -29,7 +29,8 @@ interface Event{
     long: number,
     name: string,
     id: string,
-    groupId: string
+    groupId: string,
+    groupName: string
 }
 
 // noinspection JSUnusedLocalSymbols
@@ -55,7 +56,7 @@ export const fetchEvents = async (userId: any) => {
     snap.forEach(doc => {
       if (groupIds.includes(doc.data().groupId)) {
         const { datetime, description, lat, long, name, groupId } = doc.data();
-        const event = { datetime, description, lat, long, name, id: doc.id, groupId };
+        const event = { datetime, description, lat, long, name, id: doc.id, groupId, groupName: groupsImIn.find(group => group.id === groupId)?.name };
         appendToCache("userEvents", event);
       }
     });
@@ -102,7 +103,7 @@ const Home: React.FC = () => {
               <IonCardHeader>
                 <IonCardTitle>{event.name}</IonCardTitle>
                 <IonCardSubtitle>
-                  <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>
+                  {event.groupName} &bull; <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>
                 </IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>
