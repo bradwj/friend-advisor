@@ -28,14 +28,14 @@
  *         description: Authorization failed, or user does not have permission.
  *       500:
  *         description: error adding document
- * /groups/find/allData:
+ * /groups:
  *   get:
  *     tags:
  *     - groups
  *     summary: Finds a group with given Document ID from request, returns json-encoded array of its array of data, saved as "data"
  *     description: |
- *       Example Query: GET /groups/find/allData?id=6SoVHxte3j4KmDzd85Ng
- *     operationId: findGroupData
+ *       Example Query: GET /groups?id=6SoVHxte3j4KmDzd85Ng
+ *     operationId: getGroupData
  *     produces:
  *     - application/json
  *     parameters:
@@ -46,36 +46,9 @@
  *       type: string
  *     responses:
  *       200:
- *         description: successful find operation
+ *         description: successful get operation
  *       400:
  *         description: no ID provided to search for.
- *       403:
- *         description: Authorization failed, or user does not have permission.
- *       404:
- *         description: Document does not exist
- *       500:
- *         description: Other server-error
- * /groups/find/joinId:
- *   get:
- *     tags:
- *     - groups
- *     summary: Finds the joinId of a group with given ID from request, returns json-encoded array of this Id, saved as "joinId"
- *     description: |
- *       Example Query: GET groups/find/joinId?id=6SoVHxte3j4KmDzd85Ng
- *     operationId: findGroupJoinId
- *     produces:
- *     - application/json
- *     parameters:
- *     - name: id
- *       in: query
- *       description: ID of group to obtain joinId for.
- *       required: true
- *       type: string
- *     responses:
- *       200:
- *         description: successful find operation
- *       400:
- *         description: no ID provided.
  *       403:
  *         description: Authorization failed, or user does not have permission.
  *       404:
@@ -285,25 +258,11 @@ router.patch("/join", async (req, res) => {
 });
 
 // Get all data from a specific group
-router.get("/find/allData", findGroup, checkInGroup, async (req, res) => {
+router.get("/", findGroup, checkInGroup, async (req, res) => {
   try {
     const doc = await res.group.get();
     if (doc.exists) {
       res.status(200).json(doc.data());
-    } else {
-      res.status(404).json({ message: "Group does not exist." });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Obtain only the joinId
-router.get("/find/joinId", findGroup, checkInGroup, async (req, res) => {
-  try {
-    const doc = await res.group.get();
-    if (doc.exists) {
-      res.status(200).json({ joinId: doc.data().joinId });
     } else {
       res.status(404).json({ message: "Group does not exist." });
     }
