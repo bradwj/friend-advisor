@@ -13,7 +13,6 @@ import {
   IonRadioGroup,
   IonRadio
 } from "@ionic/react";
-import "./CreateEvent.css";
 import MapPicker from "react-google-map-picker";
 import { AuthContext } from "../Auth";
 import React, { useContext, useEffect, useState } from "react";

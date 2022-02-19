@@ -145,7 +145,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
           setCanDeleteGroup(false);
         }}>Delete Group</IonButton>
 
-        <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>          <div className="qr"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
+        <IonModal className="inf" isOpen={showModal} onDidDismiss={() => setShowModal(false)}>          <div className="qr center"><QRCode value={new URL("/joingroup?id=" + group?.id, window.location.origin).href} /></div>
           <IonButton slot="bottom" onClick={() => setShowModal(false)}>Close</IonButton>
         </IonModal>
 

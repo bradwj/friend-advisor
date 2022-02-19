@@ -12,7 +12,6 @@ import { RouteComponentProps, useHistory } from "react-router";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../Auth";
 import { arrowBack } from "ionicons/icons";
-import "./User.css";
 import { Group } from "./Group";
 import { where, collection, getFirestore, query, getDocs } from "firebase/firestore";
 

@@ -10,7 +10,6 @@ import {
   IonToolbar,
   IonTitle
 } from "@ionic/react";
-import "./JoinGroup.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useState } from "react";
 import { useLocation, useHistory } from "react-router";

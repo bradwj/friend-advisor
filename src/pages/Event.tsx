@@ -10,7 +10,6 @@ import {
   IonModal,
   IonTextarea, IonInput, IonButtons, IonBackButton
 } from "@ionic/react";
-import "./Home.css";
 import React, { useContext, useEffect, useState } from "react";
 import { getFirestore, deleteDoc, doc, setDoc, deleteField } from "firebase/firestore";
 import { AuthContext } from "../Auth";

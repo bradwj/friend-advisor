@@ -10,7 +10,6 @@ import {
   IonButton,
   IonToast
 } from "@ionic/react";
-import "./Profile.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";

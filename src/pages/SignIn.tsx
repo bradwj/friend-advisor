@@ -1,7 +1,6 @@
 import { IonContent, IonPage, IonButton, IonFooter, IonIcon } from "@ionic/react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
-import "./SignIn.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";

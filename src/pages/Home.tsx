@@ -13,7 +13,6 @@ import {
   IonCardHeader,
   IonIcon, IonFabButton, IonFab
 } from "@ionic/react";
-import "./Home.css";
 import React, { useContext, useEffect, useState } from "react";
 import { collection, getDocs, getFirestore, deleteDoc, doc, query, where } from "firebase/firestore";
 import { AuthContext } from "../Auth";
