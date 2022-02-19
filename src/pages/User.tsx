@@ -13,8 +13,6 @@ import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../Auth";
 import { arrowBack } from "ionicons/icons";
 import "./User.css";
-import { Group } from "./Group";
-import { where, collection, getFirestore, query, getDocs } from "firebase/firestore";
 
 export interface User {
     userId: string,
@@ -26,30 +24,15 @@ export interface User {
     lastUpdated: number
 }
 
-const db = getFirestore();
-
-const fetchUserInGroup = async (id: string) => {
+const fetchUserInGroup = async (userId: string) => {
   console.log("fetchUser");
-  const currentGroup: Group = JSON.parse(window.localStorage.getItem("currentGroup") || "{}");
-  const userIndex = currentGroup.members.findIndex(user => user.userId === id);
-  const userEntry = currentGroup.members[userIndex];
-  const lastCachedCurrentGroup = JSON.parse(window.localStorage.getItem("lastCachedCurrentGroup") || "0");
-  console.log(lastCachedCurrentGroup);
-
-  if (!userEntry) return Promise.reject(new Error("user not found"));
-  const userQuery = query(collection(db, "users"), where("userId", "==", id), where("lastUpdated", ">", userEntry.lastUpdated));
-  const userDoc = await getDocs(userQuery);
-  if (!userDoc.empty) {
-    console.log("user returned from db");
-    const { name, likes, dislikes, dob, phone, userId, lastUpdated } = userDoc.docs[0].data();
-    currentGroup.members[userIndex] = { name, likes, dislikes, dob, phone, userId, lastUpdated };
-    window.localStorage.setItem("currentGroup", JSON.stringify(currentGroup));
-    return Promise.resolve({ name, likes, dislikes, dob, phone, userId, lastUpdated });
+  const cachedUsers: User[] = JSON.parse(window.localStorage.getItem("cachedUsers") || "[]");
+  const user = cachedUsers.find(user => user.userId === userId);
+  if (user) {
+    return Promise.resolve(user);
+  } else {
+    return Promise.reject(new Error("user not found"));
   }
-
-  console.log("user returned from cache");
-  const { name, likes, dislikes, dob, phone, userId, lastUpdated } = userEntry;
-  return Promise.resolve({ name, likes, dislikes, dob, phone, userId, lastUpdated });
 };
 
 const UserPage: React.FC<RouteComponentProps> = ({ match }) => {

@@ -15,12 +15,12 @@ export function deleteFromCache (key: string, value: any) {
 export function appendToCache (key: string, value: any) {
   const currentCache: Array<any> = JSON.parse(window.localStorage.getItem(key) || "[]");
 
-  const indexToReplace = currentCache.findIndex(element => element.id === value.id);
+  const indexToReplace = currentCache.findIndex(element => (element.id ?? element.userId ?? element.groupId) === (value.id ?? value.userId ?? element.groupId));
   if (indexToReplace === -1) currentCache.push(value);
   else currentCache[indexToReplace] = value;
 
   window.localStorage.setItem(key, JSON.stringify(currentCache));
-  console.log(`[cache_manager] Successfully appended ${value.id} to cache`);
+  console.log(`[cache_manager] Successfully appended ${value.id ?? value.userId ?? value.groupId} to cache`);
 }
 
 export function wipeCache (key: string) {

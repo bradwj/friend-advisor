@@ -21,9 +21,9 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
-import { deleteFromCache } from "../cache_manager";
-import { fetchGroups } from "./Groups";
+import { appendToCache, deleteFromCache } from "../cache_manager";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
+import { User } from "./User";
 
 export interface Group {
     id: string,
@@ -35,34 +35,37 @@ export interface Group {
 
 const db = getFirestore();
 
-export const fetchGroup = async (groupId: any, userId: any) => {
+export const fetchGroup = async (groupId: any, auth: any) => {
+  /*
+  endpoint: GET /groups?id=...&?lastUpdated=...      rec.params.id      rec.query.lastUpdated
+  return group and most recent users data
+  store users data in cachedUsers
+  fetch users from cache belonging to that group
+  on users page get user from cache
+  */
   console.log("fetchGroup");
-  const groups = await fetchGroups(userId);
-  const group = groups.find(group => group.id === groupId);
-  const currentCachedGroup = JSON.parse(window.localStorage.getItem("currentGroup") || "{}");
+  const lastCachedUsers = JSON.parse(window.localStorage.getItem("lastCachedUsers") || "0");
 
-  if (!group) return Promise.reject(new Error("Group not found!"));
-  if (group.id === currentCachedGroup.id && group.lastUpdated === currentCachedGroup.lastUpdated) {
-    window.localStorage.setItem("lastCachedCurrentGroup", `${Date.now()}`);
-    return Promise.resolve(currentCachedGroup);
+  const req = await fetchWithAuth(auth, `groups?id=${groupId}&lastUpdated=${lastCachedUsers}`, {
+    method: "GET"
+  });
+
+  const resp:{ group: Group; recentUsers: User[]; message?: string; } = await req.json();
+
+  if (resp.message) return Promise.reject(new Error(resp.message));
+  resp.recentUsers.forEach((user: any) => {
+    appendToCache("cachedUsers", user);
+  });
+
+  const cachedUsers: User[] = JSON.parse(window.localStorage.getItem("cachedUsers") || "[]");
+  console.log(resp.recentUsers);
+  for (let i = 0; i < resp.group.members.length; i++) {
+    const user = cachedUsers.find(user => user.userId === resp.group.members[i]);
+    if (user) resp.group.members[i] = { name: user.name, userId: user.userId };
   }
 
-  const returnedGroup: Group = {
-    id: group.id,
-    name: group.name,
-    members: [],
-    lastUpdated: group.lastUpdated,
-    joinId: group.joinId
-  };
-
-  for (const member of group.members) {
-    const memberDoc = await getDoc(doc(db, "users", `${member}`));
-    returnedGroup.members.push({ ...memberDoc.data() });
-  }
-  window.localStorage.setItem("currentGroup", JSON.stringify(returnedGroup));
-  window.localStorage.setItem("lastCachedCurrentGroup", `${Date.now()}`);
-
-  return Promise.resolve(returnedGroup);
+  window.localStorage.setItem("lastCachedUsers", `${Date.now()}`);
+  return Promise.resolve(resp.group);
 };
 
 const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
@@ -79,7 +82,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
 
   useEffect(() => {
     if (ctx?.loggedIn) {
-      fetchGroup(id, ctx?.userId).then(returnedGroup => {
+      fetchGroup(id, ctx).then(returnedGroup => {
         setGroup(returnedGroup);
       });
     }

@@ -32,9 +32,9 @@
  *   get:
  *     tags:
  *     - groups
- *     summary: Finds a group with given Document ID from request, returns json-encoded array of its array of data, saved as "data"
+ *     summary: Finds a group and recent members with given Document ID and lastUpdated time from request, returns object with property group (containing group data) and recentUsers (array of users updated after lastUpdated)
  *     description: |
- *       Example Query: GET /groups?id=6SoVHxte3j4KmDzd85Ng
+ *       Example Query: GET /groups?id=6SoVHxte3j4KmDzd85Ng?lastUpdated=0
  *     operationId: getGroupData
  *     produces:
  *     - application/json
@@ -44,6 +44,11 @@
  *       description: Document ID of group to obtain data from
  *       required: true
  *       type: string
+ *     - name: lastUpdated
+ *       in: query
+ *       description: time in ms of last users cache update
+ *       required: true
+ *       type: number
  *     responses:
  *       200:
  *         description: successful get operation
@@ -257,15 +262,22 @@ router.patch("/join", async (req, res) => {
   }
 });
 
-// Get all data from a specific group
+// Get all data from a specific group and most updated user data
 router.get("/", findGroup, checkInGroup, async (req, res) => {
   try {
-    const doc = await res.group.get();
-    if (doc.exists) {
-      res.status(200).json(doc.data());
-    } else {
-      res.status(404).json({ message: "Group does not exist." });
-    }
+    const docData = res.groupDoc.data();
+    const lastUpdated = parseInt(req.query.lastUpdated);
+    const group = { ...docData };
+    const userQueries = [];
+    const recentUsers = [];
+    docData.members.forEach(member => {
+      userQueries.push(db.collection("users").where("userId", "==", member).where("lastUpdated", ">", lastUpdated).get());
+    });
+    const querySnapshots = await Promise.all(userQueries);
+    querySnapshots.forEach(snap => {
+      if (!snap.empty) recentUsers.push(snap.docs[0].data());
+    });
+    res.status(200).json({ group, recentUsers });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
