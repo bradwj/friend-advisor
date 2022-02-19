@@ -17,7 +17,7 @@ import "./Group.css";
 import { RouteComponentProps } from "react-router";
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { personAddOutline } from "ionicons/icons";
 import QRCode from "react-qr-code";
 import { useHistory } from "react-router-dom";
@@ -86,19 +86,11 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   }, [ctx]);
 
   async function leaveGroup () {
-    const groupDoc = await getDoc(doc(db, "groups", id));
+    await fetchWithAuth(ctx, `groups/leave?id=${id}`, {
+      method: "PATCH"
+    });
 
-    const members = groupDoc?.data()?.members;
-
-    if (members) {
-      const index = members.indexOf(ctx?.userId);
-      if (index > -1 && ctx?.userId) {
-        members.splice(index, 1); // 2nd parameter means remove one item only
-      }
-
-      await setDoc(doc(db, "groups", id), { members }, { merge: true });
-      deleteFromCache("userGroups", { id: id });
-    }
+    deleteFromCache("userGroups", { id });
 
     history.push("/groups");
   }
