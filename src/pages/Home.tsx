@@ -1,4 +1,18 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonList, IonButton, IonCard, IonCardContent, IonCardTitle, IonCardSubtitle, IonCardHeader } from "@ionic/react";
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonList,
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardHeader,
+  IonIcon, IonFabButton, IonFab
+} from "@ionic/react";
 import "./Home.css";
 import React, { useContext, useEffect, useState } from "react";
 import { collection, getDocs, getFirestore, deleteDoc, doc, query, where } from "firebase/firestore";
@@ -7,6 +21,7 @@ import { useHistory } from "react-router";
 import { appendToCache } from "../cache_manager";
 import { fetchGroups } from "./Groups";
 import RelativeDate from "../components/RelativeDate";
+import { add } from "ionicons/icons";
 
 interface Event{
     datetime: any,
@@ -81,7 +96,6 @@ const Home: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          <IonButton expand="block" href="/create-event">Create Event</IonButton>
           {events?.sort((a, b) => a.datetime.seconds - b.datetime.seconds).map(event => (
             <IonCard button href={"events/" + event.id} key={event.id}>
               <IonCardHeader>
@@ -99,7 +113,11 @@ const Home: React.FC = () => {
             </IonCard>
           ))}
         </IonList>
-
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton href="/create-event">
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );
