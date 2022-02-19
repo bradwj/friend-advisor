@@ -1,4 +1,4 @@
-const admin = require("../firebase");
+const admin = require("../../firebase");
 
 const authenticate = (req, res, next) => {
   if (!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) {
