@@ -28,8 +28,8 @@ async function checkInGroup (req, res, next) {
   // req.user.uid
   // res.group
   try {
-    const doc = await res.group.get();
-    const { members } = doc.data();
+    res.groupDoc = await res.group.get();
+    const { members } = res.groupDoc.data();
     const found = members.find((member) => member === req.user.uid);
     if (!found) {
       return res.status(403).json({
@@ -43,4 +43,4 @@ async function checkInGroup (req, res, next) {
   next();
 }
 
-exports.default = { findGroup, checkInGroup };
+module.exports = { findGroup, checkInGroup };

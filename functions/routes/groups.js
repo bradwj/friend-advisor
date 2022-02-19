@@ -170,6 +170,33 @@
  *         description: Group does not exist or could not be found
  *       500:
  *         description: Other server-error
+ * /groups/leave:
+ *   patch:
+ *     tags:
+ *     - groups
+ *     summary: Removes a member from a group
+ *     description: |
+ *       Example Query: PATCH /groups/leave?id=groupid123456
+ *     operationId: leaveGroup
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: id
+ *       description: group id
+ *       required: true
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful leave operation
+ *       400:
+ *         description: no group id provided
+ *       403:
+ *         description: Authorization failed, or user does not have permission.
+ *       404:
+ *         description: Group does not exist or could not be found
+ *       500:
+ *         description: Other server-error
  */
 
 const express = require("express");
@@ -179,10 +206,15 @@ const createjoincode = require("../lib/createjoincode.js");
 const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
-router.post("/create", async (req, res) => { // Used to Create Group
+router.post("/create", async (req, res) => {
+  // Used to Create Group
   let { name, description } = req.query;
-  if (name === undefined || name === null) { name = "No Name Provided"; }
-  if (description === undefined || description === null) { description = "No Description Provided"; }
+  if (name === undefined || name === null) {
+    name = "No Name Provided";
+  }
+  if (description === undefined || description === null) {
+    description = "No Description Provided";
+  }
   const group = {
     name,
     description,
@@ -197,9 +229,9 @@ router.post("/create", async (req, res) => { // Used to Create Group
       id: docRef.id,
       ...group
     });
-  } catch (e) {
-    console.error("Error adding document: ", e);
-    res.status(500).send({ message: e.toString() });
+  } catch (err) {
+    console.error("Error adding document: ", err);
+    res.status(500).send({ message: err.toString() });
   }
 });
 
@@ -207,28 +239,48 @@ router.post("/create", async (req, res) => { // Used to Create Group
 router.patch("/join", async (req, res) => {
   const { joinId } = req.query;
   const userId = req.user.uid;
-  if (joinId === undefined || joinId === null || userId === undefined || userId === null) { res.status(404).send({ message: "No Id provided, but it is a required argument." }); return; }
+  if (
+    joinId === undefined ||
+    joinId === null ||
+    userId === undefined ||
+    userId === null
+  ) {
+    res
+      .status(404)
+      .send({ message: "No Id provided, but it is a required argument." });
+    return;
+  }
   try {
-    const group = await db.collection("groups").where("joinId", "==", joinId).get();
+    const group = await db
+      .collection("groups")
+      .where("joinId", "==", joinId)
+      .get();
     if (group.empty) {
       res.status(404).json({ message: "Group does not exist.", joined: false });
     } else {
       const fixed = [];
-      group.forEach(elem => fixed.push(elem));
+      group.forEach((elem) => fixed.push(elem));
       const groupDoc = await fixed.at(0);
       const { members } = groupDoc.data();
       const found = members.find((member) => member === userId);
       if (found) {
-        return res.status(400).json({ message: "Member already in group!", joined: false });
+        return res
+          .status(400)
+          .json({ message: "Member already in group!", joined: false });
       }
       console.log(groupDoc.id, userId);
       const arrayToUpdate = admin.firestore.FieldValue.arrayUnion(userId);
-      await db.collection("groups").doc(groupDoc.id).update({ members: arrayToUpdate, lastUpdated: Date.now() });
-      res.status(200).json({ message: "Member has successfully been added.", joined: true });
+      await db
+        .collection("groups")
+        .doc(groupDoc.id)
+        .update({ members: arrayToUpdate, lastUpdated: Date.now() });
+      res
+        .status(200)
+        .json({ message: "Member has successfully been added.", joined: true });
     }
-  } catch (e) {
-    console.error("Error adding document: ", e);
-    res.status(500).send({ message: e.toString(), joined: false });
+  } catch (err) {
+    console.error("Error adding document: ", err);
+    res.status(500).send({ message: err.toString(), joined: false });
   }
 });
 
@@ -264,7 +316,7 @@ router.get("/find/joinId", findGroup, checkInGroup, async (req, res) => {
 router.delete("/delete", findGroup, checkInGroup, async (req, res) => {
   try {
     await res.group.delete();
-    res.status(200).json({ message: "Group has been deleted successfully!" });
+    res.status(200).json({ message: "Group has been deleted successfully." });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -283,6 +335,25 @@ router.patch("/edit", findGroup, checkInGroup, async (req, res) => {
     updatedData.lastUpdated = Date.now();
     res.group.update(updatedData);
     res.status(200).json({ updatedData: updatedData });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Remove a user from a group
+router.patch("/leave", findGroup, checkInGroup, async (req, res) => {
+  try {
+    const removeUser = admin.firestore.FieldValue.arrayRemove(req.user.uid);
+    console.log(res.groupDoc.id);
+    await db
+      .collection("groups")
+      .doc(res.groupDoc.id)
+      .update({ members: removeUser, lastUpdated: Date.now() });
+    res
+      .status(200)
+      .json({
+        message: "Member has successfully been removed from the group."
+      });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
