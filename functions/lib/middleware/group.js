@@ -53,7 +53,7 @@ async function checkGroupEmpty (req, res) {
       await res.group.update({ archived: false });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(501).json({ message: err.message });
   }
 }
 

@@ -60,33 +60,6 @@
  *         description: Document does not exist
  *       500:
  *         description: Other server-error
- * /groups/delete:
- *   delete:
- *     tags:
- *     - groups
- *     summary: Deletes group with given Document ID
- *     description: |
- *       Example Query: DELETE groups/delete?id=ciQRf9auZZYCjCbqmcFz
- *     operationId: deleteGroup
- *     produces:
- *     - application/json
- *     parameters:
- *     - name: id
- *       in: query
- *       description: Document ID of group to delete
- *       required: true
- *       type: string
- *     responses:
- *       200:
- *         description: successful delete operation
- *       400:
- *         description: no ID provided.
- *       403:
- *         description: Authorization failed, or user does not have permission.
- *       404:
- *         description: Document does not exist
- *       500:
- *         description: Other server-error
  * /groups/edit:
  *   patch:
  *     tags:
@@ -152,7 +125,7 @@
  *   patch:
  *     tags:
  *     - groups
- *     summary: Removes a member from a group
+ *     summary: Removes a member from a group, then archives the group if it is empty.
  *     description: |
  *       Example Query: PATCH /groups/leave?id=groupid123456
  *     operationId: leaveGroup
@@ -175,6 +148,8 @@
  *         description: Group does not exist or could not be found
  *       500:
  *         description: Other server-error
+ *       501:
+ *         description: Error with archiving group.
  */
 
 const express = require("express");
