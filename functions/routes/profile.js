@@ -7,7 +7,7 @@ router.post("/create", async (req, res) => {
   const { name, phone, likes, dislikes, dob } = req.query;
   if (!name || name === "") {
     console.error("No name specified.");
-    res.status(400).send({ message: "No name was specified, but it is a required argument." });
+    return res.status(400).send({ message: "No name was specified, but it is a required argument." });
   }
   // TODO: check if phone number is valid
   const newProfile = {
@@ -30,24 +30,28 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/edit", async (req, res) => {
+  const { name, phone, likes, dislikes, dob } = req.query;
+  if (!name || name === "") {
+    console.error("No name specified.");
+    return res.status(400).send({ message: "No name was specified, but it is a required argument." });
+  }
   try {
     const docRef = await db.collection("users").doc(req.user.uid);
     const updatedProfileData = {
-      name: req.query.name,
-      phone: req.query.phone,
-      likes: req.query.likes,
-      dislikes: req.query.dislikes,
-      dob: req.query.dob, // FIXME: Call Brad's Function
+      name: name,
+      phone: phone || "",
+      likes: likes || "",
+      dislikes: dislikes || "",
+      dob: isNaN(new Date(dob)) || (typeof dob !== "string") ? "" : dob,
+      userId: req.user.uid,
       lastUpdated: Date.now()
     };
     docRef.update(updatedProfileData);
     console.log("Document written with ID: ", docRef.id);
-    res.status(200).send({
-      id: docRef.id,
-      ...updatedProfileData
-    });
+    res.status(200).send(updatedProfileData);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).send({ message: err.message });
   };
 });
 

@@ -7,6 +7,7 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
+const path = require("path");
 exports.scheduleThis = require("./lib/scheduler").scheduledFunction;
 
 const app = express();
@@ -21,11 +22,11 @@ const options = {
       version: "1.0.0"
     }
   },
-  apis: ["./routes/events.js", "./routes/groups.js", "./routes/notifications.js"]
+  apis: [path.join(__dirname, "./routes/events.js"), path.join(__dirname, "./routes/groups.js"), path.join(__dirname, "./routes/notifications.js")]
 };
 
 const openapiSpecification = swaggerJsdoc(options);
-if (process.env.NODE_ENV !== "production") fs.writeFileSync("routesApi.json", JSON.stringify(openapiSpecification));
+if (process.env.NODE_ENV !== "production") fs.writeFileSync(path.join(__dirname, "routesApi.json"), JSON.stringify(openapiSpecification));
 
 app.use(cors());
 app.use(require("./lib/middleware/authenticate"));
