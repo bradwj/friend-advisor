@@ -20,7 +20,7 @@ import { useHistory } from "react-router";
 import { appendToCache } from "../cache_manager";
 import { fetchGroups } from "./Groups";
 import RelativeDate from "../components/RelativeDate";
-import { add } from "ionicons/icons";
+import { add, locationOutline } from "ionicons/icons";
 
 interface Event{
     datetime: any,
@@ -107,6 +107,7 @@ const Home: React.FC = () => {
               </IonCardHeader>
               <IonCardContent>
                 <p>{event.description || ""}</p>
+                {event.location && <p><IonIcon icon={locationOutline}/> {event.location}</p>}
                 <br />
                 <IonButton size="default" href={"groups/" + event.groupId}>Group</IonButton>
                 <IonButton size="default" color="danger" onClick={async (e) => {
