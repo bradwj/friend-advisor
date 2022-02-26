@@ -60,33 +60,6 @@
  *         description: Document does not exist
  *       500:
  *         description: Other server-error
- * /groups/delete:
- *   delete:
- *     tags:
- *     - groups
- *     summary: Deletes group with given Document ID
- *     description: |
- *       Example Query: DELETE groups/delete?id=ciQRf9auZZYCjCbqmcFz
- *     operationId: deleteGroup
- *     produces:
- *     - application/json
- *     parameters:
- *     - name: id
- *       in: query
- *       description: Document ID of group to delete
- *       required: true
- *       type: string
- *     responses:
- *       200:
- *         description: successful delete operation
- *       400:
- *         description: no ID provided.
- *       403:
- *         description: Authorization failed, or user does not have permission.
- *       404:
- *         description: Document does not exist
- *       500:
- *         description: Other server-error
  * /groups/edit:
  *   patch:
  *     tags:
@@ -152,7 +125,7 @@
  *   patch:
  *     tags:
  *     - groups
- *     summary: Removes a member from a group
+ *     summary: Removes a member from a group, then archives the group if it is empty.
  *     description: |
  *       Example Query: PATCH /groups/leave?id=groupid123456
  *     operationId: leaveGroup
@@ -175,13 +148,40 @@
  *         description: Group does not exist or could not be found
  *       500:
  *         description: Other server-error
+ *       501:
+ *         description: Error with archiving group.
+ * /groups/all:
+ *   get:
+ *     tags:
+ *     - groups
+ *     summary: Returns all groups a user is a part of
+ *     description: |
+ *       Example Query: GET /groups/all?lastUpdated=0
+ *     operationId: allGroups
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: lastUpdated
+ *       description: time of last cache
+ *       required: true
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful fetch operation
+ *       400:
+ *         description: user not logged in
+ *       404:
+ *         description: Could not find recent groups.
+ *       500:
+ *         description: Other server-error
  */
 
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
-const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const { findGroup, findGroups, checkInGroup, checkGroupEmpty } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
@@ -198,7 +198,8 @@ router.post("/create", async (req, res) => {
     description,
     members: [req.user.uid],
     joinId: await createjoincode.generate(),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
+    archived: false
   };
   try {
     const docRef = await db.collection("groups").add(group);
@@ -283,6 +284,19 @@ router.get("/", findGroup, checkInGroup, async (req, res) => {
   }
 });
 
+// return all recent user groups
+router.get("/all", findGroups, async (req, res) => {
+  try {
+    const groups = [];
+    req.groups.forEach(doc => {
+      groups.push({ id: doc.id, members: doc.data().members, name: doc.data().name, lastUpdated: doc.data().lastUpdated, joinId: doc.data().joinId });
+    });
+    return res.status(200).json({ groups: groups });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
 // Delete a group with its documentId
 router.delete("/delete", findGroup, checkInGroup, async (req, res) => {
   try {
@@ -325,6 +339,7 @@ router.patch("/leave", findGroup, checkInGroup, async (req, res) => {
       .json({
         message: "Member has successfully been removed from the group."
       });
+    await checkGroupEmpty(req, res); // If group is empty, archives group.
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

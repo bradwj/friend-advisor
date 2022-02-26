@@ -31,9 +31,9 @@ interface Event{
 
 const db = getFirestore();
 
-export const fetchEvent = async (eventId: any, userId: any) => {
+export const fetchEvent = async (eventId: any, auth: any) => {
   console.log("fetchEvent");
-  const events = await fetchEvents(userId);
+  const events = await fetchEvents(auth);
   const event = events.find((event: any) => event.id === eventId);
 
   return new Promise<Event>((resolve, reject) => {
@@ -62,7 +62,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
 
   useEffect(() => {
     if (ctx?.loggedIn) {
-      fetchEvent(id, ctx.userId).then(data => {
+      fetchEvent(id, ctx).then(data => {
         setEventName(data.name);
         setEventDate(data.datetime);
         setEventDesc(data.description);
