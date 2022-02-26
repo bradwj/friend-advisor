@@ -1,4 +1,9 @@
-.qr {
+ion-modal.inf {
+    --width: 256px;
+    --height: 320px;
+}
+
+ion-modal.big-modal {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6,11 +11,6 @@
     flex-direction: column;
 }
 
-ion-modal.inf {
-    --width: 256px;
-    --height: 320px;
-}
-
-.padded {
-    /*padding-left: 10px;*/
+.copyToClipboard{
+    user-select: none;
 }

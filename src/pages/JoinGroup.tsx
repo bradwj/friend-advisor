@@ -9,11 +9,10 @@ import {
   IonHeader,
   IonToolbar, IonTitle
 } from "@ionic/react";
-import { getFirestore, getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
-import "./JoinGroup.css";
 import { AuthContext } from "../Auth";
 import React, { useContext, useState } from "react";
 import { useLocation, useHistory } from "react-router";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 const JoinGroup: React.FC = () => {
   const history = useHistory();
@@ -25,28 +24,19 @@ const JoinGroup: React.FC = () => {
   const [notify, setNotify] = useState<boolean>(false);
 
   const auth = useContext(AuthContext);
-  const db = getFirestore();
 
   const tryCode = async () => {
-    const groupEntry = await getDoc(doc(db, "groups", `${code}`));
-    if (groupEntry.exists()) {
-      const { members } = groupEntry.data();
-      const found = members.find((member: string) => member === auth?.userId);
-      if (found) {
-        setNotification("You are already in the group!");
-        setNotify(true);
-      } else {
-        await updateDoc(doc(db, "groups", `${code}`), {
-          members: arrayUnion(auth?.userId)
-        });
-        setNotification("You have joined the group successfully!");
-        setNotify(true);
+    const req = await fetchWithAuth(auth, `groups/join?joinId=${code}`, {
+      method: "PATCH"
+    });
 
-        history.push("/");
-      }
-    } else {
-      setNotification("Group not found!");
-      setNotify(true);
+    const resp = await req.json() as {message: string, joined: boolean};
+
+    setNotification(resp.message);
+    setNotify(true);
+
+    if (resp.joined) {
+      history.push("/groups");
     }
   };
 
@@ -63,7 +53,7 @@ const JoinGroup: React.FC = () => {
           <IonInput value={code} onIonChange={e => setGroupCode(e.detail.value!)}/>
         </IonItem>
         <IonButton onClick={tryCode} expand="block" color="primary">Join</IonButton>
-        You can also join a group by scanning a group&#39s QR code.
+        You can also join a group by scanning a group&rsquo;s QR code.
         <IonToast
                 isOpen={notify}
                 onDidDismiss={() => { setNotify(false); }}

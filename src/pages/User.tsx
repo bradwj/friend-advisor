@@ -9,42 +9,48 @@ import {
   IonToolbar
 } from "@ionic/react";
 import { RouteComponentProps, useHistory } from "react-router";
-import React, { useEffect, useState } from "react";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../Auth";
 import { arrowBack } from "ionicons/icons";
-import "./User.css";
 
-interface User {
-    id: string,
+export interface User {
+    userId: string,
     name: string,
     likes: string,
     dislikes: string,
     phone: number,
-    dob: string
+    dob: string,
+    lastUpdated: number
 }
 
-const db = getFirestore();
+const fetchUserInGroup = async (userId: string) => {
+  console.log("fetchUser");
+  const cachedUsers: User[] = JSON.parse(window.localStorage.getItem("cachedUsers") || "[]");
+  const user = cachedUsers.find(user => user.userId === userId);
+  if (user) {
+    return Promise.resolve(user);
+  } else {
+    return Promise.reject(new Error("user not found"));
+  }
+};
 
 const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [user, setUser] = useState<User>();
   const history = useHistory();
+  const ctx = useContext(AuthContext);
 
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchUser = async (id: string) => {
-    const userEntry = await getDoc(doc(db, "users", `${id}`));
-    if (userEntry.exists()) {
-      const { name, likes, dislikes, dob, phone } = userEntry.data();
-      setUser({ name, likes, dislikes, dob, phone, id: userEntry.id });
-    } else {
-      history.goBack();
-    }
-  };
-
   useEffect(() => {
-    fetchUser(id);
-  }, [id]);
+    if (ctx?.loggedIn) {
+      fetchUserInGroup(id).then(result => {
+        setUser(result);
+      }, reason => {
+        console.log(reason);
+      });
+    }
+  }, [ctx]);
 
   return (
     <IonPage>
@@ -60,7 +66,7 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
       <IonContent hidden={user === undefined} fullscreen>
         <div className="center">
           <IonAvatar slot="start">
-            <img src={`https://picsum.photos/seed/${user?.id}/200/200`} />
+            <img src={`https://picsum.photos/seed/${user?.userId}/200/200`} />
           </IonAvatar>
           <h1>{user?.name}</h1>
           <p>Likes {user?.likes}</p>

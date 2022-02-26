@@ -1,5 +1,6 @@
 import {
-  IonAvatar, IonButton,
+  IonAvatar,
+  IonButton,
   IonContent,
   IonHeader,
   IonItem,
@@ -9,40 +10,48 @@ import {
   IonTitle,
   IonToolbar
 } from "@ionic/react";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { collection, getFirestore, query, where, getDocs } from "firebase/firestore";
+import { appendToCache } from "../cache_manager";
 
 interface Group {
+  joinId: string;
     id: string,
     name: string,
-    members: string[]
+    members: string[],
+    lastUpdated: number
 }
 
 const db = getFirestore();
 
+export const fetchGroups = async (userId: any) => {
+  console.log("fetchGroups");
+  const lastCachedUserGroups: number = JSON.parse(window.localStorage.getItem("lastCachedUserGroups") || "0");
+  const groupQuery = query(collection(db, "groups"), where("members", "array-contains", `${userId}`), where("lastUpdated", ">", lastCachedUserGroups));
+
+  const docs = await getDocs(groupQuery);
+
+  docs.forEach(doc => {
+    const group: Group = { id: doc.id, members: doc.data().members, name: doc.data().name, lastUpdated: doc.data().lastUpdated, joinId: doc.data().joinId };
+    appendToCache("userGroups", group);
+  });
+
+  window.localStorage.setItem("lastCachedUserGroups", `${Date.now()}`);
+  return new Promise<Array<Group>>(resolve => resolve(JSON.parse(window.localStorage.getItem("userGroups") || "[]")));
+};
+
 const Groups: React.FC = () => {
-  const [groups, setGroups] = useState<Group[]>();
+  const [groups, setGroups] = useState<Group[]>(JSON.parse(window.localStorage.getItem("userGroups") || "[]"));
   const ctx = useContext(AuthContext);
-  console.log(4);
-
-  const fetchGroups = useCallback(async () => {
-    const docs = await getDocs(collection(db, "groups"));
-
-    const groupsImIn:Group[] = [];
-    docs.forEach(doc => {
-      if (doc.data()?.members?.includes(ctx?.userId)) {
-        groupsImIn.push({ id: doc.id, members: doc.data().members, name: doc.data().name });
-      }
-    });
-
-    setGroups(groupsImIn);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-  // if you want to run only once, just leave array empty []
 
   useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups]);
+    if (ctx?.loggedIn) {
+      fetchGroups(ctx.userId).then(groupsImIn => {
+        setGroups(groupsImIn);
+      });
+    };
+  }, [ctx]);
 
   return (
     <IonPage>

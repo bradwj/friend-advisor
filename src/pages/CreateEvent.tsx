@@ -13,21 +13,16 @@ import {
   IonRadioGroup,
   IonRadio
 } from "@ionic/react";
-import "./CreateEvent.css";
 import MapPicker from "react-google-map-picker";
 import { AuthContext } from "../Auth";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { Group } from "./Group";
+import { fetchGroups } from "./Groups";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 const DefaultLocation = { lat: 35.2058936, lng: -97.4479024 };
 const DefaultZoom = 10;
-const db = getFirestore();
-
-interface Group {
-    id: string,
-    name: string
-}
 
 const Home: React.FC = () => {
   const ctx = useContext(AuthContext);
@@ -46,22 +41,13 @@ const Home: React.FC = () => {
 
   const history = useHistory();
 
-  const fetchGroups = useCallback(async () => {
-    const docs = await getDocs(collection(db, "groups"));
-    const val: Group[] = [];
-    docs.forEach(doc => {
-      if (doc.data().members.includes(ctx?.userId)) {
-        val.push({ id: doc.id, name: doc.data().name });
-      }
-    });
-    console.log("values", val);
-    setGroups(val);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-  // if you want to run only once, just leave array empty []
-
   useEffect(() => {
-    fetchGroups();
-  }, [fetchGroups, ctx?.userData]);
+    if (ctx?.loggedIn) {
+      fetchGroups(ctx.userId).then(result => {
+        setGroups(result);
+      });
+    }
+  }, [ctx]);
 
   function handleChangeLocation (lat: any, lng: any) {
     setLocationEnabled(true);
@@ -78,16 +64,9 @@ const Home: React.FC = () => {
   // }
 
   async function submit () {
-    const basePath = process.env.NODE_ENV === "development" ? "http://localhost:5001/friend-advisor/us-central1/app" : "https://us-central1-friend-advisor.cloudfunctions.net/app";
-    if (locationEnabled) {
-      await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}&lat=${location.lat}&long=${location.lng}`, {
-        method: "POST"
-      });
-    } else {
-      await fetch(`${basePath}/events/create?groupId=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}&description=${eventDesc}`, {
-        method: "POST"
-      });
-    }
+    await fetchWithAuth(ctx, `events/create?id=${groupId}&datetime=${eventDate && new Date(eventDate).toISOString()}&name=${eventName}${eventDesc ? `&description=${eventDesc}` : ""}${locationEnabled ? `&lat=${location.lat}&long=${location.lng}` : ""}`, {
+      method: "POST"
+    });
 
     history.push("/home");
   }

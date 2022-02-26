@@ -8,14 +8,16 @@ import {
   IonLabel,
   IonButton,
   IonModal,
-  IonTextarea, IonInput
+  IonTextarea, IonInput, IonButtons, IonBackButton
 } from "@ionic/react";
-import "./Home.css";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { getFirestore, deleteDoc, doc, getDoc, setDoc, deleteField } from "firebase/firestore";
+import React, { useContext, useEffect, useState } from "react";
+import { getFirestore, deleteDoc, doc, setDoc, deleteField } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import MapPicker from "react-google-map-picker";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, useHistory } from "react-router";
+import { fetchEvents } from "./Home";
+import RelativeDate from "../components/RelativeDate";
+// import { arrowBackOutline } from "ionicons/icons";
 
 interface Event{
     datetime: any,
@@ -29,6 +31,20 @@ interface Event{
 
 const db = getFirestore();
 
+export const fetchEvent = async (eventId: any, userId: any) => {
+  console.log("fetchEvent");
+  const events = await fetchEvents(userId);
+  const event = events.find((event: any) => event.id === eventId);
+
+  return new Promise<Event>((resolve, reject) => {
+    if (event) {
+      resolve(event);
+    } else {
+      reject(new Error("Event not found!"));
+    }
+  });
+};
+
 const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [event, setEvent] = useState<Event>();
   const [editing, setEditing] = useState<boolean>(false);
@@ -39,29 +55,29 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [eventDesc, setEventDesc] = useState<string>();
   const [eventDate, setEventDate] = useState<string>();
   const [location, setLocation] = useState<{lat: number, long: number}>();
+  const history = useHistory();
 
   // @ts-ignore
   const id = match.params.id;
 
-  const fetchEvent = useCallback(async () => {
-    const event = await getDoc(doc(db, "events", id));
-    const data = event.data() as Event;
-
-    setEventName(data.name);
-    setEventDate(data.datetime);
-    setEventDesc(data.description);
-    setLocation({ lat: data.lat, long: data.long });
-
-    setEvent(data);
-  }, [ctx?.userData]); // if userId changes, useEffect will run again
-    // if you want to run only once, just leave array empty []
-
   useEffect(() => {
-    fetchEvent();
-  }, [fetchEvent]);
+    if (ctx?.loggedIn) {
+      fetchEvent(id, ctx.userId).then(data => {
+        setEventName(data.name);
+        setEventDate(data.datetime);
+        setEventDesc(data.description);
+        setLocation({ lat: data.lat, long: data.long });
+
+        setEvent(data);
+      }, reason => {
+        console.log(reason);
+        history.push("/home");
+      });
+    }
+  }, [ctx]);
 
   function getDefaultVal () {
-    let now = event?.datetime && event?.datetime.toDate();
+    let now = event && event.datetime && event.datetime.toDate();
     if (!now) now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, -1);
@@ -73,14 +89,15 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
 
   async function saveEvent () {
     if (location?.lat) {
-      await setDoc(doc(db, "events", id), { name: eventName, description: eventDesc, datetime: eventDate, lat: location?.lat, long: location?.long }, { merge: true });
+      await setDoc(doc(db, "events", id), { name: eventName, description: eventDesc, datetime: eventDate, lat: location?.lat, long: location?.long, lastUpdated: Date.now() }, { merge: true });
     } else {
       await setDoc(doc(db, "events", id), {
         name: eventName,
         description: eventDesc,
         datetime: eventDate,
         lat: deleteField(),
-        long: deleteField()
+        long: deleteField(),
+        lastUpdated: Date.now()
       }, { merge: true });
     }
     setEditing(false);
@@ -97,6 +114,9 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" />
+          </IonButtons>
           <IonTitle>Event Info</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -119,8 +139,8 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           </>
           : <>
             <h1>{event?.name}</h1>
-            <h3>{event && new Date(event.datetime.seconds * 1000).toDateString()}</h3>
-            <p>{event?.description}</p>
+            <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
+            <p>{event?.description || ""}</p>
           </>
         }
 

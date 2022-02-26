@@ -1,14 +1,13 @@
 import { IonContent, IonPage, IonButton, IonFooter, IonIcon } from "@ionic/react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
-import "./SignIn.css";
 import { AuthContext } from "../Auth";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { personOutline } from "ionicons/icons";
 
 const SignIn: React.FC = () => {
-  const auth = useContext(AuthContext);
+  const ctx = useContext(AuthContext);
   const db = getFirestore();
   const history = useHistory();
 
@@ -19,20 +18,19 @@ const SignIn: React.FC = () => {
 
   // What the hell idk how this works
   // Do not touch
-  const checkUser = useCallback(async () => {
-    if (auth?.loggedIn) {
-      const userEntry = await getDoc(doc(db, "users", `${auth?.userId}`));
-      if (userEntry.exists()) {
-        history.push("/home");
-      } else {
-        history.push("/profile");
-      }
+  const checkUser = async () => {
+    console.log("checkUser");
+    const userEntry = await getDoc(doc(db, "users", `${ctx?.userId}`));
+    if (userEntry.exists()) {
+      history.push("/home");
+    } else {
+      history.push("/profile");
     }
-  }, [auth?.userId]);
+  };
 
   useEffect(() => {
-    checkUser();
-  }, [checkUser]);
+    if (ctx?.loggedIn) checkUser();
+  }, [ctx]);
 
   return (
     <IonPage>
