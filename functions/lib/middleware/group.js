@@ -24,6 +24,26 @@ async function findGroup (req, res, next) {
   next();
 }
 
+async function findGroups (req, res, next) {
+  const { uid } = req.user;
+  const lastUpdated = parseInt(req.query.lastUpdated);
+  if (!uid) {
+    return res.status(400).json({ message: "User not logged in" });
+  } else {
+    try {
+      const groups = db.collection("groups").where("members", "array-contains", `${uid}`).where("lastUpdated", ">", lastUpdated);
+      const querySnapshot = await groups.get();
+      if (querySnapshot.empty) {
+        return res.status(404).json({ message: "Could not find recent groups." }); // status 404 means you cannot find something
+      }
+      req.groups = querySnapshot.docs;
+    } catch (err) {
+      return res.status(500).json({ message: err.message });
+    }
+  }
+  next();
+}
+
 async function checkInGroup (req, res, next) {
   // req.user.uid
   // res.group
@@ -43,4 +63,4 @@ async function checkInGroup (req, res, next) {
   next();
 }
 
-module.exports = { findGroup, checkInGroup };
+module.exports = { findGroup, findGroups, checkInGroup };

@@ -175,13 +175,38 @@
  *         description: Group does not exist or could not be found
  *       500:
  *         description: Other server-error
+ * /groups/all:
+ *   get:
+ *     tags:
+ *     - groups
+ *     summary: Returns all groups a user is a part of
+ *     description: |
+ *       Example Query: GET /groups/all?lastUpdated=0
+ *     operationId: allGroups
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *     - in: query
+ *       name: lastUpdated
+ *       description: time of last cache
+ *       required: true
+ *       type: string
+ *     responses:
+ *       200:
+ *         description: successful fetch operation
+ *       400:
+ *         description: user not logged in
+ *       404:
+ *         description: Could not find recent groups.
+ *       500:
+ *         description: Other server-error
  */
 
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
-const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const { findGroup, checkInGroup, findGroups } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
@@ -280,6 +305,19 @@ router.get("/", findGroup, checkInGroup, async (req, res) => {
     res.status(200).json({ group, recentUsers });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// return all recent user groups
+router.get("/all", findGroups, async (req, res) => {
+  try {
+    const groups = [];
+    req.groups.forEach(doc => {
+      groups.push({ id: doc.id, members: doc.data().members, name: doc.data().name, lastUpdated: doc.data().lastUpdated, joinId: doc.data().joinId });
+    });
+    return res.status(200).json({ groups: groups });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 });
 

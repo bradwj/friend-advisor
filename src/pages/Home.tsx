@@ -40,10 +40,10 @@ interface Group { // eslint-disable-line no-unused-vars
   members: string[]
 }
 
-export const fetchEvents = async (userId: any) => {
+export const fetchEvents = async (auth: any) => {
   console.log("fetchEvents");
   const lastCachedUserEvents: number = JSON.parse(window.localStorage.getItem("lastCachedUserEvents") || "0");
-  const groupsImIn = await fetchGroups(userId);
+  const groupsImIn = await fetchGroups(auth);
   const groupIds = groupsImIn.map(group => group.id);
 
   const eventPromises = [];
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     if (ctx?.loggedIn) {
-      fetchEvents(ctx.userId).then(userEvents => {
+      fetchEvents(ctx).then(userEvents => {
         setEvents(userEvents);
       });
     }
