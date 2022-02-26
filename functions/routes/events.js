@@ -55,6 +55,7 @@ const router = express.Router();
 const admin = require("../firebase.js");
 const db = admin.firestore();
 const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const { findEvent } = require("../lib/middleware/event.js");
 
 router.post("/create", findGroup, checkInGroup, async (req, res) => {
   const { id, datetime, name, description, lat, long } = req.query;
@@ -80,6 +81,27 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
     res.status(200).send({ id: docRef.id, ...event });
   } catch (e) {
     res.status(400).send({ message: e.toString() });
+  }
+});
+
+// Needs "id" to find group document, and then "eventId" to find event document.
+router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
+  const { datetime, name, description } = req.query;
+  if (res.event !== null && res.event !== undefined) {
+    try {
+      const updatedProfileData = {
+        datetime: datetime,
+        name: name,
+        description: description,
+        lastUpdated: Date.now()
+      };
+      res.event.update(updatedProfileData);
+      console.log("Document written with ID: ", res.event.id);
+      res.status(200).send(updatedProfileData);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: err.message });
+    };
   }
 });
 
