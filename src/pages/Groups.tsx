@@ -6,7 +6,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonPage,
+  IonPage, IonProgressBar,
   IonTitle,
   IonToolbar
 } from "@ionic/react";
@@ -64,31 +64,36 @@ const Groups: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonList>
-          {groups?.map(group => (
-            <IonItem button href={"groups/" + group.id} key={group.id}>
-              <IonLabel>
-                <h2>{group.name}</h2>
-              </IonLabel>
-              <IonAvatar slot="start">
-                <img src={`https://picsum.photos/seed/${group.id}/200/200`} />
-              </IonAvatar>
-            </IonItem>
-          ))}
-        </IonList>
-        <IonFab horizontal="center" vertical="bottom" slot="fixed">
-          <IonFabButton color="success">
-            <IonIcon icon={add}/>
-          </IonFabButton>
-          <IonFabList title="test" side="top">
-            <IonFabButton href="/joingroup">
-              <IonIcon icon={enter}/>
-            </IonFabButton>
-            <IonFabButton href="/creategroup" title="test" size="small">
-              <IonIcon icon={add}/>
-            </IonFabButton>
-          </IonFabList>
-        </IonFab>
+        {groups
+          ? <>
+            <IonList>
+              {groups?.map(group => (
+                <IonItem button href={"groups/" + group.id} key={group.id}>
+                  <IonLabel>
+                    <h2>{group.name}</h2>
+                  </IonLabel>
+                  <IonAvatar slot="start">
+                    <img src={`https://picsum.photos/seed/${group.id}/200/200`}/>
+                  </IonAvatar>
+                </IonItem>
+              ))}
+            </IonList>
+            <IonFab horizontal="center" vertical="bottom" slot="fixed">
+              <IonFabButton color="success">
+                <IonIcon icon={add}/>
+              </IonFabButton>
+              <IonFabList title="test" side="top">
+                <IonFabButton href="/joingroup">
+                  <IonIcon icon={enter}/>
+                </IonFabButton>
+                <IonFabButton href="/creategroup" title="test" size="small">
+                  <IonIcon icon={add}/>
+                </IonFabButton>
+              </IonFabList>
+            </IonFab>
+          </>
+          : <IonProgressBar type="indeterminate"/>
+        }
       </IonContent>
     </IonPage>
   );

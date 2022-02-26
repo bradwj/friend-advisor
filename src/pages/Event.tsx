@@ -7,7 +7,7 @@ import {
   IonItem,
   IonLabel,
   IonButton,
-  IonTextarea, IonInput, IonButtons, IonBackButton
+  IonTextarea, IonInput, IonButtons, IonBackButton, IonProgressBar
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
 import { getFirestore, deleteDoc, doc, setDoc } from "firebase/firestore";
@@ -16,13 +16,13 @@ import { RouteComponentProps, useHistory } from "react-router";
 import { fetchEvents } from "./Home";
 import RelativeDate from "../components/RelativeDate";
 
-interface Event{
-    datetime: any,
-    description: string,
-    location: string,
-    name: string,
-    id: string,
-    groupId: string
+interface Event {
+  datetime: any,
+  description: string,
+  location: string,
+  name: string,
+  id: string,
+  groupId: string
 }
 
 const db = getFirestore();
@@ -97,41 +97,49 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" />
+            <IonBackButton defaultHref="/home"/>
           </IonButtons>
           <IonTitle>Event Info</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {editing
-          ? <>
-            <IonItem>
-              <IonLabel>Name</IonLabel>
-              <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Date</IonLabel>
-              <IonInput type="datetime-local" value={getDefaultVal()} onIonChange={e => setEventDate(e.detail.value!)}/>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Description</IonLabel>
-              <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Location</IonLabel>
-              <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
-            </IonItem>
-          </>
-          : <>
-            <h1>{event?.name}</h1>
-            <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
-            <p>{event?.description || ""}</p>
-            {event?.location && <><h3>Location</h3>
-              <p>{event?.location || ""}</p></>}
-          </>
+        {event
+          ? (editing
+              ? <>
+                <IonItem>
+                  <IonLabel>Name</IonLabel>
+                  <IonInput value={eventName} onIonChange={e => setEventName(e.detail.value!)}/>
+                </IonItem>
+                <IonItem>
+                  <IonLabel>Date</IonLabel>
+                  <IonInput type="datetime-local" value={getDefaultVal()}
+                            onIonChange={e => setEventDate(e.detail.value!)}/>
+                </IonItem>
+                <IonItem>
+                  <IonLabel>Description</IonLabel>
+                  <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
+                </IonItem>
+                <IonItem>
+                  <IonLabel>Location</IonLabel>
+                  <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
+                </IonItem>
+              </>
+              : <>
+                <h1>{event?.name}</h1>
+                <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
+                <p>{event?.description || ""}</p>
+                {event?.location && <><h3>Location</h3>
+                  <p>{event?.location || ""}</p></>}
+              </>)
+          : <IonProgressBar type="indeterminate"/>
         }
 
-        {editing ? <><IonButton size="default" color="secondary" onClick={() => setEditing(false)}>Cancel</IonButton> <IonButton size="default" color="success" onClick={saveEvent}>Save</IonButton> </> : <><IonButton size="default" href={"groups/" + event?.groupId}>Group</IonButton>  <IonButton size="default" color="secondary" onClick={() => setEditing(true)}>Edit</IonButton> </>}
+        {editing
+          ? <><IonButton size="default" color="secondary" onClick={() => setEditing(false)}>Cancel</IonButton>
+            <IonButton size="default" color="success" onClick={saveEvent}>Save</IonButton> </>
+          : <><IonButton
+          size="default" href={"groups/" + event?.groupId}>Group</IonButton> <IonButton size="default" color="secondary"
+                                                                                        onClick={() => setEditing(true)}>Edit</IonButton> </>}
         <IonButton size="default" color="danger" onClick={removeEvent}>Remove</IonButton>
       </IonContent>
     </IonPage>
