@@ -52,7 +52,6 @@ async function checkGroupEmpty (req, res) {
     } else {
       await res.group.update({ archived: false });
     }
-    res.status(200).json({ message: "Group has been archived (variable changed) successfully." });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
