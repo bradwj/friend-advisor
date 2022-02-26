@@ -4,38 +4,25 @@ const admin = require("../firebase.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
-  let { name, phone, likes, dislikes, dob } = req.query;
-  if (name === undefined || name === null) {
-    name = "No Name Provided";
+  const { name, phone, likes, dislikes, dob } = req.query;
+  if (!name || name === "") {
+    console.error("No name specified.");
+    res.status(400).send({ message: "No name was specified, but it is a required argument." });
   }
-  if (phone === undefined || phone === null) {
-    phone = "";
-  }
-  if (likes === undefined || likes === null) {
-    likes = "";
-  }
-  if (dislikes === undefined || dislikes === null) {
-    dislikes = "";
-  }
-  if (dob === undefined || dob === null) {
-    dob = "";
-  }
+  // TODO: check if phone number is valid
   const newProfile = {
-    name,
-    phone,
-    likes,
-    dislikes,
-    dob,
+    name: name,
+    phone: phone || "",
+    likes: likes || "",
+    dislikes: dislikes || "",
+    dob: isNaN(new Date(dob)) || (typeof dob !== "string") ? "" : dob,
     userId: req.user.uid,
     lastUpdated: Date.now()
   };
   try {
-    const docRef = await db.collection("users").doc(req.user.uid).set(newProfile);
-    console.log("Document written with ID: ", docRef.id);
-    res.status(200).send({
-      id: docRef.id,
-      ...newProfile
-    });
+    await db.collection("users").doc(req.user.uid).set(newProfile);
+    console.log("User document updated.");
+    res.status(200).send(newProfile);
   } catch (err) {
     console.error("Error adding document: ", err);
     res.status(500).send({ message: err.toString() });
