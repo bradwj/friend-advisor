@@ -8,9 +8,12 @@ import {
   IonToolbar,
   IonInput,
   IonButton,
-  IonToast
+  IonToast,
+  IonButtons,
+  IonIcon
 } from "@ionic/react";
 import { AuthContext } from "../Auth";
+import { exitOutline, saveOutline } from "ionicons/icons";
 import React, { useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
@@ -101,31 +104,41 @@ const Profile: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Profile</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={logout} size="large">Logout
+              <IonIcon size="large" slot="end" icon={exitOutline} color="danger" /></IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonItem>
-          <IonLabel>Name</IonLabel>
+          <IonLabel><b>Name</b></IonLabel>
           <IonInput value={name} onIonChange={e => setProfileName(e.detail.value!)}/>
         </IonItem>
         <IonItem>
-          <IonLabel>Phone</IonLabel>
+          <IonLabel><b>Phone</b></IonLabel>
           <PhoneInput disableDropdown={true} country={"US"} value={phone} onChange={setProfilePhone}/>
         </IonItem>
         <IonItem>
-          <IonLabel>Likes</IonLabel>
+          <IonLabel><b>Likes</b></IonLabel>
           <IonInput value={likes} onIonChange={e => setProfileLikes(e.detail.value!)}/>
         </IonItem>
         <IonItem>
-          <IonLabel>Dislikes</IonLabel>
+          <IonLabel><b>Dislikes</b></IonLabel>
           <IonInput value={dislikes} onIonChange={e => setProfileDislikes(e.detail.value!)}/>
         </IonItem>
         <IonItem>
-          <IonLabel>Date of Birth</IonLabel>
+          <IonLabel><b>Date of Birth</b></IonLabel>
           <IonInput type="date" value={dob} onIonChange={e => setProfileDOB(e.detail.value!)}/>
         </IonItem>
-        <IonButton onClick={saveProfile} expand="block" color="secondary">Save</IonButton>
-        <IonButton onClick={logout} expand="block" color="primary">Logout</IonButton>
+
+        <small>User ID: {ctx?.userId}</small>
+
+        <div className="center-horizontal">
+          <IonButton onClick={saveProfile} size="large" style={{ width: "75px", height: "75px" }} shape="round" color="success">
+            <IonIcon size="large" icon={saveOutline} />
+          </IonButton>
+        </div>
         <IonToast
                 isOpen={notify}
                 onDidDismiss={() => { setNotify(false); }}
@@ -133,7 +146,6 @@ const Profile: React.FC = () => {
                 duration={1000}
                 position="bottom"
                 />
-        <small>User ID: {ctx?.userId}</small>
       </IonContent>
     </IonPage>
   );
