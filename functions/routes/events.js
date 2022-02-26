@@ -32,15 +32,10 @@
  *       required: false
  *       type: string
  *     - in: query
- *       name: lat
- *       description: latitudinal coordinate of the event location
+ *       name: location
+ *       description: string description OR link to a location
  *       required: false
- *       type: number
- *     - in: query
- *       name: long
- *       description: longitudinal coordinate of the event location
- *       required: false
- *       type: number
+ *       type: string
  *     responses:
  *       200:
  *         description: Returns document ID, group structure containing name, description, members, joinId
