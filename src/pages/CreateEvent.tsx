@@ -43,7 +43,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     if (ctx?.loggedIn) {
-      fetchGroups(ctx.userId).then(result => {
+      fetchGroups(ctx).then(result => {
         setGroups(result);
       });
     }
