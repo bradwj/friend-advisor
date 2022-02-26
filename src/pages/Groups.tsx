@@ -1,8 +1,8 @@
 import {
   IonAvatar,
-  IonButton,
-  IonContent,
-  IonHeader,
+  IonContent, IonFab,
+  IonFabButton, IonFabList,
+  IonHeader, IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -14,6 +14,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
 import { appendToCache } from "../cache_manager";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
+import { add, enter } from "ionicons/icons";
 
 interface Group {
   joinId: string,
@@ -75,8 +76,19 @@ const Groups: React.FC = () => {
             </IonItem>
           ))}
         </IonList>
-        <IonButton expand="block" href="/joingroup">Join Group</IonButton>
-        <IonButton expand="block" href="/creategroup">Create Group</IonButton>
+        <IonFab horizontal="center" vertical="bottom" slot="fixed">
+          <IonFabButton color="success">
+            <IonIcon icon={add}/>
+          </IonFabButton>
+          <IonFabList title="test" side="top">
+            <IonFabButton href="/joingroup">
+              <IonIcon icon={enter}/>
+            </IonFabButton>
+            <IonFabButton href="/creategroup" title="test" size="small">
+              <IonIcon icon={add}/>
+            </IonFabButton>
+          </IonFabList>
+        </IonFab>
       </IonContent>
     </IonPage>
   );
