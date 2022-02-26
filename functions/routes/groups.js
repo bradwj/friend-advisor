@@ -183,8 +183,10 @@ const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
 const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
 const db = admin.firestore();
+const rateLimited = require("../lib/rateLimit");
 
 router.post("/create", async (req, res) => {
+  if (rateLimited(req, res, 10)) return;
   // Used to Create Group
   let { name, description } = req.query;
   if (name === undefined || name === null) {
@@ -215,6 +217,7 @@ router.post("/create", async (req, res) => {
 
 // Adds a member to a group, given a joinId
 router.patch("/join", async (req, res) => {
+  if (rateLimited(req, res, 5)) return;
   const { joinId } = req.query;
   const userId = req.user.uid;
   if (
@@ -264,6 +267,7 @@ router.patch("/join", async (req, res) => {
 
 // Get all data from a specific group and most updated user data
 router.get("/", findGroup, checkInGroup, async (req, res) => {
+  if (rateLimited(req, res, 0.25)) return;
   try {
     const docData = res.groupDoc.data();
     const lastUpdated = parseInt(req.query.lastUpdated);
@@ -295,6 +299,7 @@ router.delete("/delete", findGroup, checkInGroup, async (req, res) => {
 
 // Edit a group with it's documentId and name/description as params
 router.patch("/edit", findGroup, checkInGroup, async (req, res) => {
+  if (rateLimited(req, res, 2)) return;
   try {
     const updatedData = {};
     if (req.query.name) {
@@ -313,6 +318,7 @@ router.patch("/edit", findGroup, checkInGroup, async (req, res) => {
 
 // Remove a user from a group
 router.patch("/leave", findGroup, checkInGroup, async (req, res) => {
+  if (rateLimited(req, res, 1)) return;
   try {
     const removeUser = admin.firestore.FieldValue.arrayRemove(req.user.uid);
     console.log(res.groupDoc.id);

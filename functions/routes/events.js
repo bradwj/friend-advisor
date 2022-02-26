@@ -55,8 +55,11 @@ const router = express.Router();
 const admin = require("../firebase.js");
 const db = admin.firestore();
 const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const rateLimited = require("../lib/rateLimit");
 
 router.post("/create", findGroup, checkInGroup, async (req, res) => {
+  if (rateLimited(req, res, 2)) return;
+
   const { id, datetime, name, description, lat, long } = req.query;
   try {
     const event = {
