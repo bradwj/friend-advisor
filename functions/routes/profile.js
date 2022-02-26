@@ -43,7 +43,25 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/edit", async (req, res) => {
-  // TO-DO
+  try {
+    const docRef = await db.collection("users").doc(req.user.uid);
+    const updatedProfileData = {
+      name: req.query.name,
+      phone: req.query.phone,
+      likes: req.query.likes,
+      dislikes: req.query.dislikes,
+      dob: req.query.dob, // FIXME: Call Brad's Function
+      lastUpdated: Date.now()
+    };
+    docRef.update(updatedProfileData);
+    console.log("Document written with ID: ", docRef.id);
+    res.status(200).send({
+      id: docRef.id,
+      ...updatedProfileData
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  };
 });
 
 module.exports = router;

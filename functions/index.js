@@ -1,6 +1,8 @@
 require("./firebase");
 
 const functions = require("firebase-functions");
+const admin = require("./firebase.js");
+const firestoreDb = admin.firestore();
 const swaggerJsdoc = require("swagger-jsdoc");
 const express = require("express");
 const cors = require("cors");
@@ -8,6 +10,8 @@ const fs = require("fs");
 exports.scheduleThis = require("./lib/scheduler").scheduledFunction;
 
 const app = express();
+
+firestoreDb.settings({ ignoreUndefinedProperties: true });
 
 const options = {
   definition: {
