@@ -27,7 +27,6 @@ const AboutPage: React.FC = () => {
         <p>Whether you&lsquo;re planning a birthday party, a weekend getaway, or just a night out, FriendAdvisor makes it easy for you and your friends to stay connected.</p>
         <p>FriendAdvisor was a project originally created at a <a target="_blank" href="https://devpost.com/software/friendadvisor" rel="noreferrer">hackathon</a>, but we&lsquo;ve decided to continue developing it.</p>
         <IonCard target="_blank" href="https://www.linkedin.com/in/alexis-kaufman-b27774118/">
-          <img src="https://picsum.photos/seed/1234/900/583" />
           <IonCardHeader>
             <IonCardSubtitle>Developer & Founder</IonCardSubtitle>
             <IonCardTitle>Alexis Kaufman</IonCardTitle>
@@ -37,22 +36,19 @@ const AboutPage: React.FC = () => {
             Wisconsin Territory in 1836.
           </IonCardContent> */}
         </IonCard>
-        <IonCard target="_blank" href="https://maxhogan.dev">
-          <img src="https://picsum.photos/seed/2234/900/583" />
+        <IonCard target="_blank" href="https://www.linkedin.com/in/max-hogan-ba9650223/">
           <IonCardHeader>
             <IonCardSubtitle>Developer & Founder</IonCardSubtitle>
             <IonCardTitle>Max Hogan</IonCardTitle>
           </IonCardHeader>
         </IonCard>
         <IonCard target="_blank" href="https://www.linkedin.com/in/adam-szumski/">
-          <img src="https://picsum.photos/seed/1334/900/583" />
           <IonCardHeader>
             <IonCardSubtitle>Developer & Founder</IonCardSubtitle>
             <IonCardTitle>Adam Szumski</IonCardTitle>
           </IonCardHeader>
         </IonCard>
         <IonCard target="_blank" href="https://www.linkedin.com/in/bradwj/">
-          <img src="https://picsum.photos/seed/6284/900/583" />
           <IonCardHeader>
             <IonCardSubtitle>Developer & Founder</IonCardSubtitle>
             <IonCardTitle>Bradley Johnson</IonCardTitle>
