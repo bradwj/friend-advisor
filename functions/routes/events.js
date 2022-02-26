@@ -7,13 +7,13 @@
  *     summary: By passing in the appropriate options, you can create a new event.
  *     operationId: createEvent
  *     description: |
- *       Example Query: POST /events/create?id=groupid123456&datetime=2022-02-19T02:45:31.669Z&name=EventName&description=creating a new event&lat=0.0&long=0.0
+ *       Example Query: POST /events/create?id=aH5Fr123456&datetime=2022-02-19T02:45:31.669Z&name=EventName&description=creating a new event&lat=0.0&long=0.0
  *     produces:
  *     - application/json
  *     parameters:
  *     - in: query
  *       id: group id
- *       description: the group id the event belongs to
+ *       description: the group id (document) the event belongs to
  *       required: true
  *       type: string
  *     - in: query
@@ -58,7 +58,7 @@ const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
 const { findEvent } = require("../lib/middleware/event.js");
 
 router.post("/create", findGroup, checkInGroup, async (req, res) => {
-  const { id, datetime, name, description, lat, long } = req.query;
+  const { id, datetime, name, description, location } = req.query;
   try {
     const event = {
       groupId: id,
@@ -67,6 +67,7 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
       name,
       description: description || null,
       archived: false,
+      location,
       sentNotifications: {
         monthBefore: [],
         weekBefore: [],
@@ -74,8 +75,6 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
         dayOf: []
       }
     };
-    if (lat && long) event.location = new admin.firestore.GeoPoint(Number(lat), Number(long));
-
     const docRef = await db.collection("events").add(event);
     console.log("Document written with ID:", docRef.id);
     res.status(200).send({ id: docRef.id, ...event });
@@ -86,13 +85,14 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
 
 // Needs "id" to find group document, and then "eventId" to find event document.
 router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
-  const { datetime, name, description } = req.query;
+  const { datetime, name, description, location } = req.query;
   if (res.event !== null && res.event !== undefined) {
     try {
       const updatedProfileData = {
         datetime: datetime,
         name: name,
         description: description,
+        location: location,
         lastUpdated: Date.now()
       };
       res.event.update(updatedProfileData);
