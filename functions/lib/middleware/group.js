@@ -63,4 +63,18 @@ async function checkInGroup (req, res, next) {
   next();
 }
 
-module.exports = { findGroup, findGroups, checkInGroup };
+// NOT MIDDLEWARE
+async function checkGroupEmpty (req, res) {
+  try {
+    const { members } = res.groupDoc.data();
+    if (members.length <= 0 || (members.length === 1 && members.includes(req.user.uid))) {
+      await res.group.update({ archived: true }); // Archives instead of deletes
+    } else {
+      await res.group.update({ archived: false });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+module.exports = { findGroup, findGroups, checkInGroup, checkGroupEmpty };

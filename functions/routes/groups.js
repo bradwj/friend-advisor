@@ -206,7 +206,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
-const { findGroup, checkInGroup, findGroups } = require("../lib/middleware/group.js");
+const { findGroup, findGroups, checkInGroup, checkGroupEmpty } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
@@ -223,7 +223,8 @@ router.post("/create", async (req, res) => {
     description,
     members: [req.user.uid],
     joinId: await createjoincode.generate(),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
+    archived: false
   };
   try {
     const docRef = await db.collection("groups").add(group);
@@ -363,6 +364,7 @@ router.patch("/leave", findGroup, checkInGroup, async (req, res) => {
       .json({
         message: "Member has successfully been removed from the group."
       });
+    await checkGroupEmpty(req, res); // If group is empty, archives group.
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
