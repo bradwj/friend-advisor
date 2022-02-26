@@ -31,10 +31,6 @@ const AboutPage: React.FC = () => {
             <IonCardSubtitle>Developer & Founder</IonCardSubtitle>
             <IonCardTitle>Alexis Kaufman</IonCardTitle>
           </IonCardHeader>
-          {/* <IonCardContent>
-            Founded in 1829 on an isthmus between Lake Monona and Lake Mendota, Madison was named the capital of the
-            Wisconsin Territory in 1836.
-          </IonCardContent> */}
         </IonCard>
         <IonCard target="_blank" href="https://www.linkedin.com/in/max-hogan-ba9650223/">
           <IonCardHeader>
