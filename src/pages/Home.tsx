@@ -25,8 +25,7 @@ import { add } from "ionicons/icons";
 interface Event{
     datetime: any,
     description: string,
-    lat: number,
-    long: number,
+    location: string,
     name: string,
     id: string,
     groupId: string,
@@ -55,8 +54,8 @@ export const fetchEvents = async (auth: any) => {
   snapshots.forEach(snap => {
     snap.forEach(doc => {
       if (groupIds.includes(doc.data().groupId)) {
-        const { datetime, description, lat, long, name, groupId } = doc.data();
-        const event = { datetime, description, lat, long, name, id: doc.id, groupId, groupName: groupsImIn.find(group => group.id === groupId)?.name };
+        const { datetime, description, location, name, groupId } = doc.data();
+        const event = { datetime, description, location, name, id: doc.id, groupId, groupName: groupsImIn.find(group => group.id === groupId)?.name };
         appendToCache("userEvents", event);
       }
     });
