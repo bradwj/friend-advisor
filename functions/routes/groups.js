@@ -181,7 +181,7 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
 const createjoincode = require("../lib/createjoincode.js");
-const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const { findGroup, checkInGroup, checkGroupEmpty } = require("../lib/middleware/group.js");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
@@ -198,7 +198,8 @@ router.post("/create", async (req, res) => {
     description,
     members: [req.user.uid],
     joinId: await createjoincode.generate(),
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
+    archived: false
   };
   try {
     const docRef = await db.collection("groups").add(group);
@@ -283,16 +284,6 @@ router.get("/", findGroup, checkInGroup, async (req, res) => {
   }
 });
 
-// Delete a group with its documentId
-router.delete("/delete", findGroup, checkInGroup, async (req, res) => {
-  try {
-    await res.group.delete();
-    res.status(200).json({ message: "Group has been deleted successfully." });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // Edit a group with it's documentId and name/description as params
 router.patch("/edit", findGroup, checkInGroup, async (req, res) => {
   try {
@@ -325,6 +316,7 @@ router.patch("/leave", findGroup, checkInGroup, async (req, res) => {
       .json({
         message: "Member has successfully been removed from the group."
       });
+    await checkGroupEmpty(req, res); // If group is empty, archives group.
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
