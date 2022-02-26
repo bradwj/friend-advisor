@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const admin = require("../firebase.js");
-const rateLimited = require("../lib/rateLimit");
 const db = admin.firestore();
 
 router.post("/create", async (req, res) => {
-  if (rateLimited(req, res, 2)) return;
-
   const { name, phone, likes, dislikes, dob } = req.query;
   if (!name || name === "") {
     console.error("No name specified.");
@@ -33,8 +30,6 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/edit", async (req, res) => {
-  if (rateLimited(req, res, 2)) return;
-
   const { name, phone, likes, dislikes, dob } = req.query;
   if (!name || name === "") {
     console.error("No name specified.");
