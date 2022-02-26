@@ -65,6 +65,7 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
       lastUpdated: Date.now(),
       name,
       description: description || null,
+      archived: false,
       sentNotifications: {
         monthBefore: [],
         weekBefore: [],
