@@ -53,16 +53,17 @@ const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
 const { findEvent } = require("../lib/middleware/event.js");
 
 router.post("/create", findGroup, checkInGroup, async (req, res) => {
-  const { id, datetime, name, description, location } = req.query;
+  let { id, datetime, name, description, location } = req.query;
   try {
+    if (datetime === null || datetime === undefined) { datetime = Date.now(); };
     const event = {
       groupId: id,
       datetime: new Date(datetime),
       lastUpdated: Date.now(),
-      name,
+      name: name || "",
       description: description || null,
       archived: false,
-      location,
+      location: location || "",
       sentNotifications: {
         monthBefore: [],
         weekBefore: [],
