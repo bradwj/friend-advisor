@@ -22,7 +22,7 @@ const options = {
       version: "1.0.0"
     }
   },
-  apis: [path.join(__dirname, "./routes/events.js"), path.join(__dirname, "./routes/groups.js"), path.join(__dirname, "./routes/notifications.js")]
+  apis: [path.join(__dirname, "./routes/events.js"), path.join(__dirname, "./routes/groups.js"), path.join(__dirname, "./routes/notifications.js"), path.join(__dirname, "./routes/profile.js")]
 };
 
 const openapiSpecification = swaggerJsdoc(options);

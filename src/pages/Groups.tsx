@@ -1,12 +1,12 @@
 import {
   IonAvatar,
-  IonButton,
-  IonContent,
-  IonHeader,
+  IonContent, IonFab,
+  IonFabButton, IonFabList,
+  IonHeader, IonIcon,
   IonItem,
   IonLabel,
   IonList,
-  IonPage,
+  IonPage, IonProgressBar,
   IonTitle,
   IonToolbar
 } from "@ionic/react";
@@ -14,6 +14,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Auth";
 import { appendToCache } from "../cache_manager";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
+import { add, enter } from "ionicons/icons";
 
 interface Group {
   joinId: string,
@@ -63,20 +64,36 @@ const Groups: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonList>
-          {groups?.map(group => (
-            <IonItem button href={"groups/" + group.id} key={group.id}>
-              <IonLabel>
-                <h2>{group.name}</h2>
-              </IonLabel>
-              <IonAvatar slot="start">
-                <img src={`https://picsum.photos/seed/${group.id}/200/200`} />
-              </IonAvatar>
-            </IonItem>
-          ))}
-        </IonList>
-        <IonButton expand="block" href="/joingroup">Join Group</IonButton>
-        <IonButton expand="block" href="/creategroup">Create Group</IonButton>
+        {groups
+          ? <>
+            <IonList>
+              {groups?.map(group => (
+                <IonItem button href={"groups/" + group.id} key={group.id}>
+                  <IonLabel>
+                    <h2>{group.name}</h2>
+                  </IonLabel>
+                  <IonAvatar slot="start">
+                    <img src={`https://picsum.photos/seed/${group.id}/200/200`}/>
+                  </IonAvatar>
+                </IonItem>
+              ))}
+            </IonList>
+            <IonFab horizontal="center" vertical="bottom" slot="fixed">
+              <IonFabButton color="success">
+                <IonIcon icon={add}/>
+              </IonFabButton>
+              <IonFabList title="test" side="top">
+                <IonFabButton href="/joingroup">
+                  <IonIcon icon={enter}/>
+                </IonFabButton>
+                <IonFabButton href="/creategroup" title="test" size="small">
+                  <IonIcon icon={add}/>
+                </IonFabButton>
+              </IonFabList>
+            </IonFab>
+          </>
+          : <IonProgressBar type="indeterminate"/>
+        }
       </IonContent>
     </IonPage>
   );

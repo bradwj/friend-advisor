@@ -7,13 +7,13 @@
  *     summary: By passing in the appropriate options, you can create a new event.
  *     operationId: createEvent
  *     description: |
- *       Example Query: POST /events/create?id=groupid123456&datetime=2022-02-19T02:45:31.669Z&name=EventName&description=creating a new event&lat=0.0&long=0.0
+ *       Example Query: POST /events/create?id=aH5Fr123456&datetime=2022-02-19T02:45:31.669Z&name=EventName&description=creating a new event&lat=0.0&long=0.0
  *     produces:
  *     - application/json
  *     parameters:
  *     - in: query
  *       id: group id
- *       description: the group id the event belongs to
+ *       description: the group id (document) the event belongs to
  *       required: true
  *       type: string
  *     - in: query
@@ -32,15 +32,10 @@
  *       required: false
  *       type: string
  *     - in: query
- *       name: lat
- *       description: latitudinal coordinate of the event location
+ *       name: location
+ *       description: string description OR link to a location
  *       required: false
- *       type: number
- *     - in: query
- *       name: long
- *       description: longitudinal coordinate of the event location
- *       required: false
- *       type: number
+ *       type: string
  *     responses:
  *       200:
  *         description: Returns document ID, group structure containing name, description, members, joinId
@@ -55,17 +50,20 @@ const router = express.Router();
 const admin = require("../firebase.js");
 const db = admin.firestore();
 const { findGroup, checkInGroup } = require("../lib/middleware/group.js");
+const { findEvent } = require("../lib/middleware/event.js");
 
 router.post("/create", findGroup, checkInGroup, async (req, res) => {
-  const { id, datetime, name, description, lat, long } = req.query;
+  let { id, datetime, name, description, location } = req.query;
   try {
+    if (datetime === null || datetime === undefined) { datetime = Date.now(); };
     const event = {
       groupId: id,
       datetime: new Date(datetime),
       lastUpdated: Date.now(),
-      name,
+      name: name || "",
       description: description || null,
       archived: false,
+      location: location || "",
       sentNotifications: {
         monthBefore: [],
         weekBefore: [],
@@ -73,8 +71,6 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
         dayOf: []
       }
     };
-    if (lat && long) event.location = new admin.firestore.GeoPoint(Number(lat), Number(long));
-
     const docRef = await db.collection("events").add(event);
     console.log("Document written with ID:", docRef.id);
     res.status(200).send({ id: docRef.id, ...event });
@@ -105,6 +101,28 @@ router.get("/all", async (req, res) => {
     return res.status(200).json({ events });
   } catch (err) {
     return res.status(500).send({ message: err.message });
+  }
+});
+
+// Needs "id" to find group document, and then "eventId" to find event document.
+router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
+  const { datetime, name, description, location } = req.query;
+  if (res.event !== null && res.event !== undefined) {
+    try {
+      const updatedProfileData = {
+        datetime: datetime,
+        name: name,
+        description: description,
+        location: location,
+        lastUpdated: Date.now()
+      };
+      res.event.update(updatedProfileData);
+      console.log("Document written with ID: ", res.event.id);
+      res.status(200).send(updatedProfileData);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: err.message });
+    };
   }
 });
 

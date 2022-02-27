@@ -5,7 +5,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonPage,
+  IonPage, IonProgressBar,
   IonToolbar
 } from "@ionic/react";
 import { RouteComponentProps, useHistory } from "react-router";
@@ -63,17 +63,20 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent hidden={user === undefined} fullscreen>
-        <div className="center">
-          <IonAvatar slot="start">
-            <img src={`https://picsum.photos/seed/${user?.userId}/200/200`} />
-          </IonAvatar>
-          <h1>{user?.name}</h1>
-          <p>Likes {user?.likes}</p>
-          <p>Dislikes {user?.dislikes}</p>
-          <p>{user?.phone}</p>
-          <p>{user?.dob}</p>
-        </div>
+      <IonContent fullscreen>
+        {user
+          ? <div className="center">
+            <IonAvatar slot="start">
+              <img src={`https://picsum.photos/seed/${user?.userId}/200/200`}/>
+            </IonAvatar>
+            <h1>{user?.name}</h1>
+            <p>Likes {user?.likes}</p>
+            <p>Dislikes {user?.dislikes}</p>
+            <p>{user?.phone}</p>
+            <p>{user?.dob}</p>
+          </div>
+          : <IonProgressBar type="indeterminate"/>
+        }
       </IonContent>
     </IonPage>
   );
