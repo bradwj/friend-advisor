@@ -80,7 +80,7 @@ const Groups: React.FC = () => {
               ))}
             </IonList>
             <IonFab horizontal="center" vertical="bottom" slot="fixed">
-              <IonFabButton color="success">
+              <IonFabButton color="primary">
                 <IonIcon icon={add}/>
               </IonFabButton>
               <IonFabList title="test" side="top">
