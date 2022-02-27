@@ -22,7 +22,6 @@ import { useHistory } from "react-router-dom";
 import { appendToCache, deleteFromCache } from "../cache_manager";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
 import { User } from "./User";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 export interface Group {
     id: string,
@@ -32,8 +31,6 @@ export interface Group {
     lastUpdated: number,
     joinId: string
 }
-
-const db = getFirestore();
 
 export const fetchGroup = async (groupId: any, auth: any) => {
   /*
@@ -117,7 +114,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   }
 
   async function deleteGroup () {
-    await fetchWithAuth(ctx, `groups/delete?id=${group?.id}`, {
+    await fetchWithAuth(ctx, `groups/delete?id=${id}`, {
       method: "DELETE"
     });
 
@@ -133,19 +130,17 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
   }
 
   const saveGroup = async () => {
-    console.log({
-      name,
-      description,
-      lastUpdated: Date.now()
-    });
     try {
-      await setDoc(doc(db, "groups", `${group?.id}`), {
-        name,
-        description,
-        members: group?.members,
-        joinId: group?.joinId,
-        lastUpdated: Date.now()
+      let query: string = `groups/edit?id=${id}`;
+      if (name !== group?.name) query += `&name=${name}`;
+      if (description !== group?.description) query += `&description=${description}`;
+      await fetchWithAuth(ctx, query, {
+        method: "PATCH"
       });
+      if (group) {
+        group.name = name;
+        group.description = description;
+      }
       setNotifStyle("success");
       setNotification("Your group was updated successfully!");
       setEditing(false);
