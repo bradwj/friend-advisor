@@ -14,13 +14,13 @@ import {
   IonIcon, IonFabButton, IonFab
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
-import { collection, getDocs, getFirestore, deleteDoc, doc, query, where } from "firebase/firestore";
+import { getFirestore, deleteDoc, doc } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import { useHistory } from "react-router";
 import { appendToCache } from "../cache_manager";
-import { fetchGroups } from "./Groups";
 import RelativeDate from "../components/RelativeDate";
 import { add } from "ionicons/icons";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 interface Event{
     datetime: any,
@@ -43,24 +43,18 @@ interface Group { // eslint-disable-line no-unused-vars
 export const fetchEvents = async (auth: any) => {
   console.log("fetchEvents");
   const lastCachedUserEvents: number = JSON.parse(window.localStorage.getItem("lastCachedUserEvents") || "0");
-  const groupsImIn = await fetchGroups(auth);
-  const groupIds = groupsImIn.map(group => group.id);
 
-  const eventPromises = [];
-  for (const group of groupsImIn) {
-    eventPromises.push(getDocs(query(collection(db, "events"), where("groupId", "==", group.id), where("lastUpdated", ">", lastCachedUserEvents))));
-  }
-
-  const snapshots = await Promise.all(eventPromises);
-  snapshots.forEach(snap => {
-    snap.forEach(doc => {
-      if (groupIds.includes(doc.data().groupId)) {
-        const { datetime, description, lat, long, name, groupId } = doc.data();
-        const event = { datetime, description, lat, long, name, id: doc.id, groupId, groupName: groupsImIn.find(group => group.id === groupId)?.name };
-        appendToCache("userEvents", event);
-      }
-    });
+  const req = await fetchWithAuth(auth, `events/all?lastUpdated=${lastCachedUserEvents}`, {
+    method: "GET"
   });
+
+  const resp:{ events: any[]; message?: string; } = await req.json();
+
+  if (!resp.message) {
+    resp.events.forEach(event => {
+      appendToCache("userEvents", event);
+    });
+  } else console.log(resp.message);
 
   window.localStorage.setItem("lastCachedUserEvents", `${Date.now()}`);
   return new Promise<Array<Event>>(resolve => resolve(JSON.parse(window.localStorage.getItem("userEvents") || "[]")));
@@ -98,12 +92,12 @@ const Home: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonList>
-          {events?.sort((a, b) => a.datetime.seconds - b.datetime.seconds).map(event => (
+          {events?.sort((a, b) => a.datetime._seconds - b.datetime._seconds).map(event => (
             <IonCard button href={"events/" + event.id} key={event.id}>
               <IonCardHeader>
                 <IonCardTitle>{event.name}</IonCardTitle>
                 <IonCardSubtitle>
-                  {event.groupName} &bull; <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>
+                  {event.groupName} &bull; <RelativeDate date={new Date(event.datetime._seconds * 1000)}/>
                 </IonCardSubtitle>
               </IonCardHeader>
               <IonCardContent>

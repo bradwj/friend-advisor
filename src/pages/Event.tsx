@@ -15,7 +15,7 @@ import { getFirestore, deleteDoc, doc, setDoc, deleteField } from "firebase/fire
 import { AuthContext } from "../Auth";
 import MapPicker from "react-google-map-picker";
 import { RouteComponentProps, useHistory } from "react-router";
-import { fetchEvents } from "./Home";
+// import { fetchEvents } from "./Home";
 import RelativeDate from "../components/RelativeDate";
 // import { arrowBackOutline } from "ionicons/icons";
 
@@ -33,7 +33,7 @@ const db = getFirestore();
 
 export const fetchEvent = async (eventId: any, auth: any) => {
   console.log("fetchEvent");
-  const events = await fetchEvents(auth);
+  const events = JSON.parse(window.localStorage.getItem("userEvents") || "[]");
   const event = events.find((event: any) => event.id === eventId);
 
   return new Promise<Event>((resolve, reject) => {
@@ -139,7 +139,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           </>
           : <>
             <h1>{event?.name}</h1>
-            <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
+            <h3>{event && <RelativeDate date={new Date(event.datetime._seconds * 1000)}/>}</h3>
             <p>{event?.description || ""}</p>
           </>
         }
