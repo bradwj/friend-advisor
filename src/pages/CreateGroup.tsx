@@ -21,13 +21,14 @@ const CreateGroup: React.FC = () => {
   const id: any = new URLSearchParams(useLocation().search).get("id");
 
   const [name, setName] = useState<string>(id);
+  const [description, setDescription] = useState<string>("");
   const [notification, setNotification] = useState<string>();
   const [notify, setNotify] = useState<boolean>(false);
 
   const auth = useContext(AuthContext);
 
   const tryCode = async () => {
-    await fetchWithAuth(auth, `groups/create?name=${name}`, {
+    await fetchWithAuth(auth, `groups/create?name=${name}&description=${description}`, {
       method: "POST"
     });
     setNotification("Successfully created group!");
@@ -44,8 +45,12 @@ const CreateGroup: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <IonItem>
-          <IonLabel>Group Name</IonLabel>
+          <IonLabel><b>Group Name</b></IonLabel>
           <IonInput value={name} onIonChange={e => setName(e.detail.value!)}/>
+        </IonItem>
+        <IonItem>
+          <IonLabel><b>Group Description</b></IonLabel>
+          <IonInput value={description} onIonChange={e => setDescription(e.detail.value!)}/>
         </IonItem>
         <IonButton onClick={tryCode} expand="block" color="success">Create Group</IonButton>
         <IonToast

@@ -27,6 +27,7 @@ import { User } from "./User";
 export interface Group {
     id: string,
     name: string,
+    description: string,
     members: any[],
     lastUpdated: number,
     joinId: string
@@ -126,6 +127,7 @@ const GroupPage: React.FC<RouteComponentProps> = ({ match }) => {
       </IonHeader>
       <IonContent fullscreen>
         <h1>{group?.name}</h1>
+        <p>{group?.description}</p>
         <h2>Group Members</h2>
         <IonList>
           {group?.members.map(member => <IonItem button href={"users/" + member.userId} key={member.userId}>

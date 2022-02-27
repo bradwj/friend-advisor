@@ -20,6 +20,7 @@ interface Group {
   joinId: string,
   id: string,
   name: string,
+  description: string,
   members: string[],
   lastUpdated: number
 }
