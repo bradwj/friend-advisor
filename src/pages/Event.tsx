@@ -126,7 +126,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
               </>
               : <>
                 <h1>{event?.name}</h1>
-                <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
+                <h3>{event && <RelativeDate date={new Date((event.datetime.seconds || event.datetime._seconds) * 1000)}/>}</h3>
                 <p>{event?.description || ""}</p>
                 {event?.location && <><h3>Location</h3>
                   <p>{event?.location || ""}</p></>}

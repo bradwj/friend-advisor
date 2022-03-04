@@ -93,12 +93,12 @@ const Home: React.FC = () => {
         {events
           ? <>
             <IonList>
-              {events?.sort((a, b) => a.datetime.seconds - b.datetime.seconds).map(event => (
+              {events?.sort((a, b) => (a.datetime.seconds || a.datetime._seconds) - (b.datetime.seconds || b.datetime._seconds)).map(event => (
                 <IonCard button href={"events/" + event.id} key={event.id}>
                   <IonCardHeader>
                     <IonCardTitle>{event.name}</IonCardTitle>
                     <IonCardSubtitle>
-                      {event.groupName} &bull; <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>
+                      {event.groupName} &bull; <RelativeDate date={new Date((event.datetime.seconds || event.datetime._seconds) * 1000)}/>
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
