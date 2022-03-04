@@ -106,14 +106,22 @@ router.get("/all", async (req, res) => {
 
 // Needs "id" to find group document, and then "eventId" to find event document.
 router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
-  const { datetime, name, description, location } = req.query;
+  const { datetime, name, description, location, archived } = req.query;
+  let isArchived;
+  if (archived === "true") {
+    isArchived = true;
+  } else if (archived === "false") {
+    isArchived = false;
+  }
+  console.log("isArchived", isArchived, "archive", archived);
   if (res.event !== null && res.event !== undefined) {
     try {
       const updatedProfileData = {
-        datetime: datetime,
-        name: name,
-        description: description,
-        location: location,
+        datetime,
+        name,
+        description,
+        location,
+        archived: isArchived,
         lastUpdated: Date.now()
       };
       res.event.update(updatedProfileData);
@@ -122,7 +130,10 @@ router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
     } catch (err) {
       console.error(err);
       res.status(500).send({ message: err.message });
-    };
+    }
+  } else {
+    console.error("No event passed!");
+    res.status(500).send({});
   }
 });
 

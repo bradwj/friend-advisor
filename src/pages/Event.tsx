@@ -10,11 +10,12 @@ import {
   IonTextarea, IonInput, IonButtons, IonBackButton, IonProgressBar
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
-import { getFirestore, deleteDoc, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import { RouteComponentProps, useHistory } from "react-router";
 // import { fetchEvents } from "./Home";
 import RelativeDate from "../components/RelativeDate";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 
 interface Event {
   datetime: any,
@@ -22,7 +23,8 @@ interface Event {
   location: string,
   name: string,
   id: string,
-  groupId: string
+  groupId: string,
+  archived: boolean | undefined
 }
 
 const db = getFirestore();
@@ -54,6 +56,8 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   // @ts-ignore
   const id = match.params.id;
 
+  console.log(event);
+
   useEffect(() => {
     if (ctx?.loggedIn) {
       fetchEvent(id, ctx).then(data => {
@@ -71,14 +75,23 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   }, [ctx]);
 
   function getDefaultVal () {
+    console.log(event?.datetime);
     let now = event && event.datetime && event.datetime.toDate();
     if (!now) now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, -1);
   }
 
-  async function removeEvent () {
-    await deleteDoc(doc(db, "events", id));
+  async function archiveEvent () {
+    await fetchWithAuth(ctx, `events/edit?id=${event?.groupId}&eventId=${event?.id}&archived=true`, {
+      method: "PATCH"
+    });
+  }
+
+  async function unArchiveEvent () {
+    await fetchWithAuth(ctx, `events/edit?id=${event?.groupId}&eventId=${event?.id}&archived=false`, {
+      method: "PATCH"
+    });
   }
 
   async function saveEvent () {
@@ -140,7 +153,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           : <><IonButton
           size="default" href={"groups/" + event?.groupId}>Group</IonButton> <IonButton size="default" color="secondary"
                                                                                         onClick={() => setEditing(true)}>Edit</IonButton> </>}
-        <IonButton size="default" color="danger" onClick={removeEvent}>Remove</IonButton>
+        {event?.archived ? <IonButton size="default" color="success" onClick={unArchiveEvent}>Unarchive</IonButton> : <IonButton size="default" color="danger" onClick={archiveEvent}>Archive</IonButton>}
       </IonContent>
     </IonPage>
   );
