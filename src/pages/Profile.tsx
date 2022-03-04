@@ -17,6 +17,7 @@ import { exitOutline, saveOutline } from "ionicons/icons";
 import React, { useContext, useState, useEffect } from "react";
 import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
+import { fetchWithAuth } from "../lib/fetchWithAuth";
 import { useHistory } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -67,14 +68,8 @@ const Profile: React.FC = () => {
       lastUpdated: Date.now()
     });
     try {
-      await setDoc(doc(db, "users", `${ctx?.userId}`), {
-        name,
-        phone,
-        likes,
-        dislikes,
-        dob,
-        userId: ctx?.userId,
-        lastUpdated: Date.now()
+      const req = await fetchWithAuth(ctx, `profile/create?name=${name}&phone=${phone}&likes=${likes}&dislikes=${dislikes}&dob=${dob}`, {
+        method: "POST"
       });
       setNotifStyle("success");
       setNotification("Your profile was updated successfully!");
