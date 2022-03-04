@@ -5,7 +5,6 @@ import {
   IonTitle,
   IonToolbar,
   IonList,
-  IonButton,
   IonCard,
   IonCardContent,
   IonCardTitle,
@@ -14,9 +13,7 @@ import {
   IonIcon, IonFabButton, IonFab, IonProgressBar
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
-import { getFirestore, deleteDoc, doc } from "firebase/firestore";
 import { AuthContext } from "../Auth";
-import { useHistory } from "react-router";
 import { appendToCache } from "../cache_manager";
 import RelativeDate from "../components/RelativeDate";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
@@ -59,12 +56,9 @@ export const fetchEvents = async (auth: any) => {
   return new Promise<Array<Event>>(resolve => resolve(JSON.parse(window.localStorage.getItem("userEvents") || "[]")));
 };
 
-const db = getFirestore();
-
 const Home: React.FC = () => {
   const [events, setEvents] = useState<Event[]>(JSON.parse(window.localStorage.getItem("userEvents") || "[]"));
   const ctx = useContext(AuthContext);
-  const history = useHistory();
 
   useEffect(() => {
     if (ctx?.loggedIn) {
@@ -73,14 +67,6 @@ const Home: React.FC = () => {
       });
     }
   }, [ctx]);
-
-  async function removeEvent (id: string) {
-    console.log("removing event");
-
-    await deleteDoc(doc(db, "events", id));
-
-    history.push("/home");
-  }
 
   return (
     <IonPage>
@@ -105,11 +91,6 @@ const Home: React.FC = () => {
                     <p>{event.description || ""}</p>
                     {event.location && <p><IonIcon icon={locationOutline}/> {event.location}</p>}
                     <br/>
-                    <IonButton size="default" href={"groups/" + event.groupId}>Group</IonButton>
-                    <IonButton size="default" color="danger" onClick={async (e) => {
-                      e.preventDefault(); // cancel link of outer card element
-                      await removeEvent(event.id);
-                    }}>Remove</IonButton>
                   </IonCardContent>
                 </IonCard>
               ))}
