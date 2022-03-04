@@ -48,6 +48,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
   const [editing, setEditing] = useState<boolean>(false);
   const ctx = useContext(AuthContext);
   const [eventName, setEventName] = useState<string>();
+  const [eventArchived, setEventArchived] = useState<boolean | undefined>();
   const [eventDesc, setEventDesc] = useState<string>();
   const [eventLocation, setEventLocation] = useState<string>();
   const [eventDate, setEventDate] = useState<string>();
@@ -65,6 +66,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
         setEventDate(data.datetime);
         setEventDesc(data.description);
         setEventLocation(data.location);
+        setEventArchived(data.archived);
 
         setEvent(data);
       }, reason => {
@@ -86,12 +88,16 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
     await fetchWithAuth(ctx, `events/edit?id=${event?.groupId}&eventId=${event?.id}&archived=true`, {
       method: "PATCH"
     });
+
+    setEventArchived(true);
   }
 
   async function unArchiveEvent () {
     await fetchWithAuth(ctx, `events/edit?id=${event?.groupId}&eventId=${event?.id}&archived=false`, {
       method: "PATCH"
     });
+
+    setEventArchived(false);
   }
 
   async function saveEvent () {
@@ -134,7 +140,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
                 </IonItem>
                 <IonItem>
                   <IonLabel>Location</IonLabel>
-                  <IonTextarea value={eventDesc} onIonChange={e => setEventDesc(e.detail.value!)}/>
+                  <IonTextarea value={eventLocation} onIonChange={e => setEventLocation(e.detail.value!)}/>
                 </IonItem>
               </>
               : <>
@@ -153,7 +159,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
           : <><IonButton
           size="default" href={"groups/" + event?.groupId}>Group</IonButton> <IonButton size="default" color="secondary"
                                                                                         onClick={() => setEditing(true)}>Edit</IonButton> </>}
-        {event?.archived ? <IonButton size="default" color="success" onClick={unArchiveEvent}>Unarchive</IonButton> : <IonButton size="default" color="danger" onClick={archiveEvent}>Archive</IonButton>}
+        {eventArchived ? <IonButton size="default" color="success" onClick={unArchiveEvent}>Unarchive</IonButton> : <IonButton size="default" color="danger" onClick={archiveEvent}>Archive</IonButton>}
       </IonContent>
     </IonPage>
   );
