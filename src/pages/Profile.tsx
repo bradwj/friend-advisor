@@ -15,7 +15,7 @@ import {
 import { AuthContext } from "../Auth";
 import { exitOutline, saveOutline } from "ionicons/icons";
 import React, { useContext, useState, useEffect } from "react";
-import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
 import { fetchWithAuth } from "../lib/fetchWithAuth";
 import { useHistory } from "react-router-dom";
@@ -68,7 +68,7 @@ const Profile: React.FC = () => {
       lastUpdated: Date.now()
     });
     try {
-      const req = await fetchWithAuth(ctx, `profile/create?name=${name}&phone=${phone}&likes=${likes}&dislikes=${dislikes}&dob=${dob}`, {
+      await fetchWithAuth(ctx, `profile/create?name=${name}&phone=${phone}&likes=${likes}&dislikes=${dislikes}&dob=${dob}`, {
         method: "POST"
       });
       setNotifStyle("success");
