@@ -51,6 +51,7 @@ const Profile: React.FC = () => {
 
   const [notification, setNotification] = useState<string>();
   const [notify, setNotify] = useState<boolean>(false);
+  const [notifStyle, setNotifStyle] = useState<string>("");
 
   const ctx = useContext(AuthContext);
   const history = useHistory();
@@ -65,16 +66,23 @@ const Profile: React.FC = () => {
       userId: ctx?.userId,
       lastUpdated: Date.now()
     });
-    await setDoc(doc(db, "users", `${ctx?.userId}`), {
-      name,
-      phone,
-      likes,
-      dislikes,
-      dob,
-      userId: ctx?.userId,
-      lastUpdated: Date.now()
-    });
-    setNotification("Your profile was updated successfully!");
+    try {
+      await setDoc(doc(db, "users", `${ctx?.userId}`), {
+        name,
+        phone,
+        likes,
+        dislikes,
+        dob,
+        userId: ctx?.userId,
+        lastUpdated: Date.now()
+      });
+      setNotifStyle("success");
+      setNotification("Your profile was updated successfully!");
+    } catch (err) {
+      console.error(err);
+      setNotifStyle("danger");
+      setNotification("Sorry, your profile could not be saved. :(");
+    }
     setNotify(true);
   };
 
@@ -145,6 +153,7 @@ const Profile: React.FC = () => {
                 message={notification}
                 duration={1000}
                 position="bottom"
+                color={notifStyle}
                 />
       </IonContent>
     </IonPage>

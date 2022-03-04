@@ -13,7 +13,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { getFirestore, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { AuthContext } from "../Auth";
 import { RouteComponentProps, useHistory } from "react-router";
-import { fetchEvents } from "./Home";
+// import { fetchEvents } from "./Home";
 import RelativeDate from "../components/RelativeDate";
 
 interface Event {
@@ -29,7 +29,7 @@ const db = getFirestore();
 
 export const fetchEvent = async (eventId: any, auth: any) => {
   console.log("fetchEvent");
-  const events = await fetchEvents(auth);
+  const events = JSON.parse(window.localStorage.getItem("userEvents") || "[]");
   const event = events.find((event: any) => event.id === eventId);
 
   return new Promise<Event>((resolve, reject) => {
@@ -126,7 +126,7 @@ const EventPage: React.FC<RouteComponentProps> = ({ match }) => {
               </>
               : <>
                 <h1>{event?.name}</h1>
-                <h3>{event && <RelativeDate date={new Date(event.datetime.seconds * 1000)}/>}</h3>
+                <h3>{event && <RelativeDate date={new Date(event.datetime._seconds * 1000)}/>}</h3>
                 <p>{event?.description || ""}</p>
                 {event?.location && <><h3>Location</h3>
                   <p>{event?.location || ""}</p></>}

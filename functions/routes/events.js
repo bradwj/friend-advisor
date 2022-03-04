@@ -79,6 +79,31 @@ router.post("/create", findGroup, checkInGroup, async (req, res) => {
   }
 });
 
+router.get("/all", async (req, res) => {
+  const { uid } = req.user;
+  const lastUpdated = parseInt(req.query.lastUpdated);
+  if (!uid) return res.status(404).send({ message: "User not logged in." });
+  try {
+    const groups = (await db.collection("groups").where("members", "array-contains", `${uid}`).get()).docs;
+    const groupIds = groups.map(group => ({ id: group.id, groupName: group.data().name }));
+    const eventsPromise = [];
+    const events = [];
+    groupIds.forEach(groupId => {
+      eventsPromise.push(db.collection("events").where("groupId", "==", `${groupId.id}`).where("lastUpdated", ">", lastUpdated).get());
+    });
+    const eventsSnapshot = await Promise.all(eventsPromise);
+    eventsSnapshot.forEach(querySnapshot => {
+      if (!querySnapshot.empty) {
+        const data = querySnapshot.docs[0].data();
+        events.push({ id: querySnapshot.docs[0].id, groupName: groupIds.find(group => group.id === data.groupId).groupName, ...querySnapshot.docs[0].data() });
+      }
+    });
+    return res.status(200).json({ events });
+  } catch (err) {
+    return res.status(500).send({ message: err.message });
+  }
+});
+
 // Needs "id" to find group document, and then "eventId" to find event document.
 router.patch("/edit", findGroup, checkInGroup, findEvent, async (req, res) => {
   const { datetime, name, description, location } = req.query;
