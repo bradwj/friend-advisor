@@ -12,6 +12,7 @@ import { RouteComponentProps, useHistory } from "react-router";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../Auth";
 import { arrowBack } from "ionicons/icons";
+import parsePhoneNumber from "libphonenumber-js";
 
 export interface User {
     userId: string,
@@ -52,6 +53,18 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
     }
   }, [ctx]);
 
+  let phoneNumber = "";
+  let phoneLink = "#";
+  if (user?.phone) {
+    const parsed = parsePhoneNumber(user.phone.toString());
+    if (parsed) {
+      phoneNumber = parsed.formatInternational();
+      phoneLink = parsed.getURI();
+    }
+  }
+
+  console.log(phoneNumber, phoneLink);
+
   return (
     <IonPage>
       <IonHeader>
@@ -69,11 +82,11 @@ const UserPage: React.FC<RouteComponentProps> = ({ match }) => {
             <IonAvatar slot="start">
               <img src={`https://picsum.photos/seed/${user?.userId}/200/200`}/>
             </IonAvatar>
-            <h1>{user?.name}</h1>
-            <p>Likes {user?.likes}</p>
-            <p>Dislikes {user?.dislikes}</p>
-            <p>{user?.phone}</p>
-            <p>{user?.dob}</p>
+            <h1>{user.name}</h1>
+            <p>Likes {user.likes}</p>
+            <p>Dislikes {user.dislikes}</p>
+            <p><a href={phoneLink}>{phoneNumber}</a></p>
+            <p>{user.dob}</p>
           </div>
           : <IonProgressBar type="indeterminate"/>
         }
